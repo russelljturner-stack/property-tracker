@@ -361,17 +361,77 @@ Record significant decisions in `docs/decisions/architecture-decisions.md`:
 
 ---
 
+## Git Workflow
+
+**This section defines how version control should be used on this project. Claude must follow these rules.**
+
+### Core Principles
+
+1. **No worktrees** - Work in a single directory only. Never create or use git worktrees.
+2. **Simple branching** - Keep it minimal. Complexity causes confusion.
+3. **Ask before branching** - Claude must ask Russell before creating any new branch.
+
+### Day-to-Day Workflow
+
+- **Work directly on `main`** for routine development within a phase
+- **Commit frequently** with clear messages describing what changed
+- **Push regularly** to keep the remote backup current
+
+### When to Create a Branch
+
+Only create a branch when:
+1. **Starting a new phase** (e.g., `phase-4-features`) - ask Russell first
+2. **Attempting something risky** that might need to be completely undone
+3. **Russell explicitly requests it**
+
+When a branch is complete:
+1. Merge it back to `main`
+2. Delete the branch (keep things tidy)
+
+### What Claude Must NOT Do
+
+- Never create worktrees
+- Never create branches without asking Russell first
+- Never use complex branching strategies (no git-flow, no feature branches for small changes)
+- Never leave stale branches lying around
+
+### Commit Message Format
+
+Keep it simple and descriptive:
+```
+Add login page with email/password authentication
+
+- Created login form component
+- Added NextAuth.js credential provider
+- Protected routes redirect to login
+```
+
+For small changes, a single line is fine:
+```
+Fix typo in dashboard heading
+```
+
+---
+
 ## Current Status
 
-**Current Phase:** Phase 3 - Core Application Setup
+**Current Phase:** Phase 3 - Core Application Setup (nearly complete)
 
 **Completed:**
 - Phase 1: Discovery and Documentation (48 tables, 115 relationships, 225 scripts documented)
 - Phase 2: Database Design (46 Prisma models created and deployed to Railway)
-- Pre-Phase 3: All outstanding questions answered, project approach clarified
+- Phase 3 (in progress):
+  - Next.js 16 application with TypeScript and Tailwind CSS
+  - Authentication with NextAuth.js (email/password)
+  - Responsive sidebar navigation
+  - Placeholder pages for all main sections
+  - Database connected to Railway PostgreSQL
+
+**Remaining for Phase 3:**
+- Deploy to Railway (pending GitHub repository setup)
 
 **Key Decisions Made (see docs/decisions/architecture-decisions.md):**
 - ADR-002: This is NOT a like-for-like migration - improve, don't replicate
 - ADR-004: System must deliver management insights, not just store data
 
-**Next action:** Build the Next.js application with authentication and navigation.
+**Next action:** Push to GitHub, then deploy to Railway.
