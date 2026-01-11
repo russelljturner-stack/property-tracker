@@ -1,6 +1,9 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 
+// Force dynamic rendering - this page fetches data at request time, not build time
+export const dynamic = 'force-dynamic'
+
 // This is the dashboard / home page.
 //
 // It shows an overview of the system including:

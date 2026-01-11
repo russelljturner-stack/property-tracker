@@ -1,5 +1,8 @@
 import { db } from "@/lib/db"
 
+// Force dynamic rendering - this page fetches data at request time, not build time
+export const dynamic = 'force-dynamic'
+
 // Developments list page
 //
 // This page displays all developments (projects) in the system.

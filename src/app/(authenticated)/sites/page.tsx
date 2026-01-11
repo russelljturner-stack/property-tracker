@@ -1,5 +1,8 @@
 import { db } from "@/lib/db"
 
+// Force dynamic rendering - this page fetches data at request time, not build time
+export const dynamic = 'force-dynamic'
+
 // Sites list page
 //
 // This page displays all sites (properties/land) in the system.

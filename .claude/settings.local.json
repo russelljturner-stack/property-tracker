@@ -9,7 +9,12 @@
       "Bash(mkdir:*)",
       "Bash(npm install:*)",
       "Bash(npx tsx:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: Phase 3 - Core Application Setup\n\n- Next.js 16 with TypeScript and Tailwind CSS\n- PostgreSQL database via Prisma \\(connected to Railway\\)\n- NextAuth.js authentication with email/password\n- Responsive sidebar navigation\n- Placeholder pages for Sites, Developments, Contacts, Tasks, Reports\n- Dashboard with metric cards\n- Protected routes with middleware\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(gh:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nFix build: force dynamic rendering for database pages\n\nPages that fetch from the database need to render at request time,\nnot build time, because the database isn''t accessible during Railway''s\nbuild process.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push)"
     ]
   }
 }
