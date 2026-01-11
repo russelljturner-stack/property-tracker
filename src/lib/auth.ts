@@ -20,6 +20,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   // Use Prisma to store sessions and accounts in the database
   adapter: PrismaAdapter(db),
 
+  // Trust the host header from the request (needed for Railway/Vercel deployment)
+  // This allows NextAuth to work behind proxies and load balancers
+  trustHost: true,
+
   // Use JWT strategy (stores session in browser cookie, not database)
   // This is simpler and works well for most applications
   session: {
