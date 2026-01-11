@@ -1,0 +1,44 @@
+# Environment variables (contains secrets - never commit!)
+.env
+.env.local
+.env.production
+
+# Dependencies
+node_modules/
+
+# Prisma
+prisma/migrations/**/migration_lock.toml
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+nul
+
+# Vercel
+.vercel
+
+# TypeScript build info
+*.tsbuildinfo
+
+# FileMaker source files (large, not needed for deployment)
+*.fmp12
+DDR_converted.xml
+Summary.xml
+WildstoneDevelopmentTracker240714_fmp12.xml

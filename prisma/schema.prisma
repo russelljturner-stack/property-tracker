@@ -1,0 +1,1314 @@
+// ============================================================================
+// Property Development Tracker - Prisma Schema
+// ============================================================================
+// This file defines the database structure for PostgreSQL.
+//
+// HOW PRISMA WORKS:
+// - Each "model" becomes a table in the database
+// - Fields inside a model become columns in that table
+// - Relations (like @relation) create links between tables
+// - When we run "prisma migrate", this file creates the actual database tables
+//
+// NAMING CONVENTIONS:
+// - Model names: PascalCase (e.g., DevelopmentStatus)
+// - Field names: camelCase (e.g., firstName)
+// - We keep similar names to FileMaker where possible for familiarity
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// SECTION 1: LOOKUP / REFERENCE TABLES
+// ============================================================================
+// These are simple tables that store dropdown options and status codes.
+// In FileMaker, many of these were "value lists" - here they become proper tables
+// so we can add new options without changing code.
+
+// ----------------------------------------------------------------------------
+// Site Status - Whether a site is active or not
+// FileMaker equivalent: sitestatus table (2 records: Live, Dead)
+// ----------------------------------------------------------------------------
+model SiteStatus {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique  // "Live" or "Dead"
+  description String?   // Optional description
+  sortOrder   Int       @default(0)  // For controlling display order
+  isActive    Boolean   @default(true)  // Can soft-delete by setting false
+
+  // Relation: One status can be used by many sites
+  sites       Site[]
+
+  @@map("site_status")  // The actual PostgreSQL table name
+}
+
+// ----------------------------------------------------------------------------
+// Title Type - Ownership type (Freehold, Leasehold, etc.)
+// FileMaker equivalent: title table (3 records)
+// ----------------------------------------------------------------------------
+model TitleType {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique  // "Freehold", "Leasehold", etc.
+  description String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+
+  sites       Site[]
+
+  @@map("title_type")
+}
+
+// ----------------------------------------------------------------------------
+// Deal Type - Type of development deal
+// FileMaker equivalent: dealtype table (4 records)
+// ----------------------------------------------------------------------------
+model DealType {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique  // "Acquisition", "Lease", "Consultancy", etc.
+  description String?
+  sortOrder   Int           @default(0)
+  isActive    Boolean       @default(true)
+
+  developments Development[]
+
+  @@map("deal_type")
+}
+
+// ----------------------------------------------------------------------------
+// Development Status - Workflow status for developments
+// FileMaker equivalent: developmentstatus table (19 records)
+// ----------------------------------------------------------------------------
+model DevelopmentStatus {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String?
+  colour      String?       // Hex colour for UI display (e.g., "#28a745")
+  sortOrder   Int           @default(0)
+  isActive    Boolean       @default(true)
+
+  developments Development[]
+
+  @@map("development_status")
+}
+
+// ----------------------------------------------------------------------------
+// Development Type - Category of development
+// FileMaker equivalent: developmenttype table (4 records)
+// ----------------------------------------------------------------------------
+model DevelopmentType {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String?
+  sortOrder   Int           @default(0)
+  isActive    Boolean       @default(true)
+
+  developments Development[]
+
+  @@map("development_type")
+}
+
+// ----------------------------------------------------------------------------
+// Application Status - Planning application status values
+// FileMaker equivalent: applicationstatus table (13 records)
+// Used for both planning applications and advertisement applications
+// ----------------------------------------------------------------------------
+model ApplicationStatus {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String?
+  colour      String?       // For visual status indicators
+  sortOrder   Int           @default(0)
+  isActive    Boolean       @default(true)
+
+  // This status is used by two different fields on Development
+  developmentsPlanningApp Development[] @relation("PlanningAppStatus")
+  developmentsAdvertApp   Development[] @relation("AdvertAppStatus")
+
+  @@map("application_status")
+}
+
+// ----------------------------------------------------------------------------
+// Panel Type - Type of advertising panel
+// FileMaker equivalent: paneltype table (8 records)
+// Examples: Billboard, Digital Screen, Bus Shelter, etc.
+// ----------------------------------------------------------------------------
+model PanelType {
+  id          Int                 @id @default(autoincrement())
+  name        String              @unique
+  description String?
+  sortOrder   Int                 @default(0)
+  isActive    Boolean             @default(true)
+
+  developmentDetails DevelopmentDetail[]
+
+  @@map("panel_type")
+}
+
+// ----------------------------------------------------------------------------
+// Panel Size - Standard advertising panel sizes
+// FileMaker equivalent: panelsize table (12 records)
+// Examples: 48-sheet, 96-sheet, 6-sheet, etc.
+// ----------------------------------------------------------------------------
+model PanelSize {
+  id          Int                 @id @default(autoincrement())
+  name        String              @unique
+  description String?
+  widthMm     Int?                // Width in millimetres
+  heightMm    Int?                // Height in millimetres
+  sortOrder   Int                 @default(0)
+  isActive    Boolean             @default(true)
+
+  developmentDetails DevelopmentDetail[]
+
+  @@map("panel_size")
+}
+
+// ----------------------------------------------------------------------------
+// Panel Orientation - Portrait, Landscape, Square
+// FileMaker equivalent: panelorientation table (3 records)
+// ----------------------------------------------------------------------------
+model PanelOrientation {
+  id          Int                 @id @default(autoincrement())
+  name        String              @unique  // "Portrait", "Landscape", "Square"
+  sortOrder   Int                 @default(0)
+  isActive    Boolean             @default(true)
+
+  developmentDetails DevelopmentDetail[]
+
+  @@map("panel_orientation")
+}
+
+// ----------------------------------------------------------------------------
+// Structure Type - Physical structure that holds the panel
+// FileMaker equivalent: structure table (8 records)
+// Examples: Monopole, Gantry, Wall-mounted, etc.
+// ----------------------------------------------------------------------------
+model StructureType {
+  id          Int                 @id @default(autoincrement())
+  name        String              @unique
+  description String?
+  sortOrder   Int                 @default(0)
+  isActive    Boolean             @default(true)
+
+  developmentDetails DevelopmentDetail[]
+
+  @@map("structure_type")
+}
+
+// ----------------------------------------------------------------------------
+// Task Type - Categories of tasks
+// FileMaker equivalent: tasktype table (5 records)
+// ----------------------------------------------------------------------------
+model TaskType {
+  id          Int                 @id @default(autoincrement())
+  name        String              @unique
+  description String?
+  sortOrder   Int                 @default(0)
+  isActive    Boolean             @default(true)
+
+  developmentTasks DevelopmentTask[]
+
+  @@map("task_type")
+}
+
+// ----------------------------------------------------------------------------
+// Contracting Entity - Legal entities that sign contracts
+// FileMaker equivalent: contractingentity table (8 records)
+// These are the different company legal entities
+// ----------------------------------------------------------------------------
+model ContractingEntity {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String?
+  sortOrder   Int           @default(0)
+  isActive    Boolean       @default(true)
+
+  developments Development[]
+
+  @@map("contracting_entity")
+}
+
+// ----------------------------------------------------------------------------
+// Build Part - Components of a build project
+// FileMaker equivalent: buildpart table (5 records)
+// ----------------------------------------------------------------------------
+model BuildPart {
+  id          Int                     @id @default(autoincrement())
+  name        String                  @unique
+  description String?
+  sortOrder   Int                     @default(0)
+  isActive    Boolean                 @default(true)
+
+  developmentBuildParts DevelopmentBuildPart[]
+
+  @@map("build_part")
+}
+
+// ----------------------------------------------------------------------------
+// ASGF Status - Status values for ASGF (purpose unclear from DDR)
+// FileMaker equivalent: asgfstatus table (3 records)
+// ----------------------------------------------------------------------------
+model AsgfStatus {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String?
+  sortOrder   Int           @default(0)
+  isActive    Boolean       @default(true)
+
+  developments Development[]
+
+  @@map("asgf_status")
+}
+
+// ----------------------------------------------------------------------------
+// UK Counties - Geographic lookup
+// FileMaker equivalent: counties table (75 records)
+// ----------------------------------------------------------------------------
+model County {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+
+  addresses   Address[]
+
+  @@map("county")
+}
+
+// ----------------------------------------------------------------------------
+// UK Towns and Cities - Geographic lookup
+// FileMaker equivalent: townsandcities table (193 records)
+// ----------------------------------------------------------------------------
+model TownCity {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+
+  addresses   Address[]
+
+  @@map("town_city")
+}
+
+
+// ============================================================================
+// SECTION 2: CORE ENTITY TABLES
+// ============================================================================
+// These are the main business objects - organisations, contacts, sites, etc.
+
+// ----------------------------------------------------------------------------
+// Organisation - Companies and organisations
+// FileMaker equivalent: organisation table (1,077 records)
+//
+// One organisation can play many roles:
+// - Site owner, Site agent, Local authority, Media owner, Developer, Lawyer, etc.
+// Rather than separate tables, we use one table and track roles via relationships.
+// ----------------------------------------------------------------------------
+model Organisation {
+  id          Int       @id @default(autoincrement())
+  name        String
+  type        String?   // "Site Owner", "Media Owner", "Local Authority", etc.
+  phone       String?
+  website     String?
+  notes       String?   // Using String for text fields (PostgreSQL will use TEXT)
+
+  // Audit fields - track who created/modified records
+  createdAt   DateTime  @default(now())
+  createdBy   String?
+  updatedAt   DateTime  @updatedAt
+  updatedBy   String?
+
+  // Relations
+  addressId   Int?
+  address     Address?  @relation(fields: [addressId], references: [id])
+
+  contacts    Contact[]
+
+  // An organisation can be referenced in many different roles on sites and developments
+  sitesAsSiteOwner      Site[]        @relation("SiteOwner")
+  sitesAsSiteAgent      Site[]        @relation("SiteAgent")
+  sitesAsLocalAuthority Site[]        @relation("LocalAuthority")
+
+  developmentsAsDeveloper       Development[] @relation("Developer")
+  developmentsAsMediaOwner      Development[] @relation("MediaOwner")
+  developmentsAsMediaOwnerAgent Development[] @relation("MediaOwnerAgent")
+  developmentsAsLawyer          Development[] @relation("Lawyer")
+
+  @@map("organisation")
+}
+
+// ----------------------------------------------------------------------------
+// Contact - People at organisations
+// FileMaker equivalent: contact table (730 records)
+// ----------------------------------------------------------------------------
+model Contact {
+  id              Int           @id @default(autoincrement())
+  firstName       String?
+  lastName        String?
+  jobTitle        String?
+  email           String?
+  phone           String?
+  mobile          String?
+  role            String?       // Their role/position
+  notes           String?
+  decisionLevel   String?       // Their decision-making authority
+  salutation      String?       // Mr, Mrs, Ms, Dr, etc.
+
+  // Audit fields
+  createdAt       DateTime      @default(now())
+  createdBy       String?
+  updatedAt       DateTime      @updatedAt
+  updatedBy       String?
+
+  // Relations
+  organisationId  Int?
+  organisation    Organisation? @relation(fields: [organisationId], references: [id])
+
+  // A contact can be referenced in different roles
+  developmentsAsMediaOwnerContact Contact_Development_MediaOwner[]
+  developmentsAsCaseOfficer       Development[] @relation("CaseOfficer")
+  developmentsAsLawyerContact     Development[] @relation("LawyerContact")
+  developmentsAsExternalDev       Development[] @relation("ExternalDeveloper")
+
+  // Junction tables for site contacts
+  siteOwnerAssignments  SiteOwnerContact[]
+  siteAgentAssignments  SiteAgentContact[]
+
+  @@map("contact")
+}
+
+// Explicit join table for Contact-Development media owner relationship
+model Contact_Development_MediaOwner {
+  contactId     Int
+  developmentId Int
+  contact       Contact     @relation(fields: [contactId], references: [id])
+  development   Development @relation(fields: [developmentId], references: [id])
+
+  @@id([contactId, developmentId])
+  @@map("contact_development_media_owner")
+}
+
+// ----------------------------------------------------------------------------
+// Address - Physical addresses for sites and organisations
+// FileMaker equivalent: address table (2,005 records)
+// ----------------------------------------------------------------------------
+model Address {
+  id          Int       @id @default(autoincrement())
+  line1       String?
+  line2       String?
+  postcode    String?
+  country     String?   @default("United Kingdom")
+
+  // Location data for Google Maps integration
+  latitude    Float?
+  longitude   Float?
+  location    String?   // Text description of location
+
+  // Audit fields
+  createdAt   DateTime  @default(now())
+  createdBy   String?
+  updatedAt   DateTime  @updatedAt
+  updatedBy   String?
+
+  // Relations to lookup tables
+  townCityId  Int?
+  townCity    TownCity? @relation(fields: [townCityId], references: [id])
+
+  countyId    Int?
+  county      County?   @relation(fields: [countyId], references: [id])
+
+  // This address can belong to sites or organisations
+  sites         Site[]
+  organisations Organisation[]
+
+  @@map("address")
+}
+
+// ----------------------------------------------------------------------------
+// Site - Physical locations for advertising
+// FileMaker equivalent: site table (1,847 records)
+// This is one of the core tables - a site is a physical location where
+// advertising panels can be installed.
+// ----------------------------------------------------------------------------
+model Site {
+  id              Int       @id @default(autoincrement())
+  name            String?   // Site name (often derived from address)
+  type            String?   @default("Advertisement")  // "Advertisement" or "Planning"
+  clientRef       String?   // Client's reference number
+  survey          String?   // Survey notes
+  internalOwner   String?   // Internal team member responsible
+
+  // Container field URLs (files stored in cloud storage)
+  landRegistryDocUrl  String?   // URL to land registry PDF
+  landRegistryMapUrl  String?   // URL to land registry map
+
+  // Audit fields
+  dateAdded       DateTime  @default(now())
+  createdBy       String?
+  updatedAt       DateTime  @updatedAt
+  updatedBy       String?
+
+  // Relations to lookup tables
+  statusId        Int?
+  status          SiteStatus?   @relation(fields: [statusId], references: [id])
+
+  titleTypeId     Int?
+  titleType       TitleType?    @relation(fields: [titleTypeId], references: [id])
+
+  // Relations to other entities
+  addressId       Int?
+  address         Address?      @relation(fields: [addressId], references: [id])
+
+  siteOwnerId     Int?
+  siteOwner       Organisation? @relation("SiteOwner", fields: [siteOwnerId], references: [id])
+
+  siteAgentId     Int?
+  siteAgent       Organisation? @relation("SiteAgent", fields: [siteAgentId], references: [id])
+
+  localAuthorityId Int?
+  localAuthority   Organisation? @relation("LocalAuthority", fields: [localAuthorityId], references: [id])
+
+  // Child records
+  developments    Development[]
+  photos          SitePhoto[]
+  ownerContacts   SiteOwnerContact[]
+  agentContacts   SiteAgentContact[]
+
+  @@map("site")
+}
+
+// ----------------------------------------------------------------------------
+// Development - Development projects on sites
+// FileMaker equivalent: development table (1,984 records)
+//
+// This is the most complex table - it tracks the entire lifecycle of
+// developing an advertising site, from initial deal through planning
+// permission to construction.
+// ----------------------------------------------------------------------------
+model Development {
+  id                Int       @id @default(autoincrement())
+  projectNo         Int?      @unique  // Internal project number
+
+  // --------------------------------------------
+  // Developer Information
+  // --------------------------------------------
+  internalDeveloper String?  // Internal developer name (staff member)
+
+  // --------------------------------------------
+  // Financial Information - Current Lease
+  // --------------------------------------------
+  currentRentPerAnnum     Decimal?  @db.Decimal(12, 2)
+  currentLeaseStartDate   DateTime?
+  currentLeaseEndDate     DateTime?
+  currentLeaseTerm        Int?      // Years
+  currentLeaseUrl         String?   // URL to current lease PDF
+
+  // --------------------------------------------
+  // Financial Information - Proposed Deal
+  // --------------------------------------------
+  rentalValue             Decimal?  @db.Decimal(12, 2)
+  rentalValueConsultancy  Decimal?  @db.Decimal(12, 2)
+  profitYear1             Decimal?  @db.Decimal(12, 2)
+  profitThereafter        Decimal?  @db.Decimal(12, 2)
+  purchasePrice           Decimal?  @db.Decimal(12, 2)
+  leasePerAnnum           Decimal?  @db.Decimal(12, 2)
+  feeProposal             String?
+  estimateOrActual        String?   // Whether figures are estimates
+  consultancyFinancials   String?
+
+  // --------------------------------------------
+  // Contract Information
+  // --------------------------------------------
+  offerAgreed         DateTime?
+  leaseStartDate      DateTime?
+  term                Int?          // Lease term in years
+  probability         Int?          // Deal probability percentage
+  contractIssued      DateTime?
+  contractSigned      DateTime?
+  contractUrl         String?       // URL to contract PDF
+  matterNo            String?       // Legal matter number
+  contractAnnualRent  String?
+  contractTerm        String?
+  leaseAssignable     String?
+  rpiIncreases        String?
+  rentCommencement    String?
+
+  // --------------------------------------------
+  // AFL (Agreement for Lease)
+  // --------------------------------------------
+  aflSigned           DateTime?
+  aflExpiryDate       DateTime?
+  aflSignedComment    String?
+  aflExpiryComment    String?
+
+  // --------------------------------------------
+  // Design
+  // --------------------------------------------
+  designSignedOffDate DateTime?
+  designSignedOffBy   String?
+  designUrl           String?       // URL to design file
+  designFinalOrDraft  String?
+  designSignedOff     String?
+
+  // --------------------------------------------
+  // Planning Application
+  // --------------------------------------------
+  internalPlanner                     String?
+  planningContractualSubmission       String?
+  planningContractualSubmissionDate   DateTime?
+  planningScore                       Int?
+  preAppMeetingRequired               String?
+  draftApplicationComplete            DateTime?
+  preAppSubmitted                     DateTime?
+  preAppMeetingDate                   DateTime?
+  preAppResponseReceived              DateTime?
+  preAppReference                     String?
+  preAppFeedback                      String?
+  preAppDocUrl                        String?       // URL to pre-app documents
+  planningApplicationDescription      String?
+  planningApplicationDetail           String?
+  planningClientApproval              String?
+  planningApplicationSubmitted        DateTime?
+  planningAppRegistration             DateTime?
+  planningAppRefLa                    String?       // LA reference number
+  planningAppDeterminDate             DateTime?
+  planningAppTargetOverride           DateTime?     // Manual override of target date
+  planningConditions                  String?
+  planningConditionsNumber            Int?
+  planningAppStatusModified           DateTime?
+
+  // --------------------------------------------
+  // Planning Appeal
+  // --------------------------------------------
+  planningAppealDeadlineOverride      DateTime?
+  planningAppealSubmitted             DateTime?
+  planningAppealStart                 DateTime?
+  planningAppealRefLa                 String?
+  planningAppealProcedure             String?
+  planningAppealRepresentations       DateTime?
+  planningAppealActualDetermination   DateTime?
+  planningAppealHearing               DateTime?
+  planningAppealFinalComments         DateTime?
+
+  // --------------------------------------------
+  // Advertisement Application
+  // --------------------------------------------
+  advertApplicationDescription        String?
+  advertApplicationDetail             String?
+  advertApplicationSubmitted          DateTime?
+  advertApplicationRegistration       DateTime?
+  advertAppRefLa                      String?
+  advertAppDeterminationDate          DateTime?
+  advertConditions                    String?
+  advertConditionsNumber              Int?
+  advertAppStatusModified             DateTime?
+
+  // --------------------------------------------
+  // Advertisement Appeal
+  // --------------------------------------------
+  advertAppealDeadlineOverride        DateTime?
+  advertAppealSubmitted               DateTime?
+  advertAppealStart                   DateTime?
+  advertAppealRefLa                   String?
+  advertAppealProcedure               String?
+  advertAppealRepresentations         DateTime?
+
+  // --------------------------------------------
+  // Build Information
+  // --------------------------------------------
+  buildStartDate          DateTime?
+  buildCompletionDate     DateTime?
+  buildLiveDate           DateTime?
+  buildContractor         String?
+  buildNotes              String?
+
+  // --------------------------------------------
+  // Status Tracking
+  // --------------------------------------------
+  developmentStatusModified DateTime?
+
+  // --------------------------------------------
+  // Audit Fields
+  // --------------------------------------------
+  createdAt       DateTime  @default(now())
+  createdBy       String?
+  updatedAt       DateTime  @updatedAt
+  updatedBy       String?
+
+  // --------------------------------------------
+  // Relations to Lookup Tables
+  // --------------------------------------------
+  dealTypeId      Int?
+  dealType        DealType?         @relation(fields: [dealTypeId], references: [id])
+
+  statusId        Int?
+  status          DevelopmentStatus? @relation(fields: [statusId], references: [id])
+
+  developmentTypeId Int?
+  developmentType   DevelopmentType?  @relation(fields: [developmentTypeId], references: [id])
+
+  planningAppStatusId Int?
+  planningAppStatus   ApplicationStatus? @relation("PlanningAppStatus", fields: [planningAppStatusId], references: [id])
+
+  advertAppStatusId   Int?
+  advertAppStatus     ApplicationStatus? @relation("AdvertAppStatus", fields: [advertAppStatusId], references: [id])
+
+  contractingEntityId Int?
+  contractingEntity   ContractingEntity? @relation(fields: [contractingEntityId], references: [id])
+
+  asgfStatusId    Int?
+  asgfStatus      AsgfStatus?       @relation(fields: [asgfStatusId], references: [id])
+
+  // --------------------------------------------
+  // Relations to Other Entities
+  // --------------------------------------------
+  siteId          Int?
+  site            Site?             @relation(fields: [siteId], references: [id])
+
+  developerId     Int?
+  developer       Organisation?     @relation("Developer", fields: [developerId], references: [id])
+
+  mediaOwnerId    Int?
+  mediaOwner      Organisation?     @relation("MediaOwner", fields: [mediaOwnerId], references: [id])
+
+  mediaOwnerAgentId Int?
+  mediaOwnerAgent   Organisation?   @relation("MediaOwnerAgent", fields: [mediaOwnerAgentId], references: [id])
+
+  lawyerId        Int?
+  lawyer          Organisation?     @relation("Lawyer", fields: [lawyerId], references: [id])
+
+  caseOfficerId   Int?
+  caseOfficer     Contact?          @relation("CaseOfficer", fields: [caseOfficerId], references: [id])
+
+  lawyerContactId Int?
+  lawyerContact   Contact?          @relation("LawyerContact", fields: [lawyerContactId], references: [id])
+
+  externalDeveloperId Int?
+  externalDeveloper   Contact?  @relation("ExternalDeveloper", fields: [externalDeveloperId], references: [id])
+
+  // --------------------------------------------
+  // Child Records
+  // --------------------------------------------
+  details         DevelopmentDetail[]
+  notes           DevelopmentNote[]
+  tasks           DevelopmentTask[]
+  projects        DevelopmentProject[]
+  buildParts      DevelopmentBuildPart[]
+  planningDocs    PlanningDoc[]
+  advertDocs      AdvertDoc[]
+  contractDocs    ContractDocument[]
+  tenderOffers    TenderOffer[]
+  tenderPhotos    TenderPhoto[]
+  consultancyRentReviews  ConsultancyRentReview[]
+  consultancyValuations   ConsultancyValuation[]
+  consultancyOther        ConsultancyOther[]
+  consultancyRevenue      ConsultancyRevenue[]
+  asgfReports     AsgfReport[]
+  mediaOwnerContacts Contact_Development_MediaOwner[]
+
+  @@map("development")
+}
+
+
+// ============================================================================
+// SECTION 3: CHILD / DETAIL TABLES
+// ============================================================================
+// These tables hold additional details linked to the core entities.
+
+// ----------------------------------------------------------------------------
+// Development Detail - Panel specifications for a development
+// FileMaker equivalent: developmentdetail table (2,116 records)
+// A development can have multiple panel configurations
+// ----------------------------------------------------------------------------
+model DevelopmentDetail {
+  id              Int       @id @default(autoincrement())
+  sides           Int?      // Number of sides
+  digital         String?   // Is it digital? (Yes/No)
+  illuminated     String?   // Is it illuminated? (Yes/No)
+  height          Decimal?  @db.Decimal(8, 2)  // Height in metres
+  width           Decimal?  @db.Decimal(8, 2)  // Width in metres
+  quantity        Int?      // Number of panels
+
+  // Relations
+  developmentId   Int
+  development     Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  panelTypeId     Int?
+  panelType       PanelType?  @relation(fields: [panelTypeId], references: [id])
+
+  panelSizeId     Int?
+  panelSize       PanelSize?  @relation(fields: [panelSizeId], references: [id])
+
+  orientationId   Int?
+  orientation     PanelOrientation? @relation(fields: [orientationId], references: [id])
+
+  structureTypeId Int?
+  structureType   StructureType?    @relation(fields: [structureTypeId], references: [id])
+
+  @@map("development_detail")
+}
+
+// ----------------------------------------------------------------------------
+// Site Photo - Photos of sites
+// FileMaker equivalent: sitephotos table (1,250 records)
+// ----------------------------------------------------------------------------
+model SitePhoto {
+  id          Int       @id @default(autoincrement())
+  photoUrl    String?   // URL to the photo in cloud storage
+  caption     String?
+  isPrimary   Boolean   @default(false)  // Is this the main photo?
+  uploadedAt  DateTime  @default(now())
+  uploadedBy  String?
+
+  siteId      Int
+  site        Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@map("site_photo")
+}
+
+// ----------------------------------------------------------------------------
+// Planning Document - Documents for planning applications
+// FileMaker equivalent: planningdocs table (1,413 records)
+// ----------------------------------------------------------------------------
+model PlanningDoc {
+  id            Int       @id @default(autoincrement())
+  name          String?
+  description   String?
+  documentUrl   String?   // URL to the document
+  documentType  String?   // Type of document
+  uploadedAt    DateTime  @default(now())
+  uploadedBy    String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("planning_doc")
+}
+
+// ----------------------------------------------------------------------------
+// Planning Condition - Conditions attached to planning permission
+// FileMaker equivalent: planningconditions table (4 records)
+// ----------------------------------------------------------------------------
+model PlanningCondition {
+  id            Int       @id @default(autoincrement())
+  conditionNo   Int?
+  description   String?
+  status        String?   // Met, Outstanding, etc.
+  dueDate       DateTime?
+  completedDate DateTime?
+  notes         String?
+
+  developmentId Int
+
+  @@map("planning_condition")
+}
+
+// ----------------------------------------------------------------------------
+// Advert Document - Documents for advertisement applications
+// FileMaker equivalent: advertdocs table (0 records - but keep for future use)
+// ----------------------------------------------------------------------------
+model AdvertDoc {
+  id            Int       @id @default(autoincrement())
+  name          String?
+  description   String?
+  documentUrl   String?
+  documentType  String?
+  uploadedAt    DateTime  @default(now())
+  uploadedBy    String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("advert_doc")
+}
+
+// ----------------------------------------------------------------------------
+// Contract Document - Contract-related documents
+// FileMaker equivalent: contractdocuments table (12 records)
+// ----------------------------------------------------------------------------
+model ContractDocument {
+  id            Int       @id @default(autoincrement())
+  name          String?
+  description   String?
+  documentUrl   String?
+  documentType  String?
+  uploadedAt    DateTime  @default(now())
+  uploadedBy    String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("contract_document")
+}
+
+// ----------------------------------------------------------------------------
+// Tender Offer - Offers received during tendering
+// FileMaker equivalent: tenderoffers table (1 record)
+// ----------------------------------------------------------------------------
+model TenderOffer {
+  id            Int       @id @default(autoincrement())
+  offerAmount   Decimal?  @db.Decimal(12, 2)
+  offerDate     DateTime?
+  offerFrom     String?
+  notes         String?
+  status        String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("tender_offer")
+}
+
+// ----------------------------------------------------------------------------
+// Tender Photo - Photos for tender documents
+// FileMaker equivalent: tenderphotos table (1 record)
+// ----------------------------------------------------------------------------
+model TenderPhoto {
+  id            Int       @id @default(autoincrement())
+  photoUrl      String?
+  caption       String?
+  uploadedAt    DateTime  @default(now())
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("tender_photo")
+}
+
+// ----------------------------------------------------------------------------
+// ASGF Report
+// FileMaker equivalent: asgfreports table (1 record)
+// ----------------------------------------------------------------------------
+model AsgfReport {
+  id            Int       @id @default(autoincrement())
+  reportUrl     String?
+  reportDate    DateTime?
+  notes         String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("asgf_report")
+}
+
+
+// ============================================================================
+// SECTION 4: JUNCTION TABLES (Many-to-Many Relationships)
+// ============================================================================
+// These tables link two entities together when there's a many-to-many relationship.
+// For example: A site can have many owner contacts, and a contact can be
+// assigned to many sites as an owner contact.
+
+// ----------------------------------------------------------------------------
+// Development Note - Notes linked to developments
+// FileMaker equivalent: jndevelopmentnotes table (274 records)
+// ----------------------------------------------------------------------------
+model DevelopmentNote {
+  id            Int       @id @default(autoincrement())
+  noteText      String?
+  noteDate      DateTime  @default(now())
+  noteBy        String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("development_note")
+}
+
+// ----------------------------------------------------------------------------
+// Development Task - Tasks linked to developments
+// FileMaker equivalent: jndevelopmenttasks table (41 records)
+// ----------------------------------------------------------------------------
+model DevelopmentTask {
+  id            Int       @id @default(autoincrement())
+  description   String?
+  dueDate       DateTime?
+  completedDate DateTime?
+  complete      Boolean   @default(false)
+  assignedTo    String?
+  priority      String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  taskTypeId    Int?
+  taskType      TaskType? @relation(fields: [taskTypeId], references: [id])
+
+  @@map("development_task")
+}
+
+// ----------------------------------------------------------------------------
+// Development Project - Links developments to projects
+// FileMaker equivalent: jndevelopmentprojects table (60 records)
+// ----------------------------------------------------------------------------
+model DevelopmentProject {
+  id            Int       @id @default(autoincrement())
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  projectId     Int
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([developmentId, projectId])
+  @@map("development_project")
+}
+
+// ----------------------------------------------------------------------------
+// Project - Project groupings
+// FileMaker equivalent: project table (5 records)
+// ----------------------------------------------------------------------------
+model Project {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String?
+
+  createdAt     DateTime  @default(now())
+  createdBy     String?
+
+  developments  DevelopmentProject[]
+
+  @@map("project")
+}
+
+// ----------------------------------------------------------------------------
+// Development Build Part - Build components for a development
+// FileMaker equivalent: jndevelopmentbuildpart table (0 records)
+// ----------------------------------------------------------------------------
+model DevelopmentBuildPart {
+  id            Int       @id @default(autoincrement())
+  notes         String?
+  status        String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  buildPartId   Int
+  buildPart     BuildPart @relation(fields: [buildPartId], references: [id])
+
+  tenderResponses BuildTenderResponse[]
+  snaggingItems   BuildSnaggingItem[]
+
+  @@unique([developmentId, buildPartId])
+  @@map("development_build_part")
+}
+
+// ----------------------------------------------------------------------------
+// Build Tender Response - Responses to build tenders
+// FileMaker equivalent: buildtenderesponses table (1 record)
+// ----------------------------------------------------------------------------
+model BuildTenderResponse {
+  id                    Int       @id @default(autoincrement())
+  responseAmount        Decimal?  @db.Decimal(12, 2)
+  responseDate          DateTime?
+  contractor            String?
+  notes                 String?
+  status                String?
+
+  developmentBuildPartId Int
+  developmentBuildPart   DevelopmentBuildPart @relation(fields: [developmentBuildPartId], references: [id], onDelete: Cascade)
+
+  @@map("build_tender_response")
+}
+
+// ----------------------------------------------------------------------------
+// Build Snagging Item - Snagging list items
+// FileMaker equivalent: buildsnagginglist table (0 records)
+// ----------------------------------------------------------------------------
+model BuildSnaggingItem {
+  id                    Int       @id @default(autoincrement())
+  description           String?
+  reportedDate          DateTime?
+  resolvedDate          DateTime?
+  status                String?
+
+  developmentBuildPartId Int
+  developmentBuildPart   DevelopmentBuildPart @relation(fields: [developmentBuildPartId], references: [id], onDelete: Cascade)
+
+  @@map("build_snagging_item")
+}
+
+// ----------------------------------------------------------------------------
+// Site Owner Contact - Links sites to owner contacts (many-to-many)
+// FileMaker equivalent: jnsiteownercontacts table (434 records)
+// ----------------------------------------------------------------------------
+model SiteOwnerContact {
+  id          Int       @id @default(autoincrement())
+  isPrimary   Boolean   @default(false)  // Is this the primary contact?
+
+  siteId      Int
+  site        Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  contactId   Int
+  contact     Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, contactId])
+  @@map("site_owner_contact")
+}
+
+// ----------------------------------------------------------------------------
+// Site Agent Contact - Links sites to agent contacts (many-to-many)
+// FileMaker equivalent: jnsiteagentcontacts table (74 records)
+// ----------------------------------------------------------------------------
+model SiteAgentContact {
+  id          Int       @id @default(autoincrement())
+  isPrimary   Boolean   @default(false)
+
+  siteId      Int
+  site        Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  contactId   Int
+  contact     Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([siteId, contactId])
+  @@map("site_agent_contact")
+}
+
+
+// ============================================================================
+// SECTION 5: CONSULTANCY TABLES
+// ============================================================================
+// Tables for tracking consultancy work
+
+// ----------------------------------------------------------------------------
+// Consultancy Rent Review
+// FileMaker equivalent: consultancyrentreview table (2 records)
+// ----------------------------------------------------------------------------
+model ConsultancyRentReview {
+  id            Int       @id @default(autoincrement())
+  reviewDate    DateTime?
+  currentRent   Decimal?  @db.Decimal(12, 2)
+  proposedRent  Decimal?  @db.Decimal(12, 2)
+  agreedRent    Decimal?  @db.Decimal(12, 2)
+  notes         String?
+  status        String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("consultancy_rent_review")
+}
+
+// ----------------------------------------------------------------------------
+// Consultancy Valuation
+// FileMaker equivalent: consultancyvaluation table (0 records)
+// ----------------------------------------------------------------------------
+model ConsultancyValuation {
+  id            Int       @id @default(autoincrement())
+  valuationDate DateTime?
+  valuationAmount Decimal? @db.Decimal(12, 2)
+  valuationType String?
+  notes         String?
+  reportUrl     String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("consultancy_valuation")
+}
+
+// ----------------------------------------------------------------------------
+// Consultancy Other
+// FileMaker equivalent: consultancyother table (2 records)
+// ----------------------------------------------------------------------------
+model ConsultancyOther {
+  id            Int       @id @default(autoincrement())
+  description   String?
+  consultancyType String?
+  startDate     DateTime?
+  completionDate DateTime?
+  fee           Decimal?  @db.Decimal(12, 2)
+  notes         String?
+  status        String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("consultancy_other")
+}
+
+// ----------------------------------------------------------------------------
+// Consultancy Revenue
+// FileMaker equivalent: consultancyrevenue table (0 records)
+// ----------------------------------------------------------------------------
+model ConsultancyRevenue {
+  id            Int       @id @default(autoincrement())
+  description   String?
+  amount        Decimal?  @db.Decimal(12, 2)
+  revenueDate   DateTime?
+  notes         String?
+
+  developmentId Int
+  development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)
+
+  @@map("consultancy_revenue")
+}
+
+
+// ============================================================================
+// SECTION 6: AUTHENTICATION & USER MANAGEMENT
+// ============================================================================
+// These tables handle user login, roles, and permissions.
+// Designed to support NextAuth.js and the 11 privilege sets from FileMaker.
+
+// ----------------------------------------------------------------------------
+// User - User accounts for the application
+// This works with NextAuth.js for authentication
+// ----------------------------------------------------------------------------
+model User {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  name            String?
+  passwordHash    String?   // For email/password auth (hashed, never plain text!)
+  emailVerified   DateTime?
+  image           String?   // Profile picture URL
+  isActive        Boolean   @default(true)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastLoginAt     DateTime?
+
+  // Relation to role
+  roleId          Int?
+  role            Role?     @relation(fields: [roleId], references: [id])
+
+  // NextAuth.js relations
+  accounts        Account[]
+  sessions        Session[]
+
+  // Activity log
+  activityLogs    UserLog[]
+
+  @@map("user")
+}
+
+// ----------------------------------------------------------------------------
+// Role - User roles (maps to FileMaker privilege sets)
+// FileMaker had 11 privilege sets - we replicate that flexibility here
+// ----------------------------------------------------------------------------
+model Role {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique  // e.g., "Developer", "Planner", "Admin"
+  description   String?
+
+  // Permission flags - these control what users can do
+  // You can add more granular permissions as needed
+  canViewSites          Boolean @default(true)
+  canEditSites          Boolean @default(false)
+  canDeleteSites        Boolean @default(false)
+  canViewDevelopments   Boolean @default(true)
+  canEditDevelopments   Boolean @default(false)
+  canDeleteDevelopments Boolean @default(false)
+  canViewContacts       Boolean @default(true)
+  canEditContacts       Boolean @default(false)
+  canViewReports        Boolean @default(true)
+  canExportData         Boolean @default(false)
+  canManageUsers        Boolean @default(false)
+  isAdmin               Boolean @default(false)
+
+  users         User[]
+
+  @@map("role")
+}
+
+// ----------------------------------------------------------------------------
+// Account - External auth providers (for NextAuth.js)
+// Allows "Login with Google", "Login with Microsoft", etc.
+// ----------------------------------------------------------------------------
+model Account {
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("account")
+}
+
+// ----------------------------------------------------------------------------
+// Session - Active user sessions (for NextAuth.js)
+// ----------------------------------------------------------------------------
+model Session {
+  id            Int       @id @default(autoincrement())
+  sessionToken  String    @unique
+  userId        Int
+  expires       DateTime
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+// ----------------------------------------------------------------------------
+// User Log - Activity logging
+// FileMaker equivalent: userlog table (239 records)
+// ----------------------------------------------------------------------------
+model UserLog {
+  id            Int       @id @default(autoincrement())
+  action        String    // "login", "logout", "view", "edit", "delete", etc.
+  entityType    String?   // "Site", "Development", etc.
+  entityId      Int?      // ID of the affected record
+  details       String?   // Additional details
+  ipAddress     String?
+  timestamp     DateTime  @default(now())
+
+  userId        Int
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_log")
+}
+
+
+// ============================================================================
+// SECTION 7: SYSTEM TABLES
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// Settings - Application settings
+// FileMaker equivalent: settings table (2 records)
+// Key-value store for app configuration
+// ----------------------------------------------------------------------------
+model Setting {
+  id            Int       @id @default(autoincrement())
+  key           String    @unique
+  value         String?
+  description   String?
+  updatedAt     DateTime  @updatedAt
+  updatedBy     String?
+
+  @@map("setting")
+}
+
+// ----------------------------------------------------------------------------
+// Filter Fields - Saved filter configurations
+// FileMaker equivalent: filterfields table (0 records)
+// For saving user's custom filters/views
+// ----------------------------------------------------------------------------
+model FilterField {
+  id            Int       @id @default(autoincrement())
+  name          String
+  entityType    String    // "Site", "Development", etc.
+  filterConfig  String?   // JSON string of filter configuration
+  isDefault     Boolean   @default(false)
+  isShared      Boolean   @default(false)  // Available to all users?
+  createdBy     String?
+  createdAt     DateTime  @default(now())
+
+  @@map("filter_field")
+}

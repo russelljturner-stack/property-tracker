@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(move \"C:\\\\Projects\\\\DevData\\\\layouts-analysis.md\" \"C:\\\\Projects\\\\DevData\\\\docs\\\\phase1\\\\03-layouts-analysis.md\")",
+      "Bash(move:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(powershell:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsx:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
