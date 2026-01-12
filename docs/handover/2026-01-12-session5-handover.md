@@ -65,6 +65,8 @@ The dashboard is functional and shows test data. Clicking items goes to placehol
 
 ## Next Steps (Priority Order)
 
+0. **Dashboard layout tweak** - Move "My Tasks" section to top of dashboard, above "My Active Developments" (tasks are more urgent/actionable)
+
 1. **Development detail page** (`/developments/[id]`)
    - Show all development information
    - Panel details, status history, tasks
