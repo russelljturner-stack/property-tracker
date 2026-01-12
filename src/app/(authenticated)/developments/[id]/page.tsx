@@ -6,17 +6,15 @@ import Link from "next/link"
 export const dynamic = 'force-dynamic'
 
 /**
- * Development Detail Page
+ * Development Detail Page - Progressive Disclosure Design
  *
- * Shows all information about a single development:
- * - Header with site name, status, and project number
- * - Key dates and progress indicators
- * - Panel details (type, size, structure)
- * - Tasks list
- * - Link to parent site
+ * This page implements a task-focused, progressive disclosure approach:
+ * 1. Progress Timeline - Visual indication of where we are in the lifecycle
+ * 2. Tasks & Actions - What needs to be done (most prominent)
+ * 3. Stage Cards - Expandable sections for each workflow stage
+ * 4. Sidebar - Quick access to contacts and recent activity
  *
- * This page is the main working view for a development - users will spend
- * most of their time here tracking progress and completing tasks.
+ * The design prioritises what users need to DO rather than just showing data.
  */
 
 // In Next.js 15+, params is a Promise that needs to be awaited
@@ -24,21 +22,32 @@ type PageProps = {
   params: Promise<{ id: string }>
 }
 
+// Define the development lifecycle stages
+// Each stage maps to fields in the database and determines what to show
+const STAGES = [
+  { key: 'survey', label: 'Survey', icon: '📍' },
+  { key: 'commercial', label: 'Commercial', icon: '💼' },
+  { key: 'design', label: 'Design', icon: '✏️' },
+  { key: 'planning', label: 'Planning', icon: '📋' },
+  { key: 'marketing', label: 'Marketing', icon: '📢' },
+  { key: 'build', label: 'Build', icon: '🏗️' },
+  { key: 'live', label: 'Live', icon: '✅' },
+] as const
+
+type StageKey = typeof STAGES[number]['key']
+
 export default async function DevelopmentDetailPage({ params }: PageProps) {
-  // Await params to get the ID
   const { id } = await params
   const developmentId = parseInt(id, 10)
 
-  // Validate ID is a number
   if (isNaN(developmentId)) {
     notFound()
   }
 
-  // Fetch the development with all related data
+  // Fetch the development with all related data needed for the page
   const development = await db.development.findUnique({
     where: { id: developmentId },
     include: {
-      // Site and address info
       site: {
         include: {
           address: {
@@ -48,14 +57,27 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             },
           },
           siteOwner: true,
+          siteAgent: true,
           localAuthority: true,
+          ownerContacts: {
+            include: {
+              contact: {
+                include: { organisation: true },
+              },
+            },
+          },
+          agentContacts: {
+            include: {
+              contact: {
+                include: { organisation: true },
+              },
+            },
+          },
         },
       },
-      // Status and type lookups
       status: true,
       dealType: true,
       developmentType: true,
-      // Panel details
       details: {
         include: {
           panelType: true,
@@ -64,29 +86,38 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           structureType: true,
         },
       },
-      // Tasks
       tasks: {
-        include: {
-          taskType: true,
-        },
+        include: { taskType: true },
         orderBy: [
-          { complete: 'asc' },      // Incomplete first
-          { needsReview: 'desc' },   // Needs review at top
-          { dueDate: 'asc' },        // Then by due date
+          { complete: 'asc' },
+          { needsReview: 'desc' },
+          { dueDate: 'asc' },
         ],
       },
-      // Planning info
       planningAppStatus: true,
       advertAppStatus: true,
-      // Notes (most recent first)
       notes: {
         orderBy: { noteDate: 'desc' },
-        take: 5,
+        take: 10,
+      },
+      caseOfficer: {
+        include: { organisation: true },
+      },
+      lawyerContact: {
+        include: { organisation: true },
+      },
+      lawyer: true,
+      mediaOwner: true,
+      mediaOwnerContacts: {
+        include: {
+          contact: {
+            include: { organisation: true },
+          },
+        },
       },
     },
   })
 
-  // If development not found, show 404
   if (!development) {
     notFound()
   }
@@ -107,6 +138,15 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   ].filter(Boolean)
   const fullAddress = addressParts.join(", ")
 
+  // Determine current stage based on data
+  const currentStage = determineCurrentStage(development)
+
+  // Collect all contacts for the sidebar
+  const allContacts = collectAllContacts(development)
+
+  // Build activity items from notes and task completions
+  const activityItems = buildActivityLog(development)
+
   return (
     <div className="space-y-6">
       {/* Breadcrumb navigation */}
@@ -118,7 +158,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <span className="text-gray-900">{siteName}</span>
       </nav>
 
-      {/* Header section */}
+      {/* Header section with status and key info */}
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div>
@@ -134,11 +174,17 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             {fullAddress && (
               <p className="text-gray-600 mt-1">{fullAddress}</p>
             )}
-            {development.projectNo && (
-              <p className="text-sm text-gray-500 mt-1">
-                Project #{development.projectNo}
-              </p>
-            )}
+            <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+              {development.projectNo && (
+                <span>Project #{development.projectNo}</span>
+              )}
+              {development.dealType && (
+                <span className="px-2 py-0.5 bg-gray-100 rounded">{development.dealType.name}</span>
+              )}
+              {development.developmentType && (
+                <span className="px-2 py-0.5 bg-gray-100 rounded">{development.developmentType.name}</span>
+              )}
+            </div>
           </div>
           <div className="flex gap-2">
             {development.site && (
@@ -157,59 +203,27 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </Link>
           </div>
         </div>
-
-        {/* Key info grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200">
-          <InfoItem
-            label="Deal Type"
-            value={development.dealType?.name}
-          />
-          <InfoItem
-            label="Development Type"
-            value={development.developmentType?.name}
-          />
-          <InfoItem
-            label="Internal Developer"
-            value={development.internalDeveloper}
-          />
-          <InfoItem
-            label="Site Owner"
-            value={development.site?.siteOwner?.name}
-          />
-        </div>
       </div>
 
-      {/* Two-column layout for main content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column: Main content (2/3 width on large screens) */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Panel Details Section */}
-          <section className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Panel Details</h2>
-            </div>
-            <div className="p-6">
-              {development.details.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">
-                  No panel details recorded yet.
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {development.details.map((detail, index) => (
-                    <PanelDetailCard key={detail.id} detail={detail} index={index} />
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
+      {/* Progress Timeline */}
+      <ProgressTimeline stages={STAGES} currentStage={currentStage} />
 
-          {/* Tasks Section */}
+      {/* Main content: Two-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left column: Tasks and Stage Cards (2/3 width) */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Tasks Section - Most prominent */}
           <section id="tasks" className="bg-white rounded-lg shadow">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
               <h2 className="text-lg font-semibold text-gray-900">Tasks</h2>
-              <span className="text-sm text-gray-500">
-                {development.tasks.filter(t => !t.complete).length} open
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-500">
+                  {development.tasks.filter(t => !t.complete).length} open
+                </span>
+                <button className="text-sm text-blue-600 hover:text-blue-800">
+                  + Add Task
+                </button>
+              </div>
             </div>
             <div className="divide-y divide-gray-100">
               {development.tasks.length === 0 ? (
@@ -217,134 +231,556 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   No tasks for this development.
                 </div>
               ) : (
-                development.tasks.map((task) => (
+                development.tasks.slice(0, 5).map((task) => (
                   <TaskItem key={task.id} task={task} />
+                ))
+              )}
+              {development.tasks.length > 5 && (
+                <div className="px-6 py-3 text-center">
+                  <button className="text-sm text-blue-600 hover:text-blue-800">
+                    View all {development.tasks.length} tasks
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Panel Details - Always visible summary */}
+          {development.details.length > 0 && (
+            <section className="bg-white rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900">Panel Configuration</h2>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {development.details.map((detail, index) => (
+                    <PanelDetailCard key={detail.id} detail={detail} index={index} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Stage Cards - Expandable sections for each workflow stage */}
+          <div className="space-y-4">
+            {/* Commercial Stage Card */}
+            <StageCard
+              title="Commercial"
+              icon="💼"
+              isActive={currentStage === 'commercial'}
+              isComplete={isStageComplete('commercial', development)}
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <InfoItem label="Offer Agreed" value={development.offerAgreed ? formatDate(development.offerAgreed) : undefined} />
+                <InfoItem label="Lease Per Annum" value={development.leasePerAnnum ? `£${Number(development.leasePerAnnum).toLocaleString()}` : undefined} />
+                <InfoItem label="Lease Term" value={development.term ? `${development.term} years` : undefined} />
+                <InfoItem label="Contract Signed" value={development.contractSigned ? formatDate(development.contractSigned) : undefined} />
+                <InfoItem label="Probability" value={development.probability ? `${development.probability}%` : undefined} />
+                <InfoItem label="Rental Value" value={development.rentalValue ? `£${Number(development.rentalValue).toLocaleString()}` : undefined} />
+              </div>
+              {(development.offerAgreed || development.contractSigned || development.leasePerAnnum) && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <Link href={`/developments/${development.id}/commercial`} className="text-sm text-blue-600 hover:text-blue-800">
+                    View full commercial details →
+                  </Link>
+                </div>
+              )}
+            </StageCard>
+
+            {/* Design Stage Card */}
+            <StageCard
+              title="Design"
+              icon="✏️"
+              isActive={currentStage === 'design'}
+              isComplete={isStageComplete('design', development)}
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <InfoItem label="Design Status" value={development.designFinalOrDraft} />
+                <InfoItem label="Signed Off" value={development.designSignedOff} />
+                <InfoItem label="Signed Off Date" value={development.designSignedOffDate ? formatDate(development.designSignedOffDate) : undefined} />
+                <InfoItem label="Signed Off By" value={development.designSignedOffBy} />
+              </div>
+            </StageCard>
+
+            {/* Planning Stage Card */}
+            <StageCard
+              title="Planning"
+              icon="📋"
+              isActive={currentStage === 'planning'}
+              isComplete={isStageComplete('planning', development)}
+            >
+              <div className="space-y-4">
+                {/* Planning Application */}
+                <div>
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Planning Application</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <InfoItem label="Status" value={development.planningAppStatus?.name} />
+                    <InfoItem label="LA Reference" value={development.planningAppRefLa} />
+                    <InfoItem label="Submitted" value={development.planningApplicationSubmitted ? formatDate(development.planningApplicationSubmitted) : undefined} />
+                    <InfoItem label="Target Date" value={development.planningAppDeterminDate ? formatDate(development.planningAppDeterminDate) : undefined} />
+                  </div>
+                </div>
+                {/* Advertisement Application */}
+                <div className="pt-4 border-t border-gray-100">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Advertisement Application</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <InfoItem label="Status" value={development.advertAppStatus?.name} />
+                    <InfoItem label="LA Reference" value={development.advertAppRefLa} />
+                    <InfoItem label="Submitted" value={development.advertApplicationSubmitted ? formatDate(development.advertApplicationSubmitted) : undefined} />
+                    <InfoItem label="Target Date" value={development.advertAppDeterminationDate ? formatDate(development.advertAppDeterminationDate) : undefined} />
+                  </div>
+                </div>
+                {development.caseOfficer && (
+                  <div className="pt-4 border-t border-gray-100">
+                    <InfoItem
+                      label="Case Officer"
+                      value={`${development.caseOfficer.firstName || ''} ${development.caseOfficer.lastName || ''}`.trim() || undefined}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <Link href={`/developments/${development.id}/planning`} className="text-sm text-blue-600 hover:text-blue-800">
+                  View full planning details →
+                </Link>
+              </div>
+            </StageCard>
+
+            {/* Build Stage Card */}
+            <StageCard
+              title="Build"
+              icon="🏗️"
+              isActive={currentStage === 'build'}
+              isComplete={isStageComplete('build', development)}
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <InfoItem label="Start Date" value={development.buildStartDate ? formatDate(development.buildStartDate) : undefined} />
+                <InfoItem label="Completion Date" value={development.buildCompletionDate ? formatDate(development.buildCompletionDate) : undefined} />
+                <InfoItem label="Live Date" value={development.buildLiveDate ? formatDate(development.buildLiveDate) : undefined} />
+                <InfoItem label="Contractor" value={development.buildContractor} />
+              </div>
+              {development.buildNotes && (
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <InfoItem label="Notes" value={development.buildNotes} />
+                </div>
+              )}
+            </StageCard>
+          </div>
+        </div>
+
+        {/* Right column: Sidebar (1/3 width) */}
+        <div className="space-y-6">
+          {/* Key Contacts Card */}
+          <section className="bg-white rounded-lg shadow">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                Key Contacts
+              </h3>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {allContacts.length === 0 ? (
+                <div className="px-6 py-4 text-sm text-gray-500">
+                  No contacts recorded.
+                </div>
+              ) : (
+                allContacts.map((contact, index) => (
+                  <ContactItem key={`${contact.role}-${index}`} contact={contact} />
                 ))
               )}
             </div>
           </section>
 
-          {/* Notes Section */}
-          {development.notes.length > 0 && (
-            <section className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Recent Notes</h2>
-              </div>
-              <div className="divide-y divide-gray-100">
-                {development.notes.map((note) => (
-                  <div key={note.id} className="px-6 py-4">
-                    <p className="text-gray-900">{note.noteText}</p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      {note.noteBy && `${note.noteBy} • `}
-                      {formatDate(note.noteDate)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-
-        {/* Right column: Sidebar (1/3 width on large screens) */}
-        <div className="space-y-6">
-          {/* Planning Status Card */}
+          {/* Internal Team Card */}
           <section className="bg-white rounded-lg shadow p-6">
             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Planning
+              Internal Team
             </h3>
             <div className="space-y-3">
-              <InfoItem
-                label="Application Status"
-                value={development.planningAppStatus?.name}
-              />
-              <InfoItem
-                label="LA Reference"
-                value={development.planningAppRefLa}
-              />
-              <InfoItem
-                label="Submitted"
-                value={development.planningApplicationSubmitted ? formatDate(development.planningApplicationSubmitted) : undefined}
-              />
-              <InfoItem
-                label="Target Date"
-                value={development.planningAppDeterminDate ? formatDate(development.planningAppDeterminDate) : undefined}
-              />
+              <InfoItem label="Developer" value={development.internalDeveloper} />
+              <InfoItem label="Planner" value={development.internalPlanner} />
             </div>
           </section>
 
-          {/* Advert Application Card */}
-          <section className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Advertisement
-            </h3>
-            <div className="space-y-3">
-              <InfoItem
-                label="Application Status"
-                value={development.advertAppStatus?.name}
-              />
-              <InfoItem
-                label="LA Reference"
-                value={development.advertAppRefLa}
-              />
-              <InfoItem
-                label="Submitted"
-                value={development.advertApplicationSubmitted ? formatDate(development.advertApplicationSubmitted) : undefined}
-              />
+          {/* Recent Activity Card */}
+          <section className="bg-white rounded-lg shadow">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                Recent Activity
+              </h3>
+            </div>
+            <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+              {activityItems.length === 0 ? (
+                <div className="px-6 py-4 text-sm text-gray-500">
+                  No recent activity.
+                </div>
+              ) : (
+                activityItems.slice(0, 10).map((item, index) => (
+                  <ActivityItem key={index} item={item} />
+                ))
+              )}
             </div>
           </section>
 
-          {/* Financial Summary Card */}
+          {/* Quick Info Card */}
           <section className="bg-white rounded-lg shadow p-6">
             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Financials
+              Quick Info
             </h3>
             <div className="space-y-3">
               <InfoItem
-                label="Rental Value"
-                value={development.rentalValue ? `£${Number(development.rentalValue).toLocaleString()}` : undefined}
+                label="Site Owner"
+                value={development.site?.siteOwner?.name}
               />
               <InfoItem
-                label="Lease Per Annum"
-                value={development.leasePerAnnum ? `£${Number(development.leasePerAnnum).toLocaleString()}` : undefined}
+                label="Local Authority"
+                value={development.site?.localAuthority?.name}
               />
               <InfoItem
-                label="Lease Term"
-                value={development.term ? `${development.term} years` : undefined}
-              />
-            </div>
-          </section>
-
-          {/* Key Dates Card */}
-          <section className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Key Dates
-            </h3>
-            <div className="space-y-3">
-              <InfoItem
-                label="Offer Agreed"
-                value={development.offerAgreed ? formatDate(development.offerAgreed) : undefined}
-              />
-              <InfoItem
-                label="Contract Signed"
-                value={development.contractSigned ? formatDate(development.contractSigned) : undefined}
-              />
-              <InfoItem
-                label="Lease Start"
-                value={development.leaseStartDate ? formatDate(development.leaseStartDate) : undefined}
-              />
-              <InfoItem
-                label="Build Complete"
-                value={development.buildCompletionDate ? formatDate(development.buildCompletionDate) : undefined}
-              />
-              <InfoItem
-                label="Live Date"
-                value={development.buildLiveDate ? formatDate(development.buildLiveDate) : undefined}
+                label="Media Owner"
+                value={development.mediaOwner?.name}
               />
             </div>
           </section>
         </div>
       </div>
     </div>
+  )
+}
+
+// =============================================================================
+// Helper Functions
+// =============================================================================
+
+/**
+ * Determine which stage of development we're currently in
+ * This is based on which fields have been populated
+ */
+function determineCurrentStage(development: {
+  buildLiveDate?: Date | null
+  buildStartDate?: Date | null
+  buildCompletionDate?: Date | null
+  planningApplicationSubmitted?: Date | null
+  advertApplicationSubmitted?: Date | null
+  planningAppStatus?: { name: string } | null
+  advertAppStatus?: { name: string } | null
+  designSignedOff?: string | null
+  contractSigned?: Date | null
+  offerAgreed?: Date | null
+}): StageKey {
+  // Work backwards from most advanced stage
+  if (development.buildLiveDate) return 'live'
+  if (development.buildStartDate || development.buildCompletionDate) return 'build'
+  if (development.planningApplicationSubmitted || development.advertApplicationSubmitted) return 'planning'
+  if (development.designSignedOff === 'Yes') return 'design'
+  if (development.contractSigned || development.offerAgreed) return 'commercial'
+  return 'survey'
+}
+
+/**
+ * Check if a stage is complete
+ */
+function isStageComplete(stage: StageKey, development: {
+  buildLiveDate?: Date | null
+  buildCompletionDate?: Date | null
+  planningAppStatus?: { name: string } | null
+  advertAppStatus?: { name: string } | null
+  designSignedOff?: string | null
+  contractSigned?: Date | null
+}): boolean {
+  switch (stage) {
+    case 'live':
+      return !!development.buildLiveDate
+    case 'build':
+      return !!development.buildCompletionDate
+    case 'planning':
+      // Consider complete if approved (would need to check status name)
+      return development.planningAppStatus?.name?.toLowerCase().includes('approved') || false
+    case 'design':
+      return development.designSignedOff === 'Yes'
+    case 'commercial':
+      return !!development.contractSigned
+    default:
+      return false
+  }
+}
+
+/**
+ * Collect all contacts from various sources into a unified list
+ */
+type ContactInfo = {
+  role: string
+  name: string
+  organisation?: string | null
+  phone?: string | null
+  email?: string | null
+}
+
+function collectAllContacts(development: {
+  site?: {
+    siteOwner?: { name: string } | null
+    ownerContacts?: Array<{
+      contact: {
+        firstName?: string | null
+        lastName?: string | null
+        phone?: string | null
+        email?: string | null
+        organisation?: { name: string } | null
+      }
+    }>
+    agentContacts?: Array<{
+      contact: {
+        firstName?: string | null
+        lastName?: string | null
+        phone?: string | null
+        email?: string | null
+        organisation?: { name: string } | null
+      }
+    }>
+  } | null
+  caseOfficer?: {
+    firstName?: string | null
+    lastName?: string | null
+    phone?: string | null
+    email?: string | null
+    organisation?: { name: string } | null
+  } | null
+  lawyerContact?: {
+    firstName?: string | null
+    lastName?: string | null
+    phone?: string | null
+    email?: string | null
+    organisation?: { name: string } | null
+  } | null
+  lawyer?: { name: string } | null
+  mediaOwnerContacts?: Array<{
+    contact: {
+      firstName?: string | null
+      lastName?: string | null
+      phone?: string | null
+      email?: string | null
+      organisation?: { name: string } | null
+    }
+  }>
+  internalDeveloper?: string | null
+  internalPlanner?: string | null
+}): ContactInfo[] {
+  const contacts: ContactInfo[] = []
+
+  // Site owner contacts
+  development.site?.ownerContacts?.forEach(oc => {
+    const name = `${oc.contact.firstName || ''} ${oc.contact.lastName || ''}`.trim()
+    if (name) {
+      contacts.push({
+        role: 'Site Owner Contact',
+        name,
+        organisation: oc.contact.organisation?.name,
+        phone: oc.contact.phone,
+        email: oc.contact.email,
+      })
+    }
+  })
+
+  // Site agent contacts
+  development.site?.agentContacts?.forEach(ac => {
+    const name = `${ac.contact.firstName || ''} ${ac.contact.lastName || ''}`.trim()
+    if (name) {
+      contacts.push({
+        role: 'Site Agent',
+        name,
+        organisation: ac.contact.organisation?.name,
+        phone: ac.contact.phone,
+        email: ac.contact.email,
+      })
+    }
+  })
+
+  // Case officer
+  if (development.caseOfficer) {
+    const name = `${development.caseOfficer.firstName || ''} ${development.caseOfficer.lastName || ''}`.trim()
+    if (name) {
+      contacts.push({
+        role: 'Case Officer',
+        name,
+        organisation: development.caseOfficer.organisation?.name,
+        phone: development.caseOfficer.phone,
+        email: development.caseOfficer.email,
+      })
+    }
+  }
+
+  // Lawyer contact
+  if (development.lawyerContact) {
+    const name = `${development.lawyerContact.firstName || ''} ${development.lawyerContact.lastName || ''}`.trim()
+    if (name) {
+      contacts.push({
+        role: 'Lawyer',
+        name,
+        organisation: development.lawyerContact.organisation?.name || development.lawyer?.name,
+        phone: development.lawyerContact.phone,
+        email: development.lawyerContact.email,
+      })
+    }
+  }
+
+  // Media owner contacts
+  development.mediaOwnerContacts?.forEach(mc => {
+    const name = `${mc.contact.firstName || ''} ${mc.contact.lastName || ''}`.trim()
+    if (name) {
+      contacts.push({
+        role: 'Media Owner',
+        name,
+        organisation: mc.contact.organisation?.name,
+        phone: mc.contact.phone,
+        email: mc.contact.email,
+      })
+    }
+  })
+
+  return contacts
+}
+
+/**
+ * Build activity log from notes
+ */
+type ActivityLogItem = {
+  type: 'note' | 'task'
+  date: Date
+  description: string
+  by?: string | null
+}
+
+function buildActivityLog(development: {
+  notes: Array<{
+    noteText?: string | null
+    noteDate: Date
+    noteBy?: string | null
+  }>
+}): ActivityLogItem[] {
+  const items: ActivityLogItem[] = []
+
+  // Add notes to activity log
+  development.notes.forEach(note => {
+    if (note.noteText) {
+      items.push({
+        type: 'note',
+        date: note.noteDate,
+        description: note.noteText.length > 100
+          ? note.noteText.substring(0, 100) + '...'
+          : note.noteText,
+        by: note.noteBy,
+      })
+    }
+  })
+
+  // Sort by date descending
+  items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+  return items
+}
+
+// =============================================================================
+// Component: Progress Timeline
+// =============================================================================
+function ProgressTimeline({
+  stages,
+  currentStage,
+}: {
+  stages: typeof STAGES
+  currentStage: StageKey
+}) {
+  const currentIndex = stages.findIndex(s => s.key === currentStage)
+
+  return (
+    <div className="bg-white rounded-lg shadow p-6">
+      <div className="flex items-center justify-between">
+        {stages.map((stage, index) => {
+          const isPast = index < currentIndex
+          const isCurrent = index === currentIndex
+          const isFuture = index > currentIndex
+
+          return (
+            <div key={stage.key} className="flex items-center flex-1 last:flex-none">
+              <div className="flex flex-col items-center">
+                <div
+                  className={`
+                    w-10 h-10 rounded-full flex items-center justify-center text-lg
+                    ${isPast ? 'bg-green-100 text-green-600' : ''}
+                    ${isCurrent ? 'bg-blue-600 text-white ring-4 ring-blue-100' : ''}
+                    ${isFuture ? 'bg-gray-100 text-gray-400' : ''}
+                  `}
+                >
+                  {isPast ? '✓' : stage.icon}
+                </div>
+                <span
+                  className={`
+                    mt-2 text-xs font-medium
+                    ${isCurrent ? 'text-blue-600' : isPast ? 'text-green-600' : 'text-gray-400'}
+                  `}
+                >
+                  {stage.label}
+                </span>
+              </div>
+              {index < stages.length - 1 && (
+                <div
+                  className={`
+                    flex-1 h-0.5 mx-2
+                    ${index < currentIndex ? 'bg-green-300' : 'bg-gray-200'}
+                  `}
+                />
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// =============================================================================
+// Component: Stage Card (Expandable)
+// =============================================================================
+function StageCard({
+  title,
+  icon,
+  isActive,
+  isComplete,
+  children,
+}: {
+  title: string
+  icon: string
+  isActive: boolean
+  isComplete: boolean
+  children: React.ReactNode
+}) {
+  // For now, cards are always expanded. Later we can add collapse/expand functionality
+  return (
+    <section className={`
+      bg-white rounded-lg shadow overflow-hidden
+      ${isActive ? 'ring-2 ring-blue-500' : ''}
+    `}>
+      <div className={`
+        px-6 py-4 border-b border-gray-200 flex items-center justify-between
+        ${isActive ? 'bg-blue-50' : ''}
+      `}>
+        <div className="flex items-center gap-3">
+          <span className="text-xl">{icon}</span>
+          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          {isComplete && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+              Complete
+            </span>
+          )}
+          {isActive && !isComplete && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+              Current
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="p-6">
+        {children}
+      </div>
+    </section>
   )
 }
 
@@ -458,9 +894,7 @@ function TaskItem({
   const isOverdue = !task.complete && task.dueDate && new Date(task.dueDate) < new Date()
 
   return (
-    <div
-      className={`px-6 py-4 ${task.complete ? "bg-gray-50" : ""}`}
-    >
+    <div className={`px-6 py-4 ${task.complete ? "bg-gray-50" : ""}`}>
       <div className="flex items-start gap-3">
         {/* Checkbox indicator */}
         <div
@@ -523,6 +957,74 @@ function TaskItem({
             {formatDate(task.dueDate)}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+// =============================================================================
+// Component: Contact Item
+// =============================================================================
+function ContactItem({ contact }: { contact: ContactInfo }) {
+  return (
+    <div className="px-6 py-3">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-xs text-gray-500 uppercase tracking-wider">{contact.role}</p>
+          <p className="text-sm font-medium text-gray-900 mt-0.5">{contact.name}</p>
+          {contact.organisation && (
+            <p className="text-xs text-gray-500">{contact.organisation}</p>
+          )}
+        </div>
+        <div className="flex gap-2">
+          {contact.phone && (
+            <a
+              href={`tel:${contact.phone}`}
+              className="p-1.5 rounded-full hover:bg-gray-100"
+              title={contact.phone}
+            >
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+            </a>
+          )}
+          {contact.email && (
+            <a
+              href={`mailto:${contact.email}`}
+              className="p-1.5 rounded-full hover:bg-gray-100"
+              title={contact.email}
+            >
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// =============================================================================
+// Component: Activity Item
+// =============================================================================
+function ActivityItem({ item }: { item: ActivityLogItem }) {
+  return (
+    <div className="px-6 py-3">
+      <div className="flex items-start gap-3">
+        <div className={`
+          flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs
+          ${item.type === 'note' ? 'bg-gray-100 text-gray-600' : 'bg-green-100 text-green-600'}
+        `}>
+          {item.type === 'note' ? '📝' : '✓'}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-gray-900">{item.description}</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {item.by && `${item.by} • `}
+            {formatDate(item.date)}
+          </p>
+        </div>
       </div>
     </div>
   )
