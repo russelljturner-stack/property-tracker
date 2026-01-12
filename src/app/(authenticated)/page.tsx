@@ -13,9 +13,9 @@ export const dynamic = 'force-dynamic'
  *
  * Structure:
  * 1. Summary cards - quick counts and red flags
- * 2. My Active Developments - developments I'm working on
- * 3. My Pipeline Sites - sites without developments (early stage)
- * 4. My Tasks - things I need to do, with "needs review" highlighting
+ * 2. My Tasks - things I need to do (most actionable, shown first)
+ * 3. My Active Developments - developments I'm working on
+ * 4. My Pipeline Sites - sites without developments (early stage)
  */
 
 export default async function DashboardPage() {
@@ -202,6 +202,29 @@ export default async function DashboardPage() {
         />
       </div>
 
+      {/* Tasks section - at top for quick action */}
+      <section id="tasks" className="bg-white rounded-lg shadow">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-900">My Tasks</h2>
+          <Link
+            href="/tasks"
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            View all
+          </Link>
+        </div>
+        <div className="divide-y divide-gray-100">
+          {recentTasks.length === 0 ? (
+            <div className="px-6 py-8 text-center text-gray-500">
+              No tasks assigned. Tasks will appear here when assigned to you.
+            </div>
+          ) : (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            recentTasks.map((task) => <TaskRow key={task.id} task={task as any} />)
+          )}
+        </div>
+      </section>
+
       {/* Active Developments section */}
       <section id="developments" className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
@@ -259,29 +282,6 @@ export default async function DashboardPage() {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               <PipelineSiteRow key={site.id} site={site as any} />
             ))
-          )}
-        </div>
-      </section>
-
-      {/* Tasks section */}
-      <section id="tasks" className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-900">My Tasks</h2>
-          <Link
-            href="/tasks"
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
-            View all
-          </Link>
-        </div>
-        <div className="divide-y divide-gray-100">
-          {recentTasks.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
-              No tasks assigned. Tasks will appear here when assigned to you.
-            </div>
-          ) : (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            recentTasks.map((task) => <TaskRow key={task.id} task={task as any} />)
           )}
         </div>
       </section>
