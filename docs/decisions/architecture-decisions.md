@@ -19,6 +19,7 @@ This document tracks architectural and design decisions for the Property Develop
 | 009 | Notification System | Technical | Accepted | Medium | 2026-01-12 |
 | 010 | Stalled Development Detection | Business Logic | Accepted | Medium | 2026-01-12 |
 | 011 | Search and Discovery | UI/UX | Accepted | High | 2026-01-12 |
+| 012 | Site Pipeline Status Model | Business Logic | Accepted | High | 2026-01-12 |
 
 ---
 
@@ -550,6 +551,76 @@ Users need to find sites and developments quickly. The Phase 4 review identified
 - Map component with location services
 - Site/Development query optimised for search result format
 - Mobile: map search may be primary interface
+
+---
+
+### ADR-012: Site Pipeline Status Model
+
+| Field | Value |
+|-------|-------|
+| **Category** | Business Logic |
+| **Status** | Accepted |
+| **Priority** | High |
+| **Date** | 2026-01-12 |
+
+#### Context
+
+The FileMaker system had 19 "Development Status" values in a single table, but analysis revealed these statuses actually cover two distinct workflows:
+
+1. **Site Pipeline** - Early-stage work before a Development exists (identifying sites, contacting landowners, negotiating terms)
+2. **Development Workflow** - Project work once committed to building something specific
+
+The existing `SiteStatus` table only has 2 values (Live, Dead), which indicates whether a site exists, not where it is in the pipeline.
+
+#### Decision
+
+**Split statuses into two models:**
+
+**SitePipelineStatus** (new table for Sites without active Developments):
+
+| Status | Description |
+|--------|-------------|
+| Opportunity identified | Site first logged |
+| Contact made with land owner / agent | In discussion |
+| Land owner / agent can't be contacted | Parked - needs different approach |
+| Offer in negotiation | Active discussions on terms |
+| Offers declined - no deal reached | Parked - try again later |
+
+**DevelopmentStatus** (existing table, refined for Development workflow):
+
+| Status | Stage | Description |
+|--------|-------|-------------|
+| Offer accepted | Negotiation | Deal agreed, Development created |
+| Head of terms agreed | Negotiation | Formal terms documented |
+| ASGF required | Negotiation | Advertising Safety Guidance Form needed |
+| Awaiting ASGF outcome | Negotiation | Waiting on ASGF approval |
+| Planning / advert application submitted | Planning | With local authority |
+| Planning / advert consent refused | Planning | Need to appeal or redesign |
+| Planning / advert consent granted | Planning | Approved - can proceed |
+| Contracts in negotiation | Contracts | Legal stage |
+| Contracts exchanged | Contracts | Legally committed |
+| Out to tender | Marketing | Finding advertisers |
+| Site in development | Build | Construction underway |
+| Site operational | Complete | Live and earning |
+| Development on hold | Paused | Temporary pause |
+| Development dropped | Terminal | Cancelled/abandoned |
+
+**Workflow trigger:**
+- When a Site reaches "Offer accepted", a Development is created
+- The Site can remain in pipeline status or be cleared once Development exists
+
+**Dashboard implications:**
+- Developers see "My Pipeline Sites" (Sites with pipeline status, no active Development)
+- Developers see "My Active Developments" (Developments in progress)
+- Both are work requiring action
+
+#### Consequences
+
+- New `SitePipelineStatus` lookup table needed
+- New `pipelineStatusId` field on Site model
+- Existing `SiteStatus` (Live/Dead) remains unchanged
+- Seed data needed for both status tables
+- Dashboard filters by pipeline status for "Sites needing work"
 
 ---
 

@@ -14,7 +14,16 @@
       "Bash(gh:*)",
       "Bash(git add:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nFix build: force dynamic rendering for database pages\n\nPages that fetch from the database need to render at request time,\nnot build time, because the database isn''t accessible during Railway''s\nbuild process.\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(tasklist:*)",
+      "Bash(git commit:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npm run db:seed:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(ping:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout /t:*)"
     ]
   }
 }

@@ -49,6 +49,24 @@ model SiteStatus {
 }
 
 // ----------------------------------------------------------------------------
+// Site Pipeline Status - Tracks progress of sites before a Development exists
+// NEW for web app - FileMaker combined these with Development statuses
+// ----------------------------------------------------------------------------
+model SitePipelineStatus {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique  // e.g., "Opportunity identified"
+  description String?   // Optional description of this stage
+  sortOrder   Int       @default(0)  // For controlling display order in dropdowns
+  isActive    Boolean   @default(true)  // Can soft-delete by setting false
+  isParked    Boolean   @default(false) // True for statuses that mean "on hold"
+
+  // Relation: One status can be used by many sites
+  sites       Site[]
+
+  @@map("site_pipeline_status")
+}
+
+// ----------------------------------------------------------------------------
 // Title Type - Ownership type (Freehold, Leasehold, etc.)
 // FileMaker equivalent: title table (3 records)
 // ----------------------------------------------------------------------------
@@ -457,6 +475,9 @@ model Site {
   // Relations to lookup tables
   statusId        Int?
   status          SiteStatus?   @relation(fields: [statusId], references: [id])
+
+  pipelineStatusId Int?
+  pipelineStatus   SitePipelineStatus? @relation(fields: [pipelineStatusId], references: [id])
 
   titleTypeId     Int?
   titleType       TitleType?    @relation(fields: [titleTypeId], references: [id])
@@ -924,6 +945,7 @@ model DevelopmentNote {
 // ----------------------------------------------------------------------------
 // Development Task - Tasks linked to developments
 // FileMaker equivalent: jndevelopmenttasks table (41 records)
+// Enhanced: Added task acceptance workflow (needsReview flag)
 // ----------------------------------------------------------------------------
 model DevelopmentTask {
   id            Int       @id @default(autoincrement())
@@ -931,8 +953,17 @@ model DevelopmentTask {
   dueDate       DateTime?
   completedDate DateTime?
   complete      Boolean   @default(false)
-  assignedTo    String?
+  assignedTo    String?   // Name of person task is assigned to
+  assignedById  String?   // Name of person who assigned the task
   priority      String?
+
+  // Task acceptance workflow
+  needsReview   Boolean   @default(true)  // True when newly assigned, false once accepted
+  reviewedAt    DateTime?                  // When the assignee accepted/acknowledged the task
+
+  // Audit fields
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   developmentId Int
   development   Development @relation(fields: [developmentId], references: [id], onDelete: Cascade)

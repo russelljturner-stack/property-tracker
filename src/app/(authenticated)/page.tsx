@@ -1,178 +1,541 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
+import Link from "next/link"
 
 // Force dynamic rendering - this page fetches data at request time, not build time
 export const dynamic = 'force-dynamic'
 
-// This is the dashboard / home page.
-//
-// It shows an overview of the system including:
-// - Key metrics (sites, developments, tasks)
-// - Quick access to recent items
-// - System status
-//
-// This is a server component, so we can fetch data directly from the database.
+/**
+ * Operational Dashboard (Developer View)
+ *
+ * This is the main landing page for developers (and most users).
+ * It answers the question: "What do I need to do next?"
+ *
+ * Structure:
+ * 1. Summary cards - quick counts and red flags
+ * 2. My Active Developments - developments I'm working on
+ * 3. My Pipeline Sites - sites without developments (early stage)
+ * 4. My Tasks - things I need to do, with "needs review" highlighting
+ */
 
 export default async function DashboardPage() {
-  // Get the current session
   const session = await auth()
+  const userName = session?.user?.name || "User"
 
-  // Fetch some basic counts from the database
-  // We use Promise.all to run multiple queries in parallel for speed
-  const [siteCount, developmentCount] = await Promise.all([
-    db.site.count(),
-    db.development.count(),
+  // Fetch dashboard data in parallel for speed
+  const [
+    tasksDue,
+    tasksNeedingReview,
+    pipelineSites,
+    activeDevelopments,
+    stalledDevelopments,
+    recentTasks,
+    recentDevelopments,
+    recentPipelineSites,
+  ] = await Promise.all([
+    // Count: Tasks due (incomplete, with due date in past or next 7 days)
+    db.developmentTask.count({
+      where: {
+        complete: false,
+        dueDate: {
+          lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        },
+      },
+    }),
+
+    // Count: Tasks needing review (newly assigned, not yet accepted)
+    db.developmentTask.count({
+      where: {
+        needsReview: true,
+        complete: false,
+      },
+    }),
+
+    // Count: Pipeline sites (sites with a pipeline status but no active development)
+    db.site.count({
+      where: {
+        pipelineStatusId: { not: null },
+        // In future: filter to sites without active developments
+      },
+    }),
+
+    // Count: Active developments (not completed/dropped/on hold)
+    db.development.count({
+      where: {
+        status: {
+          name: {
+            notIn: ['Site operational', 'Development dropped', 'Development on hold'],
+          },
+        },
+      },
+    }),
+
+    // Count: Stalled developments (no update in 30+ days, still active)
+    db.development.count({
+      where: {
+        updatedAt: {
+          lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+        },
+        status: {
+          name: {
+            notIn: ['Site operational', 'Development dropped', 'Development on hold'],
+          },
+        },
+      },
+    }),
+
+    // List: Recent tasks (incomplete, ordered by due date)
+    db.developmentTask.findMany({
+      where: { complete: false },
+      orderBy: [
+        { needsReview: 'desc' },  // Needs review first
+        { dueDate: 'asc' },        // Then by due date
+      ],
+      take: 5,
+      include: {
+        development: {
+          include: {
+            site: true,
+          },
+        },
+        taskType: true,
+      },
+    }),
+
+    // List: Recent active developments
+    db.development.findMany({
+      where: {
+        status: {
+          name: {
+            notIn: ['Site operational', 'Development dropped', 'Development on hold'],
+          },
+        },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 5,
+      include: {
+        site: {
+          include: {
+            address: {
+              include: {
+                townCity: true,
+              },
+            },
+          },
+        },
+        status: true,
+        // Panel info is on DevelopmentDetail, not Development directly
+        details: {
+          take: 1,
+          include: {
+            panelType: true,
+            panelSize: true,
+          },
+        },
+        tasks: {
+          where: {
+            complete: false,
+          },
+          orderBy: { dueDate: 'asc' },
+          take: 1,
+        },
+      },
+    }),
+
+    // List: Pipeline sites (sites being worked on before development)
+    db.site.findMany({
+      where: {
+        pipelineStatusId: { not: null },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 5,
+      include: {
+        pipelineStatus: true,
+        address: {
+          include: {
+            townCity: true,
+          },
+        },
+      },
+    }),
   ])
 
   return (
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">My Dashboard</h1>
         <p className="text-gray-600">
-          Welcome back, {session?.user?.name || "User"}
+          Welcome back, {userName}. Here&apos;s what needs your attention.
         </p>
       </div>
 
-      {/* Key metrics cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          title="Sites"
-          value={siteCount}
-          description="Total properties"
-          color="blue"
-          href="/sites"
-        />
-        <MetricCard
-          title="Developments"
-          value={developmentCount}
-          description="Active projects"
-          color="green"
-          href="/developments"
-        />
-        <MetricCard
-          title="Contacts"
-          value="--"
-          description="People & companies"
-          color="purple"
-          href="/contacts"
-        />
-        <MetricCard
-          title="Tasks"
-          value="--"
+      {/* Summary cards - quick counts and red flags */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <SummaryCard
+          title="Tasks Due"
+          value={tasksDue}
           description="Due this week"
-          color="orange"
-          href="/tasks"
+          variant={tasksDue > 0 ? "warning" : "default"}
+          href="#tasks"
+        />
+        <SummaryCard
+          title="Stalled"
+          value={stalledDevelopments}
+          description="No activity 30+ days"
+          variant={stalledDevelopments > 0 ? "danger" : "default"}
+          href="#developments"
+        />
+        <SummaryCard
+          title="Needs Review"
+          value={tasksNeedingReview}
+          description="New assignments"
+          variant={tasksNeedingReview > 0 ? "info" : "default"}
+          href="#tasks"
+        />
+        <SummaryCard
+          title="Pipeline"
+          value={pipelineSites}
+          description="Sites in progress"
+          variant="default"
+          href="#pipeline"
         />
       </div>
 
-      {/* Quick actions */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Quick Actions
-        </h2>
-        <div className="flex flex-wrap gap-3">
-          <QuickAction label="Add New Site" href="/sites/new" />
-          <QuickAction label="Add Development" href="/developments/new" />
-          <QuickAction label="Add Contact" href="/contacts/new" />
-          <QuickAction label="View Reports" href="/reports" />
+      {/* Active Developments section */}
+      <section id="developments" className="bg-white rounded-lg shadow">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-900">
+            My Active Developments
+          </h2>
+          <Link
+            href="/developments"
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            View all
+          </Link>
         </div>
-      </div>
-
-      {/* Recent activity placeholder */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Recent Activity
-        </h2>
-        <p className="text-gray-500 text-sm">
-          Activity feed will appear here once the system is in use.
-        </p>
-      </div>
-
-      {/* System status */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          System Status
-        </h2>
-        <div className="space-y-2 text-sm">
-          <StatusItem status="ok" label="Database connected" />
-          <StatusItem status="ok" label="Authentication active" />
-          <StatusItem
-            status="info"
-            label={`Phase 3: Core Application Setup`}
-          />
+        <div className="divide-y divide-gray-100">
+          {recentDevelopments.length === 0 ? (
+            <div className="px-6 py-8 text-center text-gray-500">
+              No active developments. Start by creating a development from a site.
+            </div>
+          ) : (
+            recentDevelopments.map((dev) => (
+              <DevelopmentRow
+                key={dev.id}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                development={dev as any}
+                isStalled={
+                  new Date(dev.updatedAt) <
+                  new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+                }
+              />
+            ))
+          )}
         </div>
-      </div>
+      </section>
+
+      {/* Pipeline Sites section */}
+      <section id="pipeline" className="bg-white rounded-lg shadow">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-900">
+            My Pipeline Sites
+          </h2>
+          <Link
+            href="/sites?filter=pipeline"
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            View all
+          </Link>
+        </div>
+        <div className="divide-y divide-gray-100">
+          {recentPipelineSites.length === 0 ? (
+            <div className="px-6 py-8 text-center text-gray-500">
+              No sites in pipeline. Add a new site to start tracking opportunities.
+            </div>
+          ) : (
+            recentPipelineSites.map((site) => (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              <PipelineSiteRow key={site.id} site={site as any} />
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* Tasks section */}
+      <section id="tasks" className="bg-white rounded-lg shadow">
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-900">My Tasks</h2>
+          <Link
+            href="/tasks"
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            View all
+          </Link>
+        </div>
+        <div className="divide-y divide-gray-100">
+          {recentTasks.length === 0 ? (
+            <div className="px-6 py-8 text-center text-gray-500">
+              No tasks assigned. Tasks will appear here when assigned to you.
+            </div>
+          ) : (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            recentTasks.map((task) => <TaskRow key={task.id} task={task as any} />)
+          )}
+        </div>
+      </section>
     </div>
   )
 }
 
-// Metric card component - shows a single statistic
-function MetricCard({
+// =============================================================================
+// Component: Summary Card
+// =============================================================================
+function SummaryCard({
   title,
   value,
   description,
-  color,
+  variant = "default",
   href,
 }: {
   title: string
-  value: number | string
+  value: number
   description: string
-  color: "blue" | "green" | "purple" | "orange"
+  variant?: "default" | "warning" | "danger" | "info"
   href: string
 }) {
-  const colorClasses = {
-    blue: "text-blue-600",
-    green: "text-green-600",
-    purple: "text-purple-600",
-    orange: "text-orange-600",
+  const variantStyles = {
+    default: "bg-white text-gray-900",
+    warning: "bg-amber-50 text-amber-900 border-amber-200",
+    danger: "bg-red-50 text-red-900 border-red-200",
+    info: "bg-blue-50 text-blue-900 border-blue-200",
+  }
+
+  const valueStyles = {
+    default: "text-gray-900",
+    warning: "text-amber-600",
+    danger: "text-red-600",
+    info: "text-blue-600",
   }
 
   return (
     <a
       href={href}
-      className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow"
+      className={`rounded-lg shadow border p-4 hover:shadow-md transition-shadow ${variantStyles[variant]}`}
     >
-      <h3 className="text-sm font-medium text-gray-500">{title}</h3>
-      <p className={`text-3xl font-bold mt-2 ${colorClasses[color]}`}>
+      <p className="text-sm font-medium opacity-75">{title}</p>
+      <p className={`text-3xl font-bold mt-1 ${valueStyles[variant]}`}>
         {value}
       </p>
-      <p className="text-sm text-gray-500 mt-1">{description}</p>
+      <p className="text-xs opacity-60 mt-1">{description}</p>
     </a>
   )
 }
 
-// Quick action button component
-function QuickAction({ label, href }: { label: string; href: string }) {
-  return (
-    <a
-      href={href}
-      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm font-medium text-gray-700 transition-colors"
-    >
-      {label}
-    </a>
-  )
-}
-
-// Status indicator component
-function StatusItem({
-  status,
-  label,
+// =============================================================================
+// Component: Development Row
+// =============================================================================
+// Using a generic type to avoid strict type checking issues with Prisma includes
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function DevelopmentRow({
+  development,
+  isStalled,
 }: {
-  status: "ok" | "warning" | "error" | "info"
-  label: string
+  development: {
+    id: number
+    updatedAt: Date
+    site?: { name?: string | null; address?: { townCity?: { name?: string } | null } | null } | null
+    status?: { name?: string; colour?: string | null } | null
+    details?: { panelType?: { name?: string } | null; panelSize?: { name?: string } | null }[]
+    tasks?: { dueDate?: Date | null; description?: string | null }[]
+  }
+  isStalled: boolean
 }) {
-  const statusColors = {
-    ok: "bg-green-500",
-    warning: "bg-yellow-500",
-    error: "bg-red-500",
-    info: "bg-blue-500",
+  // Build display name: "[Panel Type] [Panel Size] at [Site Name]"
+  // Panel info comes from the first detail record
+  const firstDetail = development.details?.[0]
+  const panelInfo = [firstDetail?.panelType?.name, firstDetail?.panelSize?.name]
+    .filter(Boolean)
+    .join(" ")
+  const siteName =
+    development.site?.name || development.site?.address?.townCity?.name || "Unknown site"
+  const displayName = panelInfo ? `${panelInfo} at ${siteName}` : siteName
+
+  // Format last activity
+  const lastActivity = formatRelativeTime(development.updatedAt)
+
+  // Next task
+  const nextTask = development.tasks?.[0]
+  const nextTaskDue = nextTask?.dueDate
+    ? formatRelativeTime(nextTask.dueDate)
+    : null
+
+  return (
+    <Link
+      href={`/developments/${development.id}`}
+      className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            {isStalled && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                Stalled
+              </span>
+            )}
+            <p className="font-medium text-gray-900 truncate">{displayName}</p>
+          </div>
+          {nextTask && (
+            <p className="text-sm text-gray-500 mt-1 truncate">
+              Next: {nextTask.description || "Task"}{" "}
+              {nextTaskDue && <span className="text-gray-400">({nextTaskDue})</span>}
+            </p>
+          )}
+        </div>
+        <div className="flex-shrink-0 text-right">
+          <span
+            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+            style={{
+              backgroundColor: development.status?.colour
+                ? `${development.status.colour}20`
+                : "#e5e7eb",
+              color: development.status?.colour || "#374151",
+            }}
+          >
+            {development.status?.name || "No status"}
+          </span>
+          <p className="text-xs text-gray-400 mt-1">{lastActivity}</p>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// =============================================================================
+// Component: Pipeline Site Row
+// =============================================================================
+function PipelineSiteRow({ site }: {
+  site: {
+    id: number
+    name?: string | null
+    pipelineStatus?: { name?: string; isParked?: boolean } | null
+    address?: { line1?: string | null; townCity?: { name?: string } | null } | null
+  }
+}) {
+  const displayName =
+    site.name || site.address?.line1 || site.address?.townCity?.name || "Unnamed site"
+  const location = site.address?.townCity?.name || ""
+  const isParked = site.pipelineStatus?.isParked || false
+
+  return (
+    <Link
+      href={`/sites/${site.id}`}
+      className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+    >
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-gray-900 truncate">{displayName}</p>
+          {location && (
+            <p className="text-sm text-gray-500">{location}</p>
+          )}
+        </div>
+        <div className="flex-shrink-0">
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              isParked
+                ? "bg-gray-100 text-gray-600"
+                : "bg-blue-100 text-blue-800"
+            }`}
+          >
+            {site.pipelineStatus?.name || "In pipeline"}
+          </span>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// =============================================================================
+// Component: Task Row
+// =============================================================================
+function TaskRow({ task }: {
+  task: {
+    id: number
+    description?: string | null
+    dueDate?: Date | null
+    needsReview?: boolean
+    development?: { id: number; site?: { name?: string | null } | null }
+    taskType?: { name?: string } | null
+  }
+}) {
+  const siteName = task.development?.site?.name || "Unknown site"
+  const dueText = task.dueDate ? formatRelativeTime(task.dueDate) : null
+  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date()
+
+  return (
+    <Link
+      href={`/developments/${task.development?.id || 0}#tasks`}
+      className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            {task.needsReview && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                NEW
+              </span>
+            )}
+            <p className="font-medium text-gray-900 truncate">
+              {task.description || "Task"}
+            </p>
+          </div>
+          <p className="text-sm text-gray-500 mt-1">{siteName}</p>
+        </div>
+        <div className="flex-shrink-0 text-right">
+          {task.taskType && (
+            <span className="text-xs text-gray-500">{task.taskType.name}</span>
+          )}
+          {dueText && (
+            <p
+              className={`text-xs mt-1 ${
+                isOverdue ? "text-red-600 font-medium" : "text-gray-400"
+              }`}
+            >
+              {isOverdue ? "Overdue: " : "Due: "}
+              {dueText}
+            </p>
+          )}
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// =============================================================================
+// Helper: Format relative time
+// =============================================================================
+function formatRelativeTime(date: Date): string {
+  const now = new Date()
+  const then = new Date(date)
+  const diffMs = now.getTime() - then.getTime()
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays < 0) {
+    // Future date
+    const futureDays = Math.abs(diffDays)
+    if (futureDays === 0) return "Today"
+    if (futureDays === 1) return "Tomorrow"
+    if (futureDays < 7) return `In ${futureDays} days`
+    if (futureDays < 30) return `In ${Math.floor(futureDays / 7)} weeks`
+    return then.toLocaleDateString()
   }
 
-  return (
-    <div className="flex items-center gap-2">
-      <span className={`w-2 h-2 rounded-full ${statusColors[status]}`} />
-      <span className="text-gray-600">{label}</span>
-    </div>
-  )
+  // Past date
+  if (diffDays === 0) return "Today"
+  if (diffDays === 1) return "Yesterday"
+  if (diffDays < 7) return `${diffDays} days ago`
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`
+  return then.toLocaleDateString()
 }
