@@ -54,24 +54,33 @@ Created realistic test data covering all key tables:
 
 ## Next Session Task
 
-**Review all FileMaker development screenshots tab by tab** to understand what was important on each, which will influence:
-- The main development detail page layout
-- Sub-section pages (commercial, planning, etc.)
-- Which fields to show at each level of detail
+**Review all FileMaker development screenshots tab by tab** - Russell will provide detailed feedback on what was important on each tab, why the information was there, and answer the questions/observations already documented.
+
+### Preparation Done
+- All screenshots reviewed and documented in `docs/phase1/08-development-tabs-review.md`
+- Initial observations and questions captured for each of the 10 tabs
+- UX strategy (progressive disclosure) already approved
+- Screenshots saved in `Filemaker/Layouts/` folder
+
+### What to Do Next Session
+1. Open `docs/phase1/08-development-tabs-review.md`
+2. Go through each tab section with Russell
+3. Russell explains the purpose of each tab and why fields were important
+4. Answer the questions documented for each tab
+5. Update the document with Russell's input
+6. Use findings to refine the sub-section page designs
 
 ### FileMaker Tabs to Review (in order):
 1. **Development** (main tab with panel details)
-2. **Survey** (4 sub-tabs: Site Photos, Site Survey Notes, ASGF, Other Developments at Site)
-3. **Commercial Agreement** (5 sub-tabs: Acquisition/Lease Financials, Consultancy Financials, Existing Lease, Contract Terms, Contract Documents)
-4. **Design** (design preview, sign-off fields)
-5. **Planning** (4 sub-tabs: Pre-Planning, Advertisement Application/Appeal, Planning Application/Appeal, Pre-Commencement Conditions)
-6. **Marketing** (3 sub-tabs: Tender Dates & Offers, Tender Documents & Photos, Tender Video)
-7. **Build** (2 sub-tabs: Build Elements, Snagging List)
-8. **Consultancy** (6 sub-tabs: Rent Review, Lease Renewal, Valuation, Revenue Share Audit, Rent Collection, Other)
-9. **Tasks & Notes** (2 sub-tabs: Tasks, Notes)
-10. **Contacts** (2 sub-tabs: Site Owner Contacts, Site Owner Agent Contacts)
-
-Screenshots are already saved in `Filemaker/Layouts/` folder.
+2. **Survey** (4 sub-tabs)
+3. **Commercial Agreement** (5 sub-tabs)
+4. **Design**
+5. **Planning** (4 sub-tabs)
+6. **Marketing** (3 sub-tabs)
+7. **Build** (2 sub-tabs)
+8. **Consultancy** (6 sub-tabs)
+9. **Tasks & Notes** (2 sub-tabs)
+10. **Contacts** (2 sub-tabs)
 
 ## Key Decisions From This Session
 
