@@ -415,23 +415,39 @@ Fix typo in dashboard heading
 
 ## Current Status
 
-**Current Phase:** Phase 3 - Core Application Setup (nearly complete)
+**Current Phase:** Phase 4 - Feature Development (starting)
 
 **Completed:**
 - Phase 1: Discovery and Documentation (48 tables, 115 relationships, 225 scripts documented)
 - Phase 2: Database Design (46 Prisma models created and deployed to Railway)
-- Phase 3 (in progress):
+- Phase 3: Core Application Setup
   - Next.js 16 application with TypeScript and Tailwind CSS
   - Authentication with NextAuth.js (email/password)
   - Responsive sidebar navigation
-  - Placeholder pages for all main sections
+  - Dashboard with summary cards, tasks, developments, pipeline sites
   - Database connected to Railway PostgreSQL
+  - Deployed to Railway
 
-**Remaining for Phase 3:**
-- Deploy to Railway (pending GitHub repository setup)
+**Phase 4 Progress:**
+- Development detail page (`/developments/[id]`) - DONE
 
 **Key Decisions Made (see docs/decisions/architecture-decisions.md):**
 - ADR-002: This is NOT a like-for-like migration - improve, don't replicate
 - ADR-004: System must deliver management insights, not just store data
 
-**Next action:** Push to GitHub, then deploy to Railway.
+---
+
+## Development Environment
+
+**IMPORTANT: Always test on Railway, not localhost.**
+
+| Environment | URL | Notes |
+|-------------|-----|-------|
+| **Production (Railway)** | https://property-tracker-production-ac30.up.railway.app | Auto-deploys from `master` branch |
+| Localhost | http://localhost:3000 | Has Turbopack issues on Windows |
+
+**Test credentials:**
+- Email: test@example.com
+- Password: password123
+
+Railway auto-deploys when you push to master. Wait ~2-3 minutes after push for changes to appear.
