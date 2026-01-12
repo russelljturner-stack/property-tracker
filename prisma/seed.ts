@@ -18,6 +18,22 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...\n');
 
+  // Clear existing test data (in reverse order of dependencies)
+  console.log('Clearing existing test data...');
+  await prisma.developmentTask.deleteMany({});
+  await prisma.developmentDetail.deleteMany({});
+  await prisma.development.deleteMany({});
+  await prisma.site.deleteMany({});
+  await prisma.address.deleteMany({});
+  await prisma.townCity.deleteMany({});
+  await prisma.panelSize.deleteMany({});
+  await prisma.panelType.deleteMany({});
+  await prisma.taskType.deleteMany({});
+  await prisma.siteStatus.deleteMany({});
+  await prisma.developmentStatus.deleteMany({});
+  await prisma.sitePipelineStatus.deleteMany({});
+  console.log('  Cleared existing data\n');
+
   // -------------------------------------------------------------------------
   // Site Pipeline Status
   // These track a site's progress BEFORE a Development is created
