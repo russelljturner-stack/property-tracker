@@ -10,8 +10,15 @@ This document tracks architectural and design decisions for the Property Develop
 |----|----------|----------|--------|----------|------|
 | 001 | Approval Workflow for Status Changes | Business Logic | Deferred | Medium | 2026-01-11 |
 | 002 | Migration Approach: Improve, Don't Replicate | Migration | Accepted | High | 2026-01-11 |
-| 003 | Application Entry Point and Navigation | UI/UX | Proposed | High | 2026-01-11 |
+| 003 | Application Entry Point and Navigation | UI/UX | Accepted | High | 2026-01-12 |
 | 004 | System Purpose and Management Information | Business Logic | Accepted | High | 2026-01-11 |
+| 005 | Role-Based Dashboards and Access Control | UI/UX | Accepted | High | 2026-01-12 |
+| 006 | Active Work Focus Principle | UI/UX | Accepted | High | 2026-01-12 |
+| 007 | External Integration Strategy | Integration | Accepted | Medium | 2026-01-12 |
+| 008 | Mobile and Field Use Requirements | UI/UX | Accepted | High | 2026-01-12 |
+| 009 | Notification System | Technical | Accepted | Medium | 2026-01-12 |
+| 010 | Stalled Development Detection | Business Logic | Accepted | Medium | 2026-01-12 |
+| 011 | Search and Discovery | UI/UX | Accepted | High | 2026-01-12 |
 
 ---
 
@@ -129,10 +136,9 @@ A structured review will be conducted before Phase 4 (Feature Development) to de
 | Field | Value |
 |-------|-------|
 | **Category** | UI/UX |
-| **Status** | Proposed |
+| **Status** | Accepted |
 | **Priority** | High |
-| **Date** | 2026-01-11 |
-| **Revisit** | Before Phase 4, after reviewing FileMaker layouts |
+| **Date** | 2026-01-12 |
 
 #### Context
 
@@ -140,23 +146,33 @@ In FileMaker, there are 4 dashboards (Sites, Developments, Planning, Tasks). The
 - **Site** = a physical location (may have one or more developments)
 - **Development** = the primary working level for users
 
-Users primarily work at the Development level, but Site acts as an entry point to reach Developments. The original FileMaker navigation may not have been optimal.
+Users primarily work at the Development level, but Site acts as an entry point to reach Developments. The Phase 4 pre-build review clarified the navigation requirements.
 
 #### Decision
 
-Defer the final navigation structure decision until the Phase 4 review. During Phase 3, build a flexible navigation shell that can be adjusted based on the review findings.
+**Entry Point:** Users land on a role-specific dashboard (not a list view).
 
-Key questions to answer in review:
-- Should users land on a Dashboard, Sites list, or Developments list?
-- How do users navigate between Site and its Developments?
-- Which dashboards are actually needed?
-- Should the mobile experience differ from desktop?
+**Primary Entity:** Development is the primary working entity. Users work on developments day-to-day.
+
+**Site as Reference:** People refer to sites by name in conversation ("92 Cromwell Road") but mean the development they're working on there. The UI must support both mental models.
+
+**Naming Convention:** Developments display as "[Type/Size] at [Site Name]" (e.g., "48 Sheet at 92 Cromwell Road").
+
+**Key Navigation Paths:**
+- Dashboard → Development (1 click)
+- Development → Site details (1 click)
+- Site → Related contacts (1 click)
+- Development → Stage information (always visible)
+
+**Stage Navigation:** The pipeline stages (Negotiation → Design → Planning → Marketing → Tendering) must be easy to see and navigate.
 
 #### Consequences
 
-- Phase 3 navigation will be a placeholder structure
-- Final navigation will be designed after reviewing FileMaker layouts and discussing workflows
-- The system may end up with a different navigation model than FileMaker
+- Build role-specific dashboards as the landing page
+- Development lists/cards are the primary navigation element
+- Site information is always accessible but secondary to development
+- Search by site name returns relevant developments
+- Mobile and desktop share the same navigation model (responsive)
 
 ---
 
@@ -222,6 +238,318 @@ The new system must be designed around delivering management insights, not just 
 - UI design should focus on surfacing key information, not just CRUD forms
 - We may need to define KPIs and metrics during the Phase 4 review
 - Some FileMaker reports may be dropped; new ones may be needed
+
+---
+
+### ADR-005: Role-Based Dashboards and Access Control
+
+| Field | Value |
+|-------|-------|
+| **Category** | UI/UX |
+| **Status** | Accepted |
+| **Priority** | High |
+| **Date** | 2026-01-12 |
+
+#### Context
+
+Different roles have different daily needs. The FileMaker system had a one-size-fits-all approach that didn't serve anyone particularly well. The Phase 4 review identified specific needs by role.
+
+#### Decision
+
+**Each role gets a tailored dashboard:**
+
+| Role | Dashboard Focus |
+|------|-----------------|
+| **Developer** | My active developments, my tasks due, my priorities |
+| **Planner** | My active workload, upcoming planning deadlines |
+| **Build Manager** | My active workload, construction schedules |
+| **Sales/Tendering** | My active workload, tender deadlines |
+| **Leadership** | Pipeline by stage, revenue potential, team workloads, red flags/bottlenecks |
+| **Administrator** | System overview + configuration access |
+
+**Access Control Model:**
+
+| Principle | Rule |
+|-----------|------|
+| Involvement | If assigned to a development, see everything (except financials if role restricts) |
+| Same role, not assigned | Can view active developments only (holiday cover) |
+| Different role, not assigned | No access (unless Leadership/Admin) |
+| Financial data | Restricted to: Developer, Sales/Tendering, Leadership, Admin |
+
+#### Consequences
+
+- Build 2-3 dashboard variants (operational, leadership, admin)
+- Dashboard components are reusable but composed differently per role
+- Access control middleware checks role + assignment
+- Financial fields conditionally hidden based on role
+
+---
+
+### ADR-006: Active Work Focus Principle
+
+| Field | Value |
+|-------|-------|
+| **Category** | UI/UX |
+| **Status** | Accepted |
+| **Priority** | High |
+| **Date** | 2026-01-12 |
+
+#### Context
+
+The FileMaker system could feel overwhelming because historical data and active work were given equal prominence. Users need to focus on what they're doing now, not what happened years ago.
+
+#### Decision
+
+**The system answers: "What do I need to do next?" not "What's everything that ever happened?"**
+
+| View Type | Focus | Historical Data |
+|-----------|-------|-----------------|
+| Dashboards | Active developments only | Not shown |
+| Development lists | Active by default | Filter to show historical |
+| Site detail | Most recent/active development prominent | History available but collapsed |
+| Search results | Active developments first | Historical clearly marked |
+
+**"Active" definition:**
+- Development is not in a terminal status (Completed, Cancelled, On Hold)
+- Has had activity within a reasonable period
+
+**Historical access:**
+- Always available via explicit action (filter, expand, drill-down)
+- Never clutters the default working view
+- Valuable for context when viewing a site ("3 previous developments here")
+
+#### Consequences
+
+- Default queries filter to active records
+- Lists have "Show historical" toggle
+- Site views show history count as a badge, expandable
+- Dashboard metrics exclude historical data unless specifically requested
+
+---
+
+### ADR-007: External Integration Strategy
+
+| Field | Value |
+|-------|-------|
+| **Category** | Integration |
+| **Status** | Accepted |
+| **Priority** | Medium |
+| **Date** | 2026-01-12 |
+
+#### Context
+
+The FileMaker system was isolated - no connection to Outlook, documents on the server, or other business systems. This created data silos and duplicate work. The Phase 4 review identified integration as a key gap.
+
+#### Decision
+
+**Integration priorities (in order):**
+
+| Priority | Integration | Scope | Phase |
+|----------|-------------|-------|-------|
+| 1 | Manual activity logging | Log "I contacted X on Y date" | Phase 4 (core) |
+| 2 | Document linking | Link to files on network/cloud storage | Phase 4 (core) |
+| 3 | Outlook Calendar/Tasks | Two-way sync of deadlines and tasks | Post-launch |
+| 4 | Outlook Email | Pull emails into site/contact history | Post-launch |
+| 5 | Outlook Contacts | Sync contact details | Post-launch |
+
+**Approach:**
+- Build manual logging first - works immediately, no external dependencies
+- Design data model to support richer integration later (activity log, document references)
+- Outlook integration via Microsoft Graph API - complex, requires proper scoping
+- File storage approach TBC based on company infrastructure (on-premise vs cloud)
+
+#### Consequences
+
+- Activity logging table needed in database (already exists in schema)
+- Document/attachment linking needs URL-based approach initially
+- Microsoft 365 integration is a separate project post-launch
+- Photo uploads from mobile will use cloud storage (specific provider TBC)
+
+---
+
+### ADR-008: Mobile and Field Use Requirements
+
+| Field | Value |
+|-------|-------|
+| **Category** | UI/UX |
+| **Status** | Accepted |
+| **Priority** | High |
+| **Date** | 2026-01-12 |
+
+#### Context
+
+FileMaker was designed for field use but never properly tested or used on mobile. The Phase 4 review confirmed field access is critical for developers and leadership.
+
+#### Decision
+
+**Mobile use cases:**
+
+| User | Scenario | Needs |
+|------|----------|-------|
+| Developer | Standing near a site | Quick lookup: is this logged? Quick actions: photo, notes |
+| Leadership | Driving past opportunity | Check if site exists, or quick-log for follow-up |
+
+**Mobile-specific features:**
+
+| Feature | Description |
+|---------|-------------|
+| Auto-location | Detect device location, show nearby sites on map |
+| Configurable radius | User adjusts search radius based on area density |
+| Quick site check | "Is there already a site here?" - fast answer |
+| Quick capture | Photo + notes with minimal taps |
+| Offline consideration | Core lookups should work with poor connectivity (deferred) |
+
+**Design principles:**
+- Responsive design, not separate mobile app
+- Mobile gets same data, simplified presentation
+- Large touch targets, minimal typing
+- Camera integration for photos
+- GPS integration for location
+
+#### Consequences
+
+- All screens must be responsive (Tailwind CSS helps here)
+- Mobile testing is part of development, not afterthought
+- Photo upload flow needs designing
+- Map view is high priority
+- Consider progressive web app (PWA) for better mobile experience
+
+---
+
+### ADR-009: Notification System
+
+| Field | Value |
+|-------|-------|
+| **Category** | Technical |
+| **Status** | Accepted |
+| **Priority** | Medium |
+| **Date** | 2026-01-12 |
+
+#### Context
+
+Users need to know when things require their attention without constantly checking the system. The FileMaker system had no notification capability.
+
+#### Decision
+
+**Notification triggers:**
+
+| Event | Who Gets Notified |
+|-------|-------------------|
+| Assigned to development | The assignee |
+| Assigned a task | The assignee |
+| Development stalled (no activity) | The assignee + their manager |
+| Planning decision due soon | Development owner |
+| Task overdue | Task owner |
+
+**Notification channels:**
+- In-app notifications (bell icon, notification centre)
+- Email notifications (configurable per user)
+
+**User control:**
+- Users can configure which notifications they receive
+- Email notifications can be disabled individually
+- In-app notifications always shown
+
+#### Consequences
+
+- Notification table needed in database
+- Email sending infrastructure required (e.g., SendGrid, Resend)
+- Background job for checking stalled developments
+- Notification preferences in user settings
+- Notification UI component (bell icon with count)
+
+---
+
+### ADR-010: Stalled Development Detection
+
+| Field | Value |
+|-------|-------|
+| **Category** | Business Logic |
+| **Status** | Accepted |
+| **Priority** | Medium |
+| **Date** | 2026-01-12 |
+
+#### Context
+
+Developments can go quiet without anyone noticing. Leadership needs visibility into bottlenecks and stalled work. The Phase 4 review defined what "stalled" means.
+
+#### Decision
+
+**Definition of "stalled":**
+
+A development is considered stalled when ALL of the following are true:
+- No field changes in 30 days
+- No new tasks attached in 30 days
+- No activity log entries in 30 days
+- Development is in an active status (not Completed/Cancelled/On Hold)
+
+**Stalled handling:**
+- Flag appears on development card/detail
+- Appears in leadership dashboard "Red Flags" section
+- Triggers notification to assignee and their manager
+- "Last activity" date shown prominently
+
+**Configurable:**
+- 30-day threshold is a starting point
+- May vary by stage (e.g., longer acceptable during Planning wait)
+- System setting, adjustable by admin
+
+#### Consequences
+
+- Need "last activity" tracking (already have updatedAt on most tables)
+- Background job to check for stalled developments daily
+- Dashboard component for "stalled" list
+- Notification integration per ADR-009
+
+---
+
+### ADR-011: Search and Discovery
+
+| Field | Value |
+|-------|-------|
+| **Category** | UI/UX |
+| **Status** | Accepted |
+| **Priority** | High |
+| **Date** | 2026-01-12 |
+
+#### Context
+
+Users need to find sites and developments quickly. The Phase 4 review identified the primary search patterns.
+
+#### Decision
+
+**Search methods:**
+
+| Method | Description |
+|--------|-------------|
+| Text search | Search by site name, address, postcode |
+| Map search | Visual search - click on map, see nearby sites |
+| Road-based search | "Show all sites on M1" - corridor search (future) |
+
+**Search behaviour:**
+- Primary search box searches site name/address
+- Results show the Site with its active Development(s)
+- Active developments shown first, historical clearly marked
+- Search is fast - typeahead/autocomplete
+
+**Result display:**
+- Site name prominent
+- Active development(s) listed with stage and assignee
+- "X historical developments" as expandable section
+- Click goes to development detail (not site)
+
+**Map search:**
+- Auto-detect location option
+- Configurable radius (default ~100m, user adjustable)
+- Pins show sites with colour coding by stage
+- Click pin to see site summary, click through to detail
+
+#### Consequences
+
+- Search index needed for fast text search
+- Map component with location services
+- Site/Development query optimised for search result format
+- Mobile: map search may be primary interface
 
 ---
 

@@ -1,14 +1,14 @@
 # Session Handover Document
 
-**Date:** 12 January 2026 (Session 4)
-**Session:** Phase 4 Pre-Build Review (Part 1)
-**Status:** IN PROGRESS
+**Date:** 12 January 2026 (Session 5)
+**Session:** Phase 4 Pre-Build Review (Complete)
+**Status:** COMPLETE
 
 ---
 
 ## Session Summary
 
-This session began the structured pre-build review required before Phase 4 feature development. We completed Questions 1 and 2 of the 6-question review framework.
+This session completed the structured pre-build review required before Phase 4 feature development. All 6 questions have been answered and documented as Architecture Decision Records.
 
 ### Review Progress
 
@@ -16,10 +16,27 @@ This session began the structured pre-build review required before Phase 4 featu
 |----------|--------|---------|
 | 1. Core purpose | COMPLETE | Site intelligence, pipeline management, institutional memory |
 | 2. Who uses it (roles) | COMPLETE | Role-based access with financial restrictions |
-| 3. Pain points | NOT STARTED | Next session |
-| 4. Unused features | NOT STARTED | |
-| 5. Missing features | NOT STARTED | |
-| 6. UI/UX patterns | NOT STARTED | |
+| 3. Pain points | COMPLETE | Platform limitations, lack of polish, no integrations |
+| 4. Unused features | COMPLETE | Keep all - low usage was rollout failure, not feature problem |
+| 5. Missing features | COMPLETE | Email/document integration, better reporting |
+| 6. UI/UX patterns | COMPLETE | Role-based dashboards, Development as primary entity |
+
+---
+
+## New ADRs Created This Session
+
+| ADR | Title | Status |
+|-----|-------|--------|
+| 003 | Application Entry Point and Navigation | Updated to Accepted |
+| 005 | Role-Based Dashboards and Access Control | NEW - Accepted |
+| 006 | Active Work Focus Principle | NEW - Accepted |
+| 007 | External Integration Strategy | NEW - Accepted |
+| 008 | Mobile and Field Use Requirements | NEW - Accepted |
+| 009 | Notification System | NEW - Accepted |
+| 010 | Stalled Development Detection | NEW - Accepted |
+| 011 | Search and Discovery | NEW - Accepted |
+
+See `docs/decisions/architecture-decisions.md` for full details.
 
 ---
 
@@ -115,9 +132,93 @@ When viewing a Site, show:
 
 ---
 
+## Key Findings: Pain Points (Question 3)
+
+| Category | Pain Point |
+|----------|------------|
+| **Platform** | FileMaker struggled with cross-platform (iOS, Android, desktop, Mac) |
+| **UX/Polish** | Never reached modern standards - functional but not slick |
+| **Mobile** | Designed for field use but never properly tested there |
+| **Information Density** | Layouts too heavy with data fields |
+| **Feature Bloat** | Lost focus as it grew larger |
+| **Reporting** | Existed but wasn't compelling enough to drive adoption |
+| **Integration** | No connection to Outlook (tasks, diary, emails, contacts) |
+| **Maintainability** | FileMaker made changes difficult |
+
+**Key theme:** Polish over features - better to have fewer features that work beautifully.
+
+---
+
+## Key Findings: Unused Features (Question 4)
+
+**Finding:** Low usage was due to incomplete rollout, not feature problems.
+
+**Decision:** Keep the full feature set for now. Review usage once the new system is live and adopted.
+
+---
+
+## Key Findings: Missing Features (Question 5)
+
+| Gap | Notes |
+|-----|-------|
+| Email integration | Communication history is key to institutional memory |
+| Document integration | Link to contracts, plans, etc. on company server |
+| Better reporting | Needed to drive leadership engagement and user adoption |
+
+**Key theme:** Not about adding more - about making what exists work better.
+
+---
+
+## Key Findings: UI/UX Patterns (Question 6)
+
+### User Journeys
+
+| User | Context | What They Need |
+|------|---------|----------------|
+| Developer (office) | Morning planning | Dashboard: active developments, tasks due |
+| Developer (field) | Standing near a site | Quick lookup, photo capture, notes |
+| Leadership (field) | Spots opportunity | Check if site exists, quick-log for follow-up |
+| Leadership (office) | Pipeline management | Overview, team workloads, bottlenecks |
+
+### Navigation Decisions
+
+| Decision | Answer |
+|----------|--------|
+| Entry point | Role-based dashboard (not a list) |
+| Primary entity | Development (what people work on) |
+| Reference entity | Site (what people say in conversation) |
+| Naming | "[Type/Size] at [Site Name]" |
+| Key relationships | Development ↔ Site ↔ Contacts = 1-2 clicks |
+| Role-based views | Yes - different dashboards per role |
+
+### Active Work Focus
+
+**Core principle:** "What do I need to do next?" not "What's everything that ever happened?"
+
+- Dashboards show active developments only
+- Historical data available but not prominent
+- Default queries filter to active records
+
+### Dashboard Metrics
+
+| Role | Metrics |
+|------|---------|
+| Leadership | Pipeline by stage, potential revenue, red flags (stalled developments) |
+| Operational | My active developments, my next tasks, my priorities |
+
+### Other Decisions
+
+| Topic | Decision |
+|-------|----------|
+| Stalled definition | No field changes, no new tasks, no activity for ~30 days |
+| Search | By site name; map-based; results show site with active development |
+| Notifications | In-app and email; for assignments, stalled warnings, task assignments |
+
+---
+
 ## Current Status
 
-**Phase 4: PRE-BUILD REVIEW IN PROGRESS**
+**Phase 4: PRE-BUILD REVIEW COMPLETE - READY FOR FEATURE DEVELOPMENT**
 
 Application remains deployed and working:
 
@@ -131,13 +232,22 @@ Application remains deployed and working:
 
 ## Next Steps
 
-Continue pre-build review:
-1. **Question 3: Pain points** - What was frustrating about FileMaker?
-2. **Question 4: Unused features** - What can we drop?
-3. **Question 5: Missing features** - What should have been there?
-4. **Question 6: UI/UX patterns** - How should navigation work?
+Pre-build review is complete. Ready to begin Phase 4 feature development.
 
-Then document decisions and begin feature development.
+**Recommended build order:**
+
+| Priority | Feature | Rationale |
+|----------|---------|-----------|
+| 1 | Role-based dashboard (operational) | Landing page for most users |
+| 2 | Development list view | Core working interface |
+| 3 | Development detail view | Where users spend most time |
+| 4 | Site detail view | Quick access from development |
+| 5 | Search functionality | Critical for finding sites/developments |
+| 6 | Map view with location | Key for field use |
+| 7 | Leadership dashboard | Pipeline and team visibility |
+| 8 | Task management | Assignments and follow-ups |
+| 9 | Activity logging | Communication history |
+| 10 | Notifications | Alerts and reminders |
 
 ---
 
@@ -145,7 +255,8 @@ Then document decisions and begin feature development.
 
 | File | Change |
 |------|--------|
-| `docs/handover/2026-01-12-session4-handover.md` | NEW - this document |
+| `docs/handover/2026-01-12-session4-handover.md` | UPDATED - complete review findings |
+| `docs/decisions/architecture-decisions.md` | UPDATED - 7 new ADRs added |
 
 ---
 
@@ -155,6 +266,6 @@ Then document decisions and begin feature development.
 I'm continuing work on the Property Development Tracker. Please read the handover document at:
 docs/handover/2026-01-12-session4-handover.md
 
-Last session: Started Phase 4 pre-build review - completed Questions 1 (Core Purpose) and 2 (Roles/Access)
-Next task: Continue pre-build review with Question 3 (Pain Points)
+Last session: Completed Phase 4 pre-build review - all 6 questions answered, 7 new ADRs created
+Next task: Begin Phase 4 feature development - start with operational dashboard
 ```
