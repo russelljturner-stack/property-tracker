@@ -20,6 +20,8 @@ This document tracks architectural and design decisions for the Property Develop
 | 010 | Stalled Development Detection | Business Logic | Accepted | Medium | 2026-01-12 |
 | 011 | Search and Discovery | UI/UX | Accepted | High | 2026-01-12 |
 | 012 | Site Pipeline Status Model | Business Logic | Accepted | High | 2026-01-12 |
+| 013 | Product Strategy: Built to Sell | Technical | Accepted | High | 2026-01-12 |
+| 014 | Consultancy Module Deferred | Deferred Features | Deferred | Low | 2026-01-12 |
 
 ---
 
@@ -621,6 +623,114 @@ The existing `SiteStatus` table only has 2 values (Live, Dead), which indicates 
 - Existing `SiteStatus` (Live/Dead) remains unchanged
 - Seed data needed for both status tables
 - Dashboard filters by pipeline status for "Sites needing work"
+
+---
+
+### ADR-013: Product Strategy: Built to Sell
+
+| Field | Value |
+|-------|-------|
+| **Category** | Technical |
+| **Status** | Accepted |
+| **Priority** | High |
+| **Date** | 2026-01-12 |
+
+#### Context
+
+This project started as a FileMaker migration for a specific use case. However, the strategic vision is broader: Russell wants to sell the application to other outdoor advertising developers. This changes the project from a bespoke internal tool to a **product**.
+
+#### Decision
+
+**The system will be designed as a sellable product, not a one-off internal tool.**
+
+This affects decisions at multiple levels:
+
+**Design & UX:**
+- The app should have personality - action-oriented, celebratory, energetic
+- Users should *want* to engage with it, not feel it's a chore
+- Professional visual design that looks like a product, not a database interface
+- Branding should be flexible (not hardcoded company references)
+
+**Architecture:**
+- White-labelling capability - branding/colours configurable per customer
+- Multi-tenant ready - could support multiple companies in future
+- Clean separation of business logic from company-specific customisation
+- Modular features that can be enabled/disabled per customer
+
+**Engineering:**
+- Fast iterative updates - architecture that supports rapid changes
+- Bespoke versions per customer should be achievable
+- Well-documented codebase (for maintainability and potential handover)
+- Standard patterns that any developer could understand
+
+**Sales positioning:**
+- "Designed to make users want to engage with it"
+- "Fast iterative development capability"
+- "White-label ready"
+- "Proven in real-world outdoor advertising operations"
+
+#### Consequences
+
+- Avoid hardcoding company-specific values - use configuration
+- Theme/branding layer needed (colours, logo, terminology)
+- Consider tenant model in database design (even if single-tenant for now)
+- Documentation becomes more important
+- Code quality standards matter for future maintenance
+- Features should be generalised, not overly specific to one workflow
+- UI copy should use generic terms ("your company") not specific names
+
+#### Notes
+
+This doesn't mean building everything upfront - but making choices that don't *prevent* these capabilities later. The first customer is Russell's own use case; the architecture should support growth beyond that.
+
+---
+
+### ADR-014: Consultancy Module Deferred
+
+| Field | Value |
+|-------|-------|
+| **Category** | Deferred Features |
+| **Status** | Deferred |
+| **Priority** | Low |
+| **Date** | 2026-01-12 |
+| **Revisit** | Post-launch, if customer demand emerges |
+
+#### Context
+
+The FileMaker system includes a Consultancy section with 6 sub-tabs (Rent Review, Lease Renewal, Valuation, Revenue Share, Rent Collection, Other). Consultancy represents a different business model where:
+
+- A landowner already has an agreement with another media operator
+- You act as an advisor to help the landowner maximise their deal
+- You receive a revenue share rather than operating the site yourself
+
+During review, Russell identified that this is a specific business model unique to one company and would not be a requirement for other outdoor advertising developers who might purchase this system.
+
+#### Decision
+
+**Consultancy will NOT be built in Phase 4. It is deferred as a potential future module.**
+
+The core product will focus on the universally-valuable Development workflow:
+- Site identification and survey
+- Commercial agreement
+- Design
+- Planning
+- Marketing (tender)
+- Build
+- Live operation
+
+This aligns with ADR-013 (Product Strategy: Built to Sell) - the system should be generalised, not overly specific to one workflow.
+
+#### Consequences
+
+- 6 sub-tabs not built, saving significant development time
+- Core product is cleaner and more focused
+- Data model remains flexible to add Consultancy later if needed
+- If Russell needs Consultancy for internal use, it can be added as a customer-specific module
+- Other customers won't see irrelevant features
+
+#### Notes
+
+Consultancy could be implemented as an optional module in future, enabled per customer. The pattern of "Site has Developments" could extend to "Site has Developments OR Consultancies" without major architectural changes.
 
 ---
 
