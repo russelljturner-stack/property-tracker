@@ -12,6 +12,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -33,6 +34,45 @@ async function main() {
   await prisma.developmentStatus.deleteMany({});
   await prisma.sitePipelineStatus.deleteMany({});
   console.log('  Cleared existing data\n');
+
+  // -------------------------------------------------------------------------
+  // Test User (for login)
+  // -------------------------------------------------------------------------
+  console.log('Creating test user...');
+
+  // Create a Developer role
+  const developerRole = await prisma.role.upsert({
+    where: { name: 'Developer' },
+    update: {},
+    create: {
+      name: 'Developer',
+      description: 'Property developer - can manage sites and developments',
+      canViewSites: true,
+      canEditSites: true,
+      canDeleteSites: false,
+      canViewDevelopments: true,
+      canEditDevelopments: true,
+      canDeleteDevelopments: false,
+      canViewContacts: true,
+      canEditContacts: true,
+      canViewReports: true,
+    },
+  });
+
+  // Create a test user with a known password
+  const passwordHash = await bcrypt.hash('password123', 10);
+  await prisma.user.upsert({
+    where: { email: 'test@example.com' },
+    update: { passwordHash }, // Update password in case it changed
+    create: {
+      email: 'test@example.com',
+      name: 'Test User',
+      passwordHash,
+      isActive: true,
+      roleId: developerRole.id,
+    },
+  });
+  console.log('  Created test user: test@example.com / password123\n');
 
   // -------------------------------------------------------------------------
   // Site Pipeline Status
