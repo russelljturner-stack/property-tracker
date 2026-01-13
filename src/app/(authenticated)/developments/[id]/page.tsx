@@ -811,17 +811,17 @@ function SiteContextPanel({
         </h2>
       </div>
 
-      <div className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="p-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {/* Map Section */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h3 className="text-xs font-medium text-gray-500 uppercase">Location</h3>
             {mapUrl ? (
               <a
                 href={`https://www.google.com/maps?q=${site.address!.latitude},${site.address!.longitude}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors aspect-[4/3]"
+                className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors aspect-[4/3] max-h-28"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -831,7 +831,7 @@ function SiteContextPanel({
                 />
               </a>
             ) : (
-              <div className="w-full aspect-[4/3] bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
+              <div className="w-full aspect-[4/3] max-h-28 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
                 No coordinates available
               </div>
             )}
@@ -841,10 +841,10 @@ function SiteContextPanel({
           </div>
 
           {/* Photo Section */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h3 className="text-xs font-medium text-gray-500 uppercase">Site Photo</h3>
             {primaryPhoto?.photoUrl ? (
-              <div className="rounded-lg overflow-hidden border border-gray-200 aspect-[4/3]">
+              <div className="rounded-lg overflow-hidden border border-gray-200 aspect-[4/3] max-h-28">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={primaryPhoto.photoUrl}
@@ -853,7 +853,7 @@ function SiteContextPanel({
                 />
               </div>
             ) : (
-              <div className="w-full aspect-[4/3] bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
+              <div className="w-full aspect-[4/3] max-h-28 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
                 No photo available
               </div>
             )}
@@ -863,9 +863,9 @@ function SiteContextPanel({
           </div>
 
           {/* Development History Section */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h3 className="text-xs font-medium text-gray-500 uppercase">Development History</h3>
-            <div className="bg-gray-50 rounded-lg p-3 aspect-[4/3] overflow-y-auto">
+            <div className="bg-gray-50 rounded-lg p-2 aspect-[4/3] max-h-28 overflow-y-auto">
               {otherDevelopments.length === 0 ? (
                 <p className="text-sm text-gray-500 text-center mt-8">
                   First development at this site
@@ -906,7 +906,7 @@ function SiteContextPanel({
         </div>
 
         {/* Link to full site page */}
-        <div className="mt-4 pt-3 border-t border-gray-100 text-center">
+        <div className="mt-2 pt-2 border-t border-gray-100 text-center">
           <Link
             href={`/sites/${site.id}`}
             className="text-sm text-blue-600 hover:text-blue-800"
