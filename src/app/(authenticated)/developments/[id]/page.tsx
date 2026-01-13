@@ -220,16 +220,17 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Site context thumbnails - map and photo (right side, 4:3 aspect ratio) */}
+          {/* Site context thumbnails - map and photo (right side, landscape 4:3) */}
           {development.site && (
-            <div className="flex gap-2 flex-shrink-0">
-              {/* Map thumbnail */}
+            <div className="flex gap-2 flex-shrink-0 items-start">
+              {/* Map thumbnail - 120px x 90px (4:3 landscape) */}
               {development.site.address?.latitude && development.site.address?.longitude ? (
                 <a
                   href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-28 aspect-[4/3] rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors flex-shrink-0"
+                  className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors flex-shrink-0"
+                  style={{ width: '120px', height: '90px' }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -239,13 +240,19 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   />
                 </a>
               ) : (
-                <div className="w-28 aspect-[4/3] bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0">
+                <div
+                  className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0"
+                  style={{ width: '120px', height: '90px' }}
+                >
                   No map
                 </div>
               )}
-              {/* Photo thumbnail */}
+              {/* Photo thumbnail - 120px x 90px (4:3 landscape) */}
               {development.site.photos?.[0]?.photoUrl ? (
-                <div className="w-28 aspect-[4/3] rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                <div
+                  className="rounded-lg overflow-hidden border border-gray-200 flex-shrink-0"
+                  style={{ width: '120px', height: '90px' }}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={development.site.photos[0].photoUrl}
@@ -254,7 +261,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   />
                 </div>
               ) : (
-                <div className="w-28 aspect-[4/3] bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0">
+                <div
+                  className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0"
+                  style={{ width: '120px', height: '90px' }}
+                >
                   No photo
                 </div>
               )}
