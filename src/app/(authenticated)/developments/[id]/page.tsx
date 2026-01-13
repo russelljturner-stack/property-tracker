@@ -800,10 +800,8 @@ function SiteContextPanel({
     ? `https://maps.googleapis.com/maps/api/staticmap?center=${site.address!.latitude},${site.address!.longitude}&zoom=16&size=400x200&maptype=satellite&markers=color:red%7C${site.address!.latitude},${site.address!.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`
     : null
 
-  // If no map, no photo, and no other developments, don't show the panel
-  if (!mapUrl && !primaryPhoto?.photoUrl && otherDevelopments.length === 0) {
-    return null
-  }
+  // Always show the panel - it provides important site context
+  // Even if data is missing, we show placeholders to indicate what could be added
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
