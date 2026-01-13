@@ -238,38 +238,38 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </svg>
             </Link>
             {/* Prev/Next navigation */}
-            <div className="flex items-center border-l border-gray-200 pl-3 ml-1">
+            <div className="flex items-center gap-1 border-l border-gray-200 pl-3 ml-1">
               {prevDevelopment ? (
                 <Link
                   href={`/developments/${prevDevelopment.id}`}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                  className="p-1.5 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded"
                   title={`Previous: #${prevDevelopment.projectNo || prevDevelopment.id}`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </Link>
               ) : (
-                <span className="p-1.5 text-gray-200 cursor-not-allowed">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                <span className="p-1.5 text-gray-300 bg-gray-50 rounded cursor-not-allowed">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </span>
               )}
               {nextDevelopment ? (
                 <Link
                   href={`/developments/${nextDevelopment.id}`}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                  className="p-1.5 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded"
                   title={`Next: #${nextDevelopment.projectNo || nextDevelopment.id}`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
               ) : (
-                <span className="p-1.5 text-gray-200 cursor-not-allowed">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                <span className="p-1.5 text-gray-300 bg-gray-50 rounded cursor-not-allowed">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </span>
               )}
