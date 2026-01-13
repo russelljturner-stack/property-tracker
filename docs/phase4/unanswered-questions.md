@@ -113,15 +113,9 @@ The header and site context (including map/photo thumbnails) on the Development 
 ## User Menu / Sign-out Location
 
 **Date raised:** 13 Jan 2026
+**RESOLVED:** 13 Jan 2026 - Moved to sidebar bottom
 
-Currently the logged-in user and sign-out button are in the top header area, which takes up space.
-
-**Question:** Where should the user menu live?
-- A) In the left navigation sidebar (common pattern - user avatar at bottom of sidebar)
-- B) Compact dropdown in header (just avatar/initials, expands on click)
-- C) Keep as-is but make more compact
-
-**Best practice note:** Most modern apps put user menu in sidebar (bottom) or as a small avatar dropdown in header. This keeps the main content area uncluttered.
+User info and sign-out button now live at the bottom of the left sidebar, following common app patterns (Slack, Notion, VS Code). Header is now mobile-only (hamburger menu).
 
 ---
 
@@ -142,6 +136,24 @@ Currently both use the same white card styling, which doesn't communicate this d
 - D) Subtle background colour for the entire right column area
 
 **Goal:** Make it visually clear that the left side is "what you're working through" and the right side is "reference info you might need".
+
+---
+
+## Projects - Filtering/Grouping Mechanism (Not Detail Page Display)
+
+**Date raised:** 13 Jan 2026
+**Decision made:** Projects are for grouping/filtering, not detail page display
+
+**Context:** In FileMaker, "Related Projects" appeared on the Development main tab. A Project connects multiple developments that share a common initiative (e.g., "Digital Network - Manchester", "High Street Regeneration", "City Centre Redevelopment").
+
+**Decision:** Projects should be used for filtering and grouping on list pages, NOT displayed on the development detail page.
+
+**Implementation:**
+1. **Development list page** - Add "Project" as a filter/sort option
+2. **Potentially a Projects page** - View all developments grouped by project
+3. **Development detail page** - No projects section needed (removed from audit as "not displayed")
+
+**Rationale:** Users want to view developments by site owner, developer, status, OR by project. It's a categorisation mechanism for list views, not context needed when viewing a single development's details.
 
 ---
 

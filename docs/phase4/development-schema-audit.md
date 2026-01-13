@@ -30,7 +30,7 @@ Legend:
 | Photo | site.photos | [x] | Site context panel |
 | Map | site.address (lat/lng) | [x] | Google Maps embed |
 | Address | site.address | [x] | Header row 2 |
-| Related Projects | projects (DevelopmentProject) | [S] | Not displayed yet |
+| Related Projects | projects (DevelopmentProject) | [-] | DECISION: Use for list filtering, not detail display |
 
 ### Middle Column
 
