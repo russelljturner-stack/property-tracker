@@ -228,59 +228,52 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </Link>
             </div>
           </div>
-
-          {/* Site context thumbnails - map and photo (right side, matches content height) */}
-          {development.site && (
-            <div className="hidden md:flex gap-2 flex-shrink-0 items-stretch">
-              {/* Map thumbnail - stretches to content height, width calculated from height */}
-              {development.site.address?.latitude && development.site.address?.longitude ? (
-                <a
-                  href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors"
-                  style={{ aspectRatio: '4/3' }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=200x150&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
-                    alt="Site location"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </a>
-              ) : (
-                <div
-                  className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs"
-                  style={{ aspectRatio: '4/3' }}
-                >
-                  No map
-                </div>
-              )}
-              {/* Photo thumbnail - stretches to content height, width calculated from height */}
-              {development.site.photos?.[0]?.photoUrl ? (
-                <div
-                  className="relative rounded-lg overflow-hidden border border-gray-200"
-                  style={{ aspectRatio: '4/3' }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={development.site.photos[0].photoUrl}
-                    alt="Site photo"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div
-                  className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs"
-                  style={{ aspectRatio: '4/3' }}
-                >
-                  No photo
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Site Context - Map and Photo thumbnails */}
+      {development.site && (
+        <div className="bg-white rounded-lg shadow p-4">
+          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">Site Context</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {/* Map thumbnail */}
+            {development.site.address?.latitude && development.site.address?.longitude ? (
+              <a
+                href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=400x300&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
+                  alt="Site location"
+                  className="w-full h-auto"
+                />
+              </a>
+            ) : (
+              <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm aspect-[4/3]">
+                No map available
+              </div>
+            )}
+            {/* Photo thumbnail */}
+            {development.site.photos?.[0]?.photoUrl ? (
+              <div className="rounded-lg overflow-hidden border border-gray-200">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={development.site.photos[0].photoUrl}
+                  alt="Site photo"
+                  className="w-full h-auto object-cover aspect-[4/3]"
+                />
+              </div>
+            ) : (
+              <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm aspect-[4/3]">
+                No photo available
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Proposed Asset Hero Visual */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
