@@ -2,6 +2,10 @@ import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { CommercialCard } from "@/components/CommercialCard"
+import { DesignCard } from "@/components/DesignCard"
+import { PlanningCard } from "@/components/PlanningCard"
+import { MarketingCard } from "@/components/MarketingCard"
+import { BuildCard } from "@/components/BuildCard"
 
 // Force dynamic rendering - this page fetches data at request time
 export const dynamic = 'force-dynamic'
@@ -125,6 +129,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       },
       lawyer: true,
       mediaOwner: true,
+      mediaOwnerAgent: true,
       mediaOwnerContacts: {
         include: {
           contact: {
@@ -149,7 +154,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   }
 
   // Fetch lookup data for dropdowns (in parallel for efficiency)
-  const [contractingEntities, lawyers] = await Promise.all([
+  const [contractingEntities, lawyers, applicationStatuses, mediaOwners] = await Promise.all([
     // ContractingEntity is its own model
     db.contractingEntity.findMany({
       where: { isActive: true },
@@ -161,6 +166,19 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     db.organisation.findMany({
       where: {
         developmentsAsLawyer: { some: {} }
+      },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    }),
+    // Application statuses for planning and advert applications
+    db.applicationStatus.findMany({
+      select: { id: true, name: true },
+      orderBy: { sortOrder: 'asc' },
+    }),
+    // Media owners - organisations that have been used as media owners
+    db.organisation.findMany({
+      where: {
+        developmentsAsMediaOwner: { some: {} }
       },
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
@@ -364,215 +382,92 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               lawyers={lawyers}
             />
 
-            {/* Design Stage Card */}
-            <StageCard
-              title="Design"
-              icon="✏️"
+            {/* Design Stage Card - Expandable with Edit capability */}
+            <DesignCard
+              developmentId={development.id}
+              data={{
+                id: development.id,
+                designUrl: development.designUrl,
+                designFinalOrDraft: development.designFinalOrDraft,
+                designSignedOff: development.designSignedOff,
+                designSignedOffDate: development.designSignedOffDate,
+                designSignedOffBy: development.designSignedOffBy,
+              }}
               isActive={currentStage === 'design'}
               isComplete={isStageComplete('design', development)}
-            >
-              {/* Design Visual - smaller hero image */}
-              <div className="mb-4">
-                <div className="relative rounded-lg overflow-hidden bg-gray-900 max-w-md">
-                  {development.designUrl ? (
-                    <div className="aspect-video">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={development.designUrl}
-                        alt="Proposed development visual"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-                      <div className="text-center text-gray-400">
-                        <svg className="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <p className="text-xs">No design visual</p>
-                      </div>
-                    </div>
-                  )}
-                  {/* Design status badge overlay */}
-                  <div className="absolute top-2 left-2">
-                    <DesignStatusBadge status={development.designFinalOrDraft} />
-                  </div>
-                </div>
-              </div>
+            />
 
-              {/* Design Status Progression */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between text-xs mb-2">
-                  {['Stock', 'Proposed', 'Draft', 'Final'].map((stage, index) => {
-                    const currentIndex = (() => {
-                      switch (development.designFinalOrDraft?.toLowerCase()) {
-                        case 'final': return 3
-                        case 'draft': return 2
-                        case 'proposed': return 1
-                        default: return 0
-                      }
-                    })()
-                    const isComplete = index < currentIndex
-                    const isCurrent = index === currentIndex
-                    return (
-                      <div key={stage} className="flex flex-col items-center">
-                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium mb-1 ${
-                          isComplete ? 'bg-green-500 text-white' :
-                          isCurrent ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'
-                        }`}>
-                          {isComplete ? '✓' : index + 1}
-                        </div>
-                        <span className={isCurrent || isComplete ? 'font-medium text-gray-900' : 'text-gray-400'}>{stage}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Sign-off Status */}
-              <div className="space-y-3 pt-3 border-t border-gray-100">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Internal Sign-off</span>
-                  {development.designSignedOff === 'Yes' || development.designSignedOffDate ? (
-                    <span className="flex items-center gap-1 text-sm text-green-600 font-medium">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      Approved
-                    </span>
-                  ) : (
-                    <span className="text-sm text-gray-400">Pending</span>
-                  )}
-                </div>
-                {development.designSignedOffDate && (
-                  <p className="text-xs text-gray-500">
-                    {formatDate(development.designSignedOffDate)}
-                    {development.designSignedOffBy && ` by ${development.designSignedOffBy}`}
-                  </p>
-                )}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Client Sign-off</span>
-                  <span className="text-sm text-gray-400">Not tracked</span>
-                </div>
-              </div>
-            </StageCard>
-
-            {/* Planning Stage Card */}
-            <StageCard
-              title="Planning"
-              icon="📋"
+            {/* Planning Stage Card - Expandable with Edit capability */}
+            <PlanningCard
+              developmentId={development.id}
+              data={{
+                id: development.id,
+                planningAppStatusId: development.planningAppStatusId,
+                planningAppStatus: development.planningAppStatus,
+                planningScore: development.planningScore,
+                planningApplicationDescription: development.planningApplicationDescription,
+                planningApplicationDetail: development.planningApplicationDetail,
+                planningClientApproval: development.planningClientApproval,
+                planningApplicationSubmitted: development.planningApplicationSubmitted,
+                planningAppRegistration: development.planningAppRegistration,
+                planningAppRefLa: development.planningAppRefLa,
+                planningAppDeterminDate: development.planningAppDeterminDate,
+                planningConditions: development.planningConditions,
+                planningConditionsNumber: development.planningConditionsNumber,
+                planningAppealSubmitted: development.planningAppealSubmitted,
+                planningAppealStart: development.planningAppealStart,
+                planningAppealRefLa: development.planningAppealRefLa,
+                planningAppealProcedure: development.planningAppealProcedure,
+                advertAppStatusId: development.advertAppStatusId,
+                advertAppStatus: development.advertAppStatus,
+                advertApplicationDescription: development.advertApplicationDescription,
+                advertApplicationSubmitted: development.advertApplicationSubmitted,
+                advertApplicationRegistration: development.advertApplicationRegistration,
+                advertAppRefLa: development.advertAppRefLa,
+                advertAppDeterminationDate: development.advertAppDeterminationDate,
+                advertConditions: development.advertConditions,
+                advertConditionsNumber: development.advertConditionsNumber,
+                advertAppealSubmitted: development.advertAppealSubmitted,
+                advertAppealStart: development.advertAppealStart,
+                advertAppealRefLa: development.advertAppealRefLa,
+                advertAppealProcedure: development.advertAppealProcedure,
+                caseOfficer: development.caseOfficer,
+              }}
+              applicationStatuses={applicationStatuses}
               isActive={currentStage === 'planning'}
               isComplete={isStageComplete('planning', development)}
-            >
-              <div className="space-y-4">
-                {/* Planning Application */}
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Planning Application</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <InfoItem label="Status" value={development.planningAppStatus?.name} />
-                    <InfoItem label="LA Reference" value={development.planningAppRefLa} />
-                    <InfoItem label="Submitted" value={development.planningApplicationSubmitted ? formatDate(development.planningApplicationSubmitted) : undefined} />
-                    <InfoItem label="Target Date" value={development.planningAppDeterminDate ? formatDate(development.planningAppDeterminDate) : undefined} />
-                  </div>
-                </div>
-                {/* Advertisement Application */}
-                <div className="pt-4 border-t border-gray-100">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Advertisement Application</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <InfoItem label="Status" value={development.advertAppStatus?.name} />
-                    <InfoItem label="LA Reference" value={development.advertAppRefLa} />
-                    <InfoItem label="Submitted" value={development.advertApplicationSubmitted ? formatDate(development.advertApplicationSubmitted) : undefined} />
-                    <InfoItem label="Target Date" value={development.advertAppDeterminationDate ? formatDate(development.advertAppDeterminationDate) : undefined} />
-                  </div>
-                </div>
-                {development.caseOfficer && (
-                  <div className="pt-4 border-t border-gray-100">
-                    <InfoItem
-                      label="Case Officer"
-                      value={`${development.caseOfficer.firstName || ''} ${development.caseOfficer.lastName || ''}`.trim() || undefined}
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <Link href={`/developments/${development.id}/planning`} className="text-sm text-blue-600 hover:text-blue-800">
-                  View full planning details →
-                </Link>
-              </div>
-            </StageCard>
+            />
 
-            {/* Marketing Stage Card */}
-            <StageCard
-              title="Marketing"
-              icon="📢"
+            {/* Marketing Stage Card - Expandable with Edit capability */}
+            <MarketingCard
+              developmentId={development.id}
+              data={{
+                id: development.id,
+                mediaOwnerId: development.mediaOwnerId,
+                mediaOwner: development.mediaOwner,
+                mediaOwnerAgentId: development.mediaOwnerAgentId,
+                mediaOwnerAgent: development.mediaOwnerAgent,
+                tenderOffers: development.tenderOffers,
+              }}
+              mediaOwners={mediaOwners}
               isActive={currentStage === 'marketing'}
               isComplete={isStageComplete('marketing', development)}
-            >
-              {/* Media Owner */}
-              {development.mediaOwner && (
-                <div className="mb-4 pb-4 border-b border-gray-100">
-                  <InfoItem label="Media Owner" value={development.mediaOwner.name} />
-                </div>
-              )}
+            />
 
-              {/* Tender Status */}
-              <div className="mb-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Tender Status</h4>
-                {development.tenderOffers && development.tenderOffers.length > 0 ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Offers Received</span>
-                      <span className="font-semibold text-gray-900">{development.tenderOffers.length}</span>
-                    </div>
-                    {/* Offer comparison - show top offers */}
-                    <div className="mt-3 space-y-2">
-                      {development.tenderOffers.slice(0, 3).map((offer, index) => (
-                        <div
-                          key={offer.id}
-                          className={`flex items-center justify-between p-2 rounded ${
-                            index === 0 ? 'bg-green-50 border border-green-200' : 'bg-gray-50'
-                          }`}
-                        >
-                          <span className="text-sm font-medium">{offer.offerFrom || 'Unknown bidder'}</span>
-                          <span className={`text-sm font-semibold ${index === 0 ? 'text-green-700' : 'text-gray-700'}`}>
-                            {offer.offerAmount
-                              ? `£${Number(offer.offerAmount).toLocaleString()}`
-                              : 'Amount TBC'}
-                          </span>
-                        </div>
-                      ))}
-                      {development.tenderOffers.length > 3 && (
-                        <p className="text-xs text-gray-500 text-center">
-                          +{development.tenderOffers.length - 3} more offers
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">No tender offers yet</p>
-                )}
-              </div>
-            </StageCard>
-
-            {/* Build Stage Card */}
-            <StageCard
-              title="Build"
-              icon="🏗️"
+            {/* Build Stage Card - Expandable with Edit capability */}
+            <BuildCard
+              developmentId={development.id}
+              data={{
+                id: development.id,
+                buildStartDate: development.buildStartDate,
+                buildCompletionDate: development.buildCompletionDate,
+                buildLiveDate: development.buildLiveDate,
+                buildContractor: development.buildContractor,
+                buildNotes: development.buildNotes,
+              }}
               isActive={currentStage === 'build'}
               isComplete={isStageComplete('build', development)}
-            >
-              <div className="grid grid-cols-2 gap-4">
-                <InfoItem label="Start Date" value={development.buildStartDate ? formatDate(development.buildStartDate) : undefined} />
-                <InfoItem label="Completion Date" value={development.buildCompletionDate ? formatDate(development.buildCompletionDate) : undefined} />
-                <InfoItem label="Live Date" value={development.buildLiveDate ? formatDate(development.buildLiveDate) : undefined} />
-                <InfoItem label="Contractor" value={development.buildContractor} />
-              </div>
-              {development.buildNotes && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <InfoItem label="Notes" value={development.buildNotes} />
-                </div>
-              )}
-            </StageCard>
+            />
           </div>
         </div>
 
