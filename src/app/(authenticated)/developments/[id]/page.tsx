@@ -263,14 +263,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Site Context Panel - COMMENTED OUT: Thumbnails now in header
-      {development.site && (
-        <SiteContextPanel
-          site={development.site}
-          currentDevelopmentId={development.id}
-        />
-      )}
-      */}
 
       {/* Progress Timeline */}
       <ProgressTimeline stages={STAGES} currentStage={currentStage} />
@@ -487,6 +479,50 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               )}
             </div>
           </section>
+
+          {/* Related Developments Card - other developments at this site */}
+          {development.site?.developments && development.site.developments.length > 1 && (
+            <section className="bg-white rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                  Related Developments
+                </h3>
+              </div>
+              <div className="p-4">
+                <p className="text-xs text-gray-500 mb-3">
+                  Other developments at this site
+                </p>
+                <div className="space-y-2">
+                  {development.site.developments
+                    .filter(dev => dev.id !== development.id)
+                    .map((dev) => (
+                      <Link
+                        key={dev.id}
+                        href={`/developments/${dev.id}`}
+                        className="block p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-gray-900">
+                            #{dev.projectNo || dev.id}
+                          </span>
+                          {dev.status && (
+                            <span
+                              className="text-xs px-2 py-0.5 rounded-full"
+                              style={{
+                                backgroundColor: dev.status.colour ? `${dev.status.colour}20` : '#e5e7eb',
+                                color: dev.status.colour || '#374151',
+                              }}
+                            >
+                              {dev.status.name}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                </div>
+              </div>
+            </section>
+          )}
 
           {/* Quick Info Card */}
           <section className="bg-white rounded-lg shadow p-6">
@@ -798,165 +834,6 @@ function ProgressTimeline({
             </div>
           )
         })}
-      </div>
-    </div>
-  )
-}
-
-// =============================================================================
-// Component: Site Context Panel
-// Shows map, site photo, and development history at this site
-// =============================================================================
-function SiteContextPanel({
-  site,
-  currentDevelopmentId,
-}: {
-  site: {
-    id: number
-    name?: string | null
-    address?: {
-      latitude?: number | null
-      longitude?: number | null
-      postcode?: string | null
-    } | null
-    photos?: Array<{
-      photoUrl?: string | null
-      caption?: string | null
-    }>
-    developments?: Array<{
-      id: number
-      projectNo?: number | null
-      status?: { name: string; colour?: string | null } | null
-    }>
-  }
-  currentDevelopmentId: number
-}) {
-  const hasCoordinates = site.address?.latitude && site.address?.longitude
-  const primaryPhoto = site.photos?.[0]
-
-  // Other developments at this site (excluding current one)
-  const otherDevelopments = site.developments?.filter(d => d.id !== currentDevelopmentId) || []
-
-  // Build Google Maps Static API URL
-  // Using satellite view at zoom level 16 for good site context
-  const mapUrl = hasCoordinates
-    ? `https://maps.googleapis.com/maps/api/staticmap?center=${site.address!.latitude},${site.address!.longitude}&zoom=16&size=400x200&maptype=satellite&markers=color:red%7C${site.address!.latitude},${site.address!.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`
-    : null
-
-  // Always show the panel - it provides important site context
-  // Even if data is missing, we show placeholders to indicate what could be added
-
-  return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-          Site Context
-        </h2>
-      </div>
-
-      <div className="p-3">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {/* Map Section */}
-          <div className="space-y-1">
-            <h3 className="text-xs font-medium text-gray-500 uppercase">Location</h3>
-            {mapUrl ? (
-              <a
-                href={`https://www.google.com/maps?q=${site.address!.latitude},${site.address!.longitude}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors aspect-[4/3] max-h-36"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={mapUrl}
-                  alt={`Map of ${site.name || 'site location'}`}
-                  className="w-full h-full object-cover"
-                />
-              </a>
-            ) : (
-              <div className="w-full aspect-[4/3] max-h-36 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
-                No coordinates available
-              </div>
-            )}
-            {site.address?.postcode && (
-              <p className="text-xs text-gray-500 mt-1">{site.address.postcode}</p>
-            )}
-          </div>
-
-          {/* Photo Section */}
-          <div className="space-y-1">
-            <h3 className="text-xs font-medium text-gray-500 uppercase">Site Photo</h3>
-            {primaryPhoto?.photoUrl ? (
-              <div className="rounded-lg overflow-hidden border border-gray-200 aspect-[4/3] max-h-36">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={primaryPhoto.photoUrl}
-                  alt={primaryPhoto.caption || `Photo of ${site.name || 'site'}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="w-full aspect-[4/3] max-h-36 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
-                No photo available
-              </div>
-            )}
-            {primaryPhoto?.caption && (
-              <p className="text-xs text-gray-500 mt-1 truncate">{primaryPhoto.caption}</p>
-            )}
-          </div>
-
-          {/* Development History Section */}
-          <div className="space-y-1">
-            <h3 className="text-xs font-medium text-gray-500 uppercase">Development History</h3>
-            <div className="bg-gray-50 rounded-lg p-2 aspect-[4/3] max-h-36 overflow-y-auto">
-              {otherDevelopments.length === 0 ? (
-                <p className="text-sm text-gray-500 text-center mt-8">
-                  First development at this site
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-xs text-gray-600 mb-2">
-                    {otherDevelopments.length} other development{otherDevelopments.length !== 1 ? 's' : ''} at this site
-                  </p>
-                  {otherDevelopments.map((dev) => (
-                    <Link
-                      key={dev.id}
-                      href={`/developments/${dev.id}`}
-                      className="block text-sm p-2 bg-white rounded border border-gray-200 hover:border-blue-400 transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-gray-900">
-                          #{dev.projectNo || dev.id}
-                        </span>
-                        {dev.status && (
-                          <span
-                            className="text-xs px-2 py-0.5 rounded-full"
-                            style={{
-                              backgroundColor: dev.status.colour ? `${dev.status.colour}20` : '#e5e7eb',
-                              color: dev.status.colour || '#374151',
-                            }}
-                          >
-                            {dev.status.name}
-                          </span>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Link to full site page */}
-        <div className="mt-2 pt-2 border-t border-gray-100 text-center">
-          <Link
-            href={`/sites/${site.id}`}
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
-            View full site details →
-          </Link>
-        </div>
       </div>
     </div>
   )
