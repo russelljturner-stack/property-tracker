@@ -237,8 +237,17 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
+            <h1 className="text-xl font-bold text-gray-900">{siteName}</h1>
+            {development.status && (
+              <StatusBadge
+                name={development.status.name}
+                colour={development.status.colour}
+              />
+            )}
+          </div>
+          <div className="flex items-center gap-2">
             {/* Prev/Next navigation */}
-            <div className="flex items-center gap-1 border-l border-gray-200 pl-3 ml-1">
+            <div className="flex items-center gap-1 mr-2">
               {prevDevelopment ? (
                 <Link
                   href={`/developments/${prevDevelopment.id}`}
@@ -274,15 +283,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 </span>
               )}
             </div>
-            <h1 className="text-xl font-bold text-gray-900">{siteName}</h1>
-            {development.status && (
-              <StatusBadge
-                name={development.status.name}
-                colour={development.status.colour}
-              />
-            )}
-          </div>
-          <div className="flex gap-2">
             {development.site && (
               <Link
                 href={`/sites/${development.site.id}`}
