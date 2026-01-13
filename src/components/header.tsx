@@ -1,29 +1,25 @@
 "use client"
 
-import { signOut, useSession } from "next-auth/react"
-
 // This is the header component that appears at the top of every page.
 //
 // It shows:
 // - A hamburger menu button (on mobile, to open the sidebar)
-// - The current page title (optional)
-// - The logged-in user's name and a sign out button
+// - Space for breadcrumbs or page context (future)
+//
+// User info has been moved to the sidebar for a cleaner layout.
 
 interface HeaderProps {
   onMenuClick: () => void
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-  // Get the current user's session data
-  const { data: session } = useSession()
-
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
-      <div className="flex items-center justify-between h-16 px-4">
-        {/* Left side - hamburger menu (mobile) */}
+    <header className="sticky top-0 z-30 bg-white border-b border-gray-200 lg:hidden">
+      <div className="flex items-center h-14 px-4">
+        {/* Hamburger menu (mobile only) */}
         <button
           onClick={onMenuClick}
-          className="p-2 rounded-md hover:bg-gray-100 lg:hidden"
+          className="p-2 rounded-md hover:bg-gray-100"
           aria-label="Open menu"
         >
           <svg
@@ -40,34 +36,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             />
           </svg>
         </button>
-
-        {/* Center - could show page title or breadcrumbs later */}
-        <div className="hidden lg:block">
-          {/* Placeholder for breadcrumbs or page context */}
-        </div>
-
-        {/* Right side - user info and sign out */}
-        <div className="flex items-center gap-4">
-          {session?.user && (
-            <>
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">
-                  {session.user.name || session.user.email}
-                </p>
-                {session.user.role && (
-                  <p className="text-xs text-gray-500">{session.user.role}</p>
-                )}
-              </div>
-
-              <button
-                onClick={() => signOut()}
-                className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
-              >
-                Sign out
-              </button>
-            </>
-          )}
-        </div>
+        <span className="ml-3 font-semibold text-gray-900">PDT</span>
       </div>
     </header>
   )

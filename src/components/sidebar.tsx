@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { signOut, useSession } from "next-auth/react"
 
 // This is the sidebar navigation component.
 //
@@ -60,6 +61,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   return (
     <>
@@ -146,12 +148,35 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* Footer - version info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-800">
-          <p className="text-xs text-gray-500">
-            Property Development Tracker
-          </p>
-          <p className="text-xs text-gray-600">Phase 3 - Setup</p>
+        {/* Footer - User info and sign out */}
+        <div className="absolute bottom-0 left-0 right-0 border-t border-gray-800">
+          {session?.user && (
+            <div className="p-3">
+              <div className="flex items-center gap-3">
+                {/* User avatar - initials in a circle */}
+                <div className="flex-shrink-0 w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-sm font-medium text-white">
+                  {(session.user.name || session.user.email || "U").charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">
+                    {session.user.name || session.user.email}
+                  </p>
+                  {session.user.role && (
+                    <p className="text-xs text-gray-400 truncate">{session.user.role}</p>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => signOut()}
+                className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </aside>
     </>
