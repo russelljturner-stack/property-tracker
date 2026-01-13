@@ -593,6 +593,43 @@ async function main() {
   await prisma.siteAgentContact.create({ data: { siteId: sites[2].id, contactId: agentContacts[1].id, isPrimary: true } });
   await prisma.siteAgentContact.create({ data: { siteId: sites[8].id, contactId: agentContacts[2].id, isPrimary: true } });
 
+  // Add site photos (2-3 per site for testing)
+  // Using picsum.photos for placeholder images
+  console.log('Creating site photos...');
+  await Promise.all([
+    // Site 0: Cromwell Road Digital - 3 photos
+    prisma.sitePhoto.create({ data: { siteId: sites[0].id, photoUrl: 'https://picsum.photos/seed/site0a/800/600', caption: 'Street view - looking north', isPrimary: true, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[0].id, photoUrl: 'https://picsum.photos/seed/site0b/800/600', caption: 'Proposed location close-up', isPrimary: false, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[0].id, photoUrl: 'https://picsum.photos/seed/site0c/800/600', caption: 'Context - surrounding area', isPrimary: false, uploadedBy: 'Test User' } }),
+
+    // Site 1: Old Street Roundabout - 3 photos
+    prisma.sitePhoto.create({ data: { siteId: sites[1].id, photoUrl: 'https://picsum.photos/seed/site1a/800/600', caption: 'Roundabout approach', isPrimary: true, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[1].id, photoUrl: 'https://picsum.photos/seed/site1b/800/600', caption: 'Traffic flow view', isPrimary: false, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[1].id, photoUrl: 'https://picsum.photos/seed/site1c/800/600', caption: 'Evening lighting conditions', isPrimary: false, uploadedBy: 'Test User' } }),
+
+    // Site 2: Euston Road Tower - 2 photos
+    prisma.sitePhoto.create({ data: { siteId: sites[2].id, photoUrl: 'https://picsum.photos/seed/site2a/800/600', caption: 'Tower elevation', isPrimary: true, uploadedBy: 'Planning Team' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[2].id, photoUrl: 'https://picsum.photos/seed/site2b/800/600', caption: 'Ground level context', isPrimary: false, uploadedBy: 'Planning Team' } }),
+
+    // Site 3: Piccadilly Gardens - 3 photos
+    prisma.sitePhoto.create({ data: { siteId: sites[3].id, photoUrl: 'https://picsum.photos/seed/site3a/800/600', caption: 'Gardens overview', isPrimary: true, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[3].id, photoUrl: 'https://picsum.photos/seed/site3b/800/600', caption: 'Footfall area', isPrimary: false, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[3].id, photoUrl: 'https://picsum.photos/seed/site3c/800/600', caption: 'Night view', isPrimary: false, uploadedBy: 'Test User' } }),
+
+    // Site 4: Deansgate Digital - 2 photos
+    prisma.sitePhoto.create({ data: { siteId: sites[4].id, photoUrl: 'https://picsum.photos/seed/site4a/800/600', caption: 'High street position', isPrimary: true, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[4].id, photoUrl: 'https://picsum.photos/seed/site4b/800/600', caption: 'Pedestrian view', isPrimary: false, uploadedBy: 'Test User' } }),
+
+    // Site 5: Birmingham New Street - 3 photos
+    prisma.sitePhoto.create({ data: { siteId: sites[5].id, photoUrl: 'https://picsum.photos/seed/site5a/800/600', caption: 'Station entrance view', isPrimary: true, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[5].id, photoUrl: 'https://picsum.photos/seed/site5b/800/600', caption: 'Commuter flow', isPrimary: false, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[5].id, photoUrl: 'https://picsum.photos/seed/site5c/800/600', caption: 'Visibility assessment', isPrimary: false, uploadedBy: 'Test User' } }),
+
+    // Site 6: M1 Junction 14 - 2 photos
+    prisma.sitePhoto.create({ data: { siteId: sites[6].id, photoUrl: 'https://picsum.photos/seed/site6a/800/600', caption: 'Motorway approach', isPrimary: true, uploadedBy: 'Test User' } }),
+    prisma.sitePhoto.create({ data: { siteId: sites[6].id, photoUrl: 'https://picsum.photos/seed/site6b/800/600', caption: 'Junction visibility', isPrimary: false, uploadedBy: 'Test User' } }),
+  ]);
+
   console.log(`  Created ${sites.length} sites\n`);
 
   // =========================================================================
