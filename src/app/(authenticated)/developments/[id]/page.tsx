@@ -220,16 +220,16 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Site context thumbnails - map and photo (right side) */}
+          {/* Site context thumbnails - map and photo (right side, full header height) */}
           {development.site && (
-            <div className="flex gap-2 flex-shrink-0">
+            <div className="flex gap-2 flex-shrink-0 self-stretch">
               {/* Map thumbnail */}
               {development.site.address?.latitude && development.site.address?.longitude ? (
                 <a
                   href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-24 h-20 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors flex-shrink-0"
+                  className="block w-28 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors flex-shrink-0"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -239,13 +239,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   />
                 </a>
               ) : (
-                <div className="w-24 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0">
+                <div className="w-28 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0">
                   No map
                 </div>
               )}
               {/* Photo thumbnail */}
               {development.site.photos?.[0]?.photoUrl ? (
-                <div className="w-24 h-20 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                <div className="w-28 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={development.site.photos[0].photoUrl}
@@ -254,7 +254,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   />
                 </div>
               ) : (
-                <div className="w-24 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0">
+                <div className="w-28 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0">
                   No photo
                 </div>
               )}
