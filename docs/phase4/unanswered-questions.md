@@ -157,6 +157,68 @@ Currently both use the same white card styling, which doesn't communicate this d
 
 ---
 
+## Deal Type "Push" - What Is It?
+
+**Date raised:** 13 Jan 2026
+
+The FileMaker DDR shows 4 deal types in the lookup table:
+- ID 1: Lease
+- ID 2: Push ← What is this?
+- ID 3: Consultancy
+- ID 5: Acquisition
+
+**Question:** What does "Push" deal type mean? Is it still used, or can it be removed?
+
+---
+
+## Planning Date Calculation - Automatic or Manual?
+
+**Date raised:** 13 Jan 2026
+
+FileMaker automatically calculated target determination dates:
+- Planning registration date + 56 days (8 weeks) = target date
+- Appeal start + 112 days (written) or 154 days (hearing) = appeal determination forecast
+
+**Question:** Should the web app:
+- A) Auto-calculate these dates and show them as read-only
+- B) Auto-calculate as defaults but allow manual override
+- C) Just provide manual entry (user enters the date themselves)
+
+**Note:** Option B matches FileMaker's behaviour (had override fields).
+
+---
+
+## Development Name Auto-Generation
+
+**Date raised:** 13 Jan 2026
+
+FileMaker auto-generated development names from panel configuration:
+- Single config: "[Panel Type] [Panel Size] [Structure Type]" (e.g., "Digital 48 Sheet Tower")
+- Multiple configs: "Mixed Format"
+
+**Question:** Should the web app:
+- A) Auto-generate names (like FileMaker)
+- B) Require manual entry
+- C) Auto-generate as suggestion, allow override
+
+---
+
+## Status Change Audit Trail
+
+**Date raised:** 13 Jan 2026
+
+FileMaker tracked when status fields changed:
+- `developmentstatusmodified` - auto-updated when development status changed
+- `planningappstatusmodified` - auto-updated when planning app status changed
+- Similar pattern for other status fields
+
+**Question:** Should the web app:
+- A) Just track the last modification date (like FileMaker)
+- B) Full audit trail showing all status changes with timestamps and user
+- C) No tracking needed
+
+---
+
 ## Review Items (Not Questions)
 
 These items need review on Railway but aren't blocking questions:
@@ -167,4 +229,4 @@ These items need review on Railway but aren't blocking questions:
 
 ---
 
-*Last updated: 13 Jan 2026*
+*Last updated: 13 Jan 2026 - Added questions from DDR business logic analysis*

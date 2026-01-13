@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Development Schema Audit</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      color: #333;
+    }
+    h1 { color: #1a1a1a; border-bottom: 2px solid #333; padding-bottom: 10px; }
+    h2 { color: #2563eb; margin-top: 30px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+    h3 { color: #374151; margin-top: 20px; }
+    table { border-collapse: collapse; width: 100%; margin: 15px 0; font-size: 14px; }
+    th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+    th { background: #f3f4f6; font-weight: 600; }
+    tr:nth-child(even) { background: #f9fafb; }
+    .legend { background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .legend code { background: #fff; padding: 2px 6px; border-radius: 4px; }
+    .summary { background: #dbeafe; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .missing { background: #fee2e2; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .priority { background: #dcfce7; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    code { font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; }
+    @media print {
+      body { font-size: 12px; }
+      h1 { font-size: 18px; }
+      h2 { font-size: 14px; page-break-before: auto; }
+      h3 { font-size: 12px; }
+      table { font-size: 11px; }
+      th, td { padding: 4px 6px; }
+      .legend, .summary, .missing, .priority { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Development Schema Audit</h1>
+<p><strong>Purpose:</strong> Compare FileMaker Development layout fields → Prisma schema → Current UI<br>
+<strong>Generated:</strong> 2026-01-13<br>
+<strong>Updated:</strong> 2026-01-13 - Added FileMaker DDR field descriptions</p>
+
+<div class="summary">
+  <strong>Note:</strong> The markdown version (<code>development-schema-audit.md</code>) now includes a "DDR Description" column with original FileMaker field descriptions extracted from the Database Design Report. This provides valuable context about field purpose and business logic.
+</div>
+
+<div class="legend">
+  <strong>Legend:</strong><br>
+  <code>[x]</code> = Present and displayed in UI<br>
+  <code>[S]</code> = In Prisma schema but not yet displayed<br>
+  <code>[ ]</code> = Not in schema (missing)
+</div>
+
+<h2>Tab 1: Development (Main Tab)</h2>
+
+<h3>Header Area</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Development Name</td><td>site.name</td><td>[x]</td><td>Shown in header</td></tr>
+  <tr><td>Site Name</td><td>site.name</td><td>[x]</td><td>Same as above</td></tr>
+  <tr><td>Project No</td><td>projectNo</td><td>[x]</td><td>Shown in header row 2</td></tr>
+</table>
+
+<h3>Left Column</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Name</td><td>site.name</td><td>[x]</td><td>Header</td></tr>
+  <tr><td>Site Owner/Client</td><td>site.siteOwner</td><td>[x]</td><td>Header row 2</td></tr>
+  <tr><td>Owners Agent</td><td>site.siteAgent</td><td>[x]</td><td>Header row 2</td></tr>
+  <tr><td>Photo</td><td>site.photos</td><td>[x]</td><td>Site context panel</td></tr>
+  <tr><td>Map</td><td>site.address (lat/lng)</td><td>[x]</td><td>Google Maps embed</td></tr>
+  <tr><td>Address</td><td>site.address</td><td>[x]</td><td>Header row 2</td></tr>
+  <tr><td>Related Projects</td><td>projects (DevelopmentProject)</td><td>[S]</td><td>Not displayed yet</td></tr>
+</table>
+
+<h3>Middle Column</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Date Created</td><td>createdAt</td><td>[S]</td><td>In schema, not shown</td></tr>
+  <tr><td>Development Type</td><td>developmentType</td><td>[x]</td><td>Header row 2</td></tr>
+  <tr><td>Deal Type</td><td>dealType</td><td>[x]</td><td>Header row 2</td></tr>
+  <tr><td>Development Status</td><td>status</td><td>[x]</td><td>Status badge in header</td></tr>
+  <tr><td>Advertisement Planning Status</td><td>advertAppStatus</td><td>[S]</td><td>In schema, not on main view</td></tr>
+</table>
+
+<h3>Panel Details (Repeating - DevelopmentDetail)</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Panel Type</td><td>details.panelType</td><td>[x]</td><td>Panel Configuration card</td></tr>
+  <tr><td>Panel Size</td><td>details.panelSize</td><td>[x]</td><td>Panel Configuration card</td></tr>
+  <tr><td>Orientation</td><td>details.orientation</td><td>[x]</td><td>Panel Configuration card</td></tr>
+  <tr><td>Structure</td><td>details.structureType</td><td>[x]</td><td>Panel Configuration card</td></tr>
+  <tr><td>Double Sided</td><td>details.sides</td><td>[x]</td><td>Panel Configuration card</td></tr>
+  <tr><td>No. of Structures</td><td>details.quantity</td><td>[x]</td><td>Panel Configuration card</td></tr>
+  <tr><td>Total Panels</td><td>(calculated)</td><td>[ ]</td><td>Could calculate from quantity × sides</td></tr>
+  <tr><td>Digital</td><td>details.digital</td><td>[x]</td><td>Panel Configuration card</td></tr>
+  <tr><td>Illuminated</td><td>details.illuminated</td><td>[x]</td><td>Panel Configuration card</td></tr>
+  <tr><td>Height</td><td>details.height</td><td>[x]</td><td>Panel Configuration card</td></tr>
+  <tr><td>Width</td><td>details.width</td><td>[x]</td><td>Panel Configuration card</td></tr>
+</table>
+
+<h3>Right Column</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Developer Company</td><td>developer</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Wildstone Owner (internal)</td><td>internalDeveloper</td><td>[x]</td><td>Header row 2 ("Developer")</td></tr>
+  <tr><td>Developer</td><td>externalDeveloper</td><td>[S]</td><td>Contact relation, not displayed</td></tr>
+  <tr><td>Media Owner</td><td>mediaOwner</td><td>[x]</td><td>Commercial card (collapsed)</td></tr>
+  <tr><td>Media Owner Agent</td><td>mediaOwnerAgent</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Notes (development description)</td><td>-</td><td>[ ]</td><td>No general notes field on Development</td></tr>
+</table>
+
+<h2>Tab 2: Survey (4 Sub-tabs)</h2>
+
+<h3>Survey - Left Side (Site Data)</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Date Identified</td><td>site.dateAdded</td><td>[S]</td><td>Site table, not shown</td></tr>
+  <tr><td>Site Status</td><td>site.status</td><td>[S]</td><td>Site table, not on dev page</td></tr>
+  <tr><td>Local Authority</td><td>site.localAuthority</td><td>[x]</td><td>Header row 2</td></tr>
+  <tr><td>Title</td><td>site.titleType</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Street View link</td><td>(generated from lat/lng)</td><td>[ ]</td><td>Could add</td></tr>
+  <tr><td>Open Map in Browser</td><td>(generated from lat/lng)</td><td>[ ]</td><td>Could add</td></tr>
+</table>
+
+<h3>Survey - Site Photos &amp; Notes</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Site Photos</td><td>site.photos</td><td>[x]</td><td>Site context panel (1 photo)</td></tr>
+  <tr><td>Photo Description</td><td>site.photos.caption</td><td>[S]</td><td>In schema, not shown</td></tr>
+  <tr><td>Survey Notes</td><td>site.survey</td><td>[S]</td><td>In Site table, not on dev page</td></tr>
+</table>
+
+<h3>Survey - ASGF</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>ASGF Required</td><td>-</td><td>[ ]</td><td>Missing - need boolean field</td></tr>
+  <tr><td>ASGF Status</td><td>asgfStatus</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>ASGF Reports</td><td>asgfReports</td><td>[S]</td><td>Table exists, not displayed</td></tr>
+</table>
+
+<h3>Survey - Other Developments at Site</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Other developments at site</td><td>site.developments</td><td>[x]</td><td>Site context panel shows count</td></tr>
+</table>
+
+<h2>Tab 3: Commercial Agreement (5 Sub-tabs)</h2>
+
+<h3>Commercial - Acquisition/Lease Financials</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Estimate or Actual?</td><td>estimateOrActual</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Probability %</td><td>probability</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Fee Proposal</td><td>feeProposal</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Rent Per Annum</td><td>leasePerAnnum</td><td>[x]</td><td>Commercial card</td></tr>
+  <tr><td>Purchase Price</td><td>purchasePrice</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Rental Value</td><td>rentalValue</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Rental Value (Consultancy)</td><td>rentalValueConsultancy</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Start Date</td><td>leaseStartDate</td><td>[x]</td><td>Commercial card</td></tr>
+  <tr><td>Term (Yrs)</td><td>term</td><td>[x]</td><td>Commercial card</td></tr>
+  <tr><td>End Date</td><td>(calculated)</td><td>[ ]</td><td>Could calc from start + term</td></tr>
+  <tr><td>Profit Year 1</td><td>profitYear1</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Profit Subsequent Years</td><td>profitThereafter</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Total Profit</td><td>(calculated)</td><td>[ ]</td><td>Would need calculation</td></tr>
+</table>
+
+<h3>Commercial - Existing Lease</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Current Rent Per Annum</td><td>currentRentPerAnnum</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Lease Start Date</td><td>currentLeaseStartDate</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Lease End Date</td><td>currentLeaseEndDate</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Current Lease document</td><td>currentLeaseUrl</td><td>[S]</td><td>In schema, not displayed</td></tr>
+</table>
+
+<h3>Commercial - Contract Terms</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Clyde &amp; Co. Reference</td><td>matterNo</td><td>[S]</td><td>In schema (matterNo), not displayed</td></tr>
+  <tr><td>Contracting Entity</td><td>contractingEntity</td><td>[x]</td><td>Commercial card</td></tr>
+  <tr><td>Contract Term</td><td>contractTerm</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Is Lease Assignable?</td><td>leaseAssignable</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>RPI Increases</td><td>rpiIncreases</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Rent Commencement</td><td>rentCommencement</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Date AFL Signed</td><td>aflSigned</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>AFL Signed Comments</td><td>aflSignedComment</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>AFL Expiry Date</td><td>aflExpiryDate</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>AFL Expiry Comment</td><td>aflExpiryComment</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Contract Annual Rent</td><td>contractAnnualRent</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Contract Issued</td><td>contractIssued</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Contract Signed</td><td>contractSigned</td><td>[x]</td><td>Commercial card</td></tr>
+  <tr><td>Contract URL</td><td>contractUrl</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Offer Agreed</td><td>offerAgreed</td><td>[x]</td><td>Commercial card</td></tr>
+  <tr><td>Lawyer (Wildstone)</td><td>lawyer</td><td>[x]</td><td>Commercial card</td></tr>
+  <tr><td>Lawyer Contact</td><td>lawyerContact</td><td>[S]</td><td>In schema, not displayed</td></tr>
+</table>
+
+<h3>Commercial - Contract Documents</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Contract Documents</td><td>contractDocs</td><td>[S]</td><td>Table exists, not displayed</td></tr>
+</table>
+
+<h2>Tab 4: Design</h2>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Design Document/Image</td><td>designUrl</td><td>[x]</td><td>Design card</td></tr>
+  <tr><td>Design Signed Off?</td><td>designSignedOff</td><td>[x]</td><td>Design card</td></tr>
+  <tr><td>Design Status (Draft/Final)</td><td>designFinalOrDraft</td><td>[x]</td><td>Design card</td></tr>
+  <tr><td>Sign-off Date</td><td>designSignedOffDate</td><td>[x]</td><td>Design card</td></tr>
+  <tr><td>Signed Off By</td><td>designSignedOffBy</td><td>[x]</td><td>Design card</td></tr>
+  <tr><td>Design Status</td><td>-</td><td>[ ]</td><td>Missing "Proposed" status per Tab review</td></tr>
+  <tr><td>Client Sign-off Date</td><td>-</td><td>[ ]</td><td>Missing - dual sign-off recommended</td></tr>
+  <tr><td>Client Sign-off By</td><td>-</td><td>[ ]</td><td>Missing - dual sign-off recommended</td></tr>
+</table>
+
+<h2>Tab 5: Planning (4 Sub-tabs)</h2>
+
+<h3>Planning - Common Fields</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Lead Wildstone Planner</td><td>internalPlanner</td><td>[x]</td><td>Planning card</td></tr>
+  <tr><td>Local Authority</td><td>site.localAuthority</td><td>[x]</td><td>Via site relation</td></tr>
+  <tr><td>Planning Score (1-5)</td><td>planningScore</td><td>[x]</td><td>Planning card</td></tr>
+</table>
+
+<h3>Planning - Pre-Planning</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Draft Application Completed</td><td>draftApplicationComplete</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Client Approval</td><td>planningClientApproval</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Pre-App Required?</td><td>preAppMeetingRequired</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Pre-App Submitted</td><td>preAppSubmitted</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Pre-App Meeting Date</td><td>preAppMeetingDate</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Pre-App Response Received</td><td>preAppResponseReceived</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Pre-App Reference</td><td>preAppReference</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Pre-App Feedback</td><td>preAppFeedback</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Pre-App Document</td><td>preAppDocUrl</td><td>[S]</td><td>In schema, not displayed</td></tr>
+</table>
+
+<h3>Planning - Advertisement Application</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Status</td><td>advertAppStatus</td><td>[x]</td><td>Planning card</td></tr>
+  <tr><td>Application Description</td><td>advertApplicationDescription</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Application Detail</td><td>advertApplicationDetail</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Date Submitted</td><td>advertApplicationSubmitted</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Date Validated</td><td>advertApplicationRegistration</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>LA Reference</td><td>advertAppRefLa</td><td>[x]</td><td>Planning card</td></tr>
+  <tr><td>Target Determination Date</td><td>advertAppDeterminationDate</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Conditions</td><td>advertConditions</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Conditions Number</td><td>advertConditionsNumber</td><td>[S]</td><td>In schema, not displayed</td></tr>
+</table>
+
+<h3>Planning - Planning Application</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Status</td><td>planningAppStatus</td><td>[x]</td><td>Planning card</td></tr>
+  <tr><td>Application Description</td><td>planningApplicationDescription</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Application Detail</td><td>planningApplicationDetail</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Date Submitted</td><td>planningApplicationSubmitted</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Date Registered</td><td>planningAppRegistration</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>LA Reference</td><td>planningAppRefLa</td><td>[x]</td><td>Planning card</td></tr>
+  <tr><td>Target Determination Date</td><td>planningAppDeterminDate</td><td>[x]</td><td>Planning card</td></tr>
+  <tr><td>Conditions</td><td>planningConditions</td><td>[S]</td><td>In schema</td></tr>
+</table>
+
+<h3>Planning - Appeals (Both Types)</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Appeal Deadline Override</td><td>planningAppealDeadlineOverride / advertAppealDeadlineOverride</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Appeal Submitted</td><td>planningAppealSubmitted / advertAppealSubmitted</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Appeal Start</td><td>planningAppealStart / advertAppealStart</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Appeal Reference</td><td>planningAppealRefLa / advertAppealRefLa</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Appeal Procedure</td><td>planningAppealProcedure / advertAppealProcedure</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Appeal Representations</td><td>planningAppealRepresentations / advertAppealRepresentations</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Appeal Hearing Date</td><td>planningAppealHearing</td><td>[S]</td><td>Planning only</td></tr>
+  <tr><td>Appeal Final Comments</td><td>planningAppealFinalComments</td><td>[S]</td><td>Planning only</td></tr>
+  <tr><td>Appeal Actual Determination</td><td>planningAppealActualDetermination</td><td>[S]</td><td>Planning only</td></tr>
+</table>
+
+<h2>Tab 6: Marketing (3 Sub-tabs)</h2>
+
+<h3 style="color: #dc2626;">Marketing - Tender Workflow (BIGGEST GAP)</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr style="background:#fee2e2"><td>Tender Strategy</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Tender Status</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Materials Required (Video)</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Materials Required (Visuals)</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Materials Required (Event)</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Materials Comment</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Materials Prepared Date</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Release Date</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Response Deadline</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Evaluation Complete</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Awarded Date</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Solicitors Instructed</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Contract Issued</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Contract Complete</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+</table>
+
+<h3>Marketing - Tender Offers</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Media Owner/Brand</td><td>tenderOffers.offerFrom</td><td>[S]</td><td>In schema (basic)</td></tr>
+  <tr style="background:#fee2e2"><td>Main Contact</td><td>-</td><td>[ ]</td><td><strong>MISSING - need contact relation</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Response Received?</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Response document</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr><td>Offer amount</td><td>tenderOffers.offerAmount</td><td>[S]</td><td>In schema</td></tr>
+  <tr style="background:#fee2e2"><td>Premium</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr><td>Offer Accepted?</td><td>tenderOffers.status</td><td>[S]</td><td>Could use status field</td></tr>
+  <tr><td>Offer Date</td><td>tenderOffers.offerDate</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Notes</td><td>tenderOffers.notes</td><td>[S]</td><td>In schema</td></tr>
+</table>
+
+<h3>Marketing - Tender Media</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Tender Photos</td><td>tenderPhotos</td><td>[S]</td><td>Table exists</td></tr>
+  <tr style="background:#fee2e2"><td>Tender Documents</td><td>-</td><td>[ ]</td><td><strong>MISSING - no TenderDoc table</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Tender Video</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+</table>
+
+<h2>Tab 7: Build (2 Sub-tabs)</h2>
+
+<h3>Build - Header &amp; Basic Fields</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Build Start Date</td><td>buildStartDate</td><td>[x]</td><td>Build card</td></tr>
+  <tr><td>Build Completion Date</td><td>buildCompletionDate</td><td>[x]</td><td>Build card</td></tr>
+  <tr><td>Build Live Date</td><td>buildLiveDate</td><td>[x]</td><td>Build card</td></tr>
+  <tr><td>Build Contractor</td><td>buildContractor</td><td>[x]</td><td>Build card</td></tr>
+  <tr><td>Build Notes</td><td>buildNotes</td><td>[S]</td><td>In schema, not displayed</td></tr>
+</table>
+
+<h3>Build - Build Elements</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Build Part</td><td>buildParts.buildPart</td><td>[S]</td><td>Junction table exists</td></tr>
+  <tr style="background:#fee2e2"><td>Tender Required</td><td>-</td><td>[ ]</td><td><strong>MISSING from DevelopmentBuildPart</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Tender Released</td><td>-</td><td>[ ]</td><td><strong>MISSING from DevelopmentBuildPart</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Tender Deadline</td><td>-</td><td>[ ]</td><td><strong>MISSING from DevelopmentBuildPart</strong></td></tr>
+</table>
+
+<h3>Build - Tender Responses</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Contractor</td><td>buildTenderResponses.contractor</td><td>[S]</td><td>Table exists</td></tr>
+  <tr style="background:#fee2e2"><td>Main Contact</td><td>-</td><td>[ ]</td><td><strong>MISSING - need contact relation</strong></td></tr>
+  <tr><td>Cost</td><td>buildTenderResponses.responseAmount</td><td>[S]</td><td>In schema</td></tr>
+  <tr style="background:#fee2e2"><td>Response document</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr><td>Is accepted bid?</td><td>buildTenderResponses.status</td><td>[S]</td><td>In schema</td></tr>
+</table>
+
+<h3>Build - Snagging List</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Date Added</td><td>buildSnaggingItem.reportedDate</td><td>[S]</td><td>In schema</td></tr>
+  <tr style="background:#fee2e2"><td>Estimated Completion</td><td>-</td><td>[ ]</td><td><strong>MISSING from BuildSnaggingItem</strong></td></tr>
+  <tr><td>Actual Completion</td><td>buildSnaggingItem.resolvedDate</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Description</td><td>buildSnaggingItem.description</td><td>[S]</td><td>In schema</td></tr>
+</table>
+
+<h2>Tab 8: Consultancy (6 Sub-tabs)</h2>
+<div class="summary">
+  <strong>DEFERRED</strong> - Per ADR-014, Consultancy is not in scope for core product.<br>
+  Tables exist in schema but will not be displayed: ConsultancyRentReview, ConsultancyValuation, ConsultancyOther, ConsultancyRevenue
+</div>
+
+<h2>Tab 9: Tasks &amp; Notes</h2>
+
+<h3>Tasks</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Task Type</td><td>tasks.taskType</td><td>[x]</td><td>Tasks sidebar</td></tr>
+  <tr><td>Description</td><td>tasks.description</td><td>[x]</td><td>Tasks sidebar</td></tr>
+  <tr><td>Created By</td><td>tasks.assignedById</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr style="background:#fee2e2"><td>Department</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+  <tr><td>Created Date</td><td>tasks.createdAt</td><td>[x]</td><td>Tasks sidebar</td></tr>
+  <tr><td>Due Date</td><td>tasks.dueDate</td><td>[x]</td><td>Tasks sidebar</td></tr>
+  <tr><td>Assigned To</td><td>tasks.assignedTo</td><td>[x]</td><td>Tasks sidebar</td></tr>
+  <tr><td>Status</td><td>tasks.complete</td><td>[x]</td><td>Tasks sidebar</td></tr>
+  <tr><td>Completed Date</td><td>tasks.completedDate</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Priority</td><td>tasks.priority</td><td>[S]</td><td>In schema</td></tr>
+</table>
+
+<h3>Notes</h3>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Note Text</td><td>notes.noteText</td><td>[x]</td><td>Activity sidebar</td></tr>
+  <tr style="background:#fee2e2"><td>Related File</td><td>-</td><td>[ ]</td><td><strong>MISSING from DevelopmentNote</strong></td></tr>
+  <tr><td>Added Date</td><td>notes.noteDate</td><td>[x]</td><td>Activity sidebar</td></tr>
+  <tr><td>Made By</td><td>notes.noteBy</td><td>[x]</td><td>Activity sidebar</td></tr>
+  <tr style="background:#fee2e2"><td>Department</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
+</table>
+
+<h2>Tab 10: Contacts</h2>
+<table>
+  <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
+  <tr><td>Name</td><td>contact.firstName + lastName</td><td>[x]</td><td>Contacts sidebar</td></tr>
+  <tr><td>Company</td><td>contact.organisation.name</td><td>[x]</td><td>Contacts sidebar</td></tr>
+  <tr><td>Title</td><td>contact.jobTitle</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Mobile</td><td>contact.mobile</td><td>[x]</td><td>Contacts sidebar</td></tr>
+  <tr><td>Telephone</td><td>contact.phone</td><td>[x]</td><td>Contacts sidebar</td></tr>
+  <tr style="background:#fee2e2"><td>Extension</td><td>-</td><td>[ ]</td><td><strong>MISSING from Contact</strong></td></tr>
+  <tr><td>Email</td><td>contact.email</td><td>[x]</td><td>Contacts sidebar</td></tr>
+  <tr><td>Site Role</td><td>contact.role</td><td>[S]</td><td>Generic role field</td></tr>
+  <tr><td>Decision Level</td><td>contact.decisionLevel</td><td>[S]</td><td>In schema</td></tr>
+  <tr style="background:#fee2e2"><td>Contact Left?</td><td>-</td><td>[ ]</td><td><strong>MISSING from Contact</strong></td></tr>
+  <tr style="background:#fee2e2"><td>Date Left</td><td>-</td><td>[ ]</td><td><strong>MISSING from Contact</strong></td></tr>
+</table>
+
+<h2>Summary</h2>
+
+<div class="summary">
+  <h3>UI Coverage by Tab</h3>
+  <table>
+    <tr><th>Tab</th><th>Fields in FileMaker</th><th>In Schema</th><th>Displayed</th><th>Coverage</th></tr>
+    <tr><td>Development</td><td>~25</td><td>22</td><td>18</td><td>72%</td></tr>
+    <tr><td>Survey</td><td>~15</td><td>12</td><td>5</td><td>33%</td></tr>
+    <tr><td>Commercial</td><td>~40+</td><td>35</td><td>8</td><td>20%</td></tr>
+    <tr style="background:#dcfce7"><td>Design</td><td>~5</td><td>5</td><td>5</td><td><strong>100%</strong></td></tr>
+    <tr><td>Planning</td><td>~50+</td><td>45</td><td>8</td><td>16%</td></tr>
+    <tr style="background:#fee2e2"><td>Marketing</td><td>~20</td><td>4</td><td>0</td><td><strong>0%</strong></td></tr>
+    <tr><td>Build</td><td>~15</td><td>12</td><td>4</td><td>27%</td></tr>
+    <tr><td>Consultancy</td><td>~30</td><td>30</td><td>0</td><td>DEFERRED</td></tr>
+    <tr><td>Tasks &amp; Notes</td><td>~15</td><td>12</td><td>10</td><td>67%</td></tr>
+    <tr><td>Contacts</td><td>~15</td><td>10</td><td>6</td><td>40%</td></tr>
+  </table>
+</div>
+
+<div class="missing">
+  <h3>Missing from Schema (Need to Add)</h3>
+  <ul>
+    <li><strong>Marketing/Tender workflow</strong> - 14+ fields for tender process</li>
+    <li><strong>Contact tracking</strong> - hasLeft, leftDate, extension fields</li>
+    <li><strong>Design dual sign-off</strong> - client sign-off date/by</li>
+    <li><strong>Department field</strong> - on tasks and notes</li>
+    <li><strong>Note attachments</strong> - fileUrl on DevelopmentNote</li>
+    <li><strong>Build tender fields</strong> - tenderRequired, tenderReleasedDate, tenderDeadlineDate</li>
+    <li><strong>Snagging estimated completion</strong> - estimatedCompletionDate</li>
+  </ul>
+</div>
+
+<div class="priority">
+  <h3>Recommended Priority for Schema Updates</h3>
+  <ol>
+    <li><strong>Priority 1: Marketing Tab</strong> - Biggest gap, entire tender workflow missing</li>
+    <li><strong>Priority 2: Contact Tracking</strong> - hasLeft/leftDate for tracking departures</li>
+    <li><strong>Priority 3: Design Enhancements</strong> - Dual sign-off (internal + client)</li>
+    <li><strong>Priority 4: Department Tracking</strong> - Add department to Tasks and Notes</li>
+    <li><strong>Priority 5: Build Tender Fields</strong> - Enhance DevelopmentBuildPart for tender workflow</li>
+  </ol>
+</div>
+
+<h2>Key DDR Field Insights</h2>
+<div class="summary">
+  <p>The DDR field descriptions reveal important business context:</p>
+
+  <h3>Profit Calculations</h3>
+  <ul>
+    <li><strong>profityear1:</strong> "profit for the first year"</li>
+    <li><strong>profitthereafter:</strong> "profit of development for all other years after year 1"</li>
+    <li>FileMaker had calculated fields (c_profityear1, c_profitthereafter, c_totalprofit) that computed these based on deal type</li>
+  </ul>
+
+  <h3>Contract Terms Context</h3>
+  <ul>
+    <li><strong>aflSigned:</strong> "date afl signed" - AFL = Agreement for Lease</li>
+    <li><strong>aflExpiryDate:</strong> "afl expiry date" - Key contractual milestone</li>
+    <li><strong>leaseAssignable:</strong> "lease is assignable Yes / No" - Important for deal flexibility</li>
+    <li><strong>rpiIncreases:</strong> "terms of rpi increases" - Rent increases linked to inflation</li>
+  </ul>
+
+  <h3>Development Tracking</h3>
+  <ul>
+    <li><strong>wildstonedeveloperorcontact:</strong> "wildstone developer who is leading the development" - Internal owner/lead</li>
+    <li><strong>estimateoractual:</strong> "shows whether deal figures are estimate or actual figures" - Pipeline vs confirmed deals</li>
+    <li><strong>probability:</strong> "percentage likelihood of development built" - Deal confidence level</li>
+  </ul>
+
+  <h3>Tender Process</h3>
+  <ul>
+    <li><strong>tenderstrategy:</strong> "tender strategy type - formal or informal" - Affects process requirements</li>
+    <li><strong>tendermaterialsrequired:</strong> "type of collateral required - Video / Visuals / Event (can select multiple)"</li>
+    <li><strong>tenderawarded:</strong> "date tender was awarded" - Key milestone</li>
+  </ul>
+
+  <h3>Contact Management</h3>
+  <ul>
+    <li><strong>contact left:</strong> "radio button to show if contact has now left the organisation" - Critical for data hygiene</li>
+    <li><strong>leftorganisation:</strong> "date contact has left organisation" - When they left</li>
+  </ul>
+</div>
+
+<h2>FileMaker UI/Helper Fields (Not Needed)</h2>
+<div class="legend">
+  <p>These fields existed in FileMaker for UI functionality that will be handled differently in the web app:</p>
+  <ul>
+    <li><strong>autoenter*:</strong> Auto-populate filter fields - Web app uses dynamic filtering</li>
+    <li><strong>g_*:</strong> Global fields for storing state - Not needed with proper relations</li>
+    <li><strong>selected*:</strong> UI state for filtering - Handled in React state</li>
+    <li><strong>active*:</strong> Currently selected items - Handled in React state</li>
+    <li><strong>dialog*:</strong> FileMaker custom dialogs - Web app handles validation differently</li>
+  </ul>
+</div>
+
+</body>
+</html>
