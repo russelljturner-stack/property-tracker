@@ -670,6 +670,10 @@ async function main() {
         lawyerContactId: lawyerContacts[0].id,
         mediaOwnerId: mediaOwners[0].id,
         updatedAt: daysAgo(1),
+        // Design data - Draft status with image
+        designUrl: 'https://picsum.photos/seed/design1/800/450',
+        designFinalOrDraft: 'Draft',
+        planningScore: 4,
       }
     }),
     // Dev 2: Consent granted, contracts stage
@@ -693,6 +697,9 @@ async function main() {
         designSignedOff: 'Yes',
         designSignedOffDate: daysAgo(60),
         designSignedOffBy: 'Client Design Team',
+        designUrl: 'https://picsum.photos/seed/design2/800/450',
+        designFinalOrDraft: 'Final',
+        planningScore: 5,
         offerAgreed: daysAgo(240),
         contractIssued: daysAgo(14),
         leasePerAnnum: 35000,
@@ -721,6 +728,9 @@ async function main() {
         planningApplicationSubmitted: daysAgo(200),
         designSignedOff: 'Yes',
         designSignedOffDate: daysAgo(90),
+        designUrl: 'https://picsum.photos/seed/design3/800/450',
+        designFinalOrDraft: 'Final',
+        planningScore: 5,
         contractSigned: daysAgo(45),
         offerAgreed: daysAgo(300),
         leasePerAnnum: 45000,
@@ -745,6 +755,9 @@ async function main() {
         advertAppStatusId: appStatuses[4].id, // Approved
         designSignedOff: 'Yes',
         designSignedOffDate: daysAgo(120),
+        designUrl: 'https://picsum.photos/seed/design4/800/450',
+        designFinalOrDraft: 'Final',
+        planningScore: 5,
         contractSigned: daysAgo(90),
         offerAgreed: daysAgo(365),
         buildStartDate: daysAgo(30),
@@ -797,6 +810,8 @@ async function main() {
         leasePerAnnum: 22000,
         term: 10,
         probability: 50,
+        planningScore: 2,
+        designFinalOrDraft: 'Proposed',
         updatedAt: daysAgo(50), // STALLED - 50 days no update
       }
     }),
@@ -819,6 +834,8 @@ async function main() {
         leasePerAnnum: 50000,
         term: 20,
         probability: 40,
+        planningScore: 1,
+        designFinalOrDraft: 'Draft',
         rentalValue: 300000,
         caseOfficerId: caseOfficers[3].id,
         updatedAt: daysAgo(5),
