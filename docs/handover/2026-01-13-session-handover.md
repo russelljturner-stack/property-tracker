@@ -1,32 +1,68 @@
-# Session Handover - 13 January 2026
-
-## REVIEW REQUIRED
-
-**You have not yet reviewed the changes made in this session.** Before starting new work, please test the Development detail pages on Railway.
-
----
+# Session Handover - 13 January 2026 (Session 11)
 
 ## Session Summary
 
-Completed all 8 planned improvements to the Development detail page:
+This session focused on **Phase 4 Feature Development** - specifically implementing the Commercial section and creating navigation tools:
 
-1. **Site Context Panel** - Thumbnails in header (map + photo, 120x90px 4:3 landscape)
-2. **Proposed Asset Hero Visual** - Large hero image with design status badge, Stock→Proposed→Draft→Final progression
-3. **Planning Score Display** - Colour-coded badge (green 4-5, amber 3, red 1-2) with probability text
-4. **Task Priority** - High/Medium/Low badges with colour coding, priority indicator bar
-5. **Design Stage Card Update** - Visual progression indicator, dual sign-off tracking
-6. **Marketing Stage Card** - Media owner display, tender status with offer comparison view
-7. **Contacts Enhancement** - Decision Maker indicator (★ DM), Site Role display, Influencer badge
-8. **What's Next Prompt** - Action-oriented callout with priority styling (red/amber/green)
+### Completed
+1. **Developments List Page** (`/developments`)
+   - Table view with Development, Location, Status, Stage, Planning Score, Owner columns
+   - Status summary cards at top
+   - Stage badges colour-coded by workflow stage
+   - Planning score with red/amber/green colour coding
+
+2. **Commercial Section Expandable Card** - Full implementation with all FileMaker fields:
+   - Deal Financials (Estimate/Actual toggle, Cost/Revenue/Profit columns)
+   - Calculated fields: End Date (Start + Term), Total Profit
+   - Consultancy Financials section (conditional - only shows if data exists)
+   - Existing Lease section with expiry warnings (6 months)
+   - AFL section with expiry warnings
+   - Contract Terms (all fields from FileMaker)
+   - Contract Documents list
+   - Legal contacts with phone/email links
+
+3. **Unanswered Questions Document** created at `docs/phase4/unanswered-questions.md`
+
+4. **CLAUDE.md Updated** - Added "Propose Before Implementing" rule
+
+### Fixed
+- TypeScript errors with CommercialStageCard component type definitions
 
 ---
 
 ## Current Status
 
-- **Phase:** 4 - Feature Development
-- **Git:** All changes pushed to GitHub (branch: master)
-- **Deployment:** Railway auto-deploys from master - app is live
-- **Database:** Seeded with test data including design statuses, planning scores, task priorities, tender offers, and contact roles
+**Phase:** 4 - Feature Development
+
+**What's Working:**
+- Developments list page with navigation
+- Development detail page with full Commercial section
+- Sites list page (needs review)
+- Dashboard, authentication, navigation all working
+
+**What's Next:**
+- Review Commercial section on Railway (just deployed)
+- Review Developments list page
+- Review Sites list page
+- Field audit for remaining sections (Design, Planning, Marketing, Build)
+
+---
+
+## Outstanding Questions
+
+See `docs/phase4/unanswered-questions.md` for full details:
+
+1. **Schema Gaps** - Some FileMaker fields not in Prisma schema:
+   - Planning Consent Deadline, Build Deadline, Contract Status, etc.
+   - Decision needed: Add to schema or belong in other sections?
+
+2. **Calculated Fields**:
+   - Total Profit: Calculate on fly or store?
+   - End Date: Calculate (Start + Term) or store separately?
+
+3. **Existing Lease** - Support multiple existing leases or just one?
+
+4. **Navigation** - How to implement prev/next navigation through filtered records?
 
 ---
 
@@ -36,32 +72,20 @@ Completed all 8 planned improvements to the Development detail page:
 - **Email:** test@example.com
 - **Password:** password123
 
-### Developments to Review
+### Key Pages to Review
 
-| Dev | Features to test |
-|-----|------------------|
-| Dev 1 (#1001) | Draft design, planning score 4, high priority tasks |
-| Dev 2 (#1002) | Final design, signed off, planning score 5 |
-| Dev 3 (#1003) | **Out to tender** - 5 tender offers with comparison view |
-| Dev 6 (#1006) | Stalled - overdue tasks, proposed design |
-| Dev 7 (#1007) | Planning refused - appeal action needed |
-
----
-
-## Next Steps
-
-1. **Review the work** - Test all 8 improvements on Railway before continuing
-2. After review, potential next items:
-   - Sites list page
-   - Sites detail page
-   - Contacts page
-   - Any fixes based on review feedback
+| Page | URL | What to check |
+|------|-----|---------------|
+| Developments List | `/developments` | Table view, status cards, stage badges |
+| Development Detail | `/developments/1` | Commercial section expandable card |
+| Sites List | `/sites` | Table view (built previous session) |
 
 ---
 
 ## Running Services
 
-None to start. Railway runs the app 24/7 in the cloud.
+- **Railway Production:** https://property-tracker-production-ac30.up.railway.app (auto-deploys from master)
+- No local dev server running
 
 For local development (optional):
 ```bash
@@ -72,8 +96,30 @@ npm run dev
 
 ## Known Issues
 
-- Thumbnails use fixed 120x90px dimensions (earlier attempts with CSS aspect-ratio had browser inconsistencies)
-- "Client Sign-off" in Design card shows "Not tracked" - field doesn't exist in database yet
+None currently blocking - build passes, deployment working.
+
+---
+
+## Key Files Changed This Session
+
+- `src/app/(authenticated)/developments/page.tsx` - New developments list page
+- `src/app/(authenticated)/developments/[id]/page.tsx` - Commercial section implementation
+- `docs/phase4/unanswered-questions.md` - New file tracking open questions
+- `CLAUDE.md` - Added "Propose Before Implementing" rule
+
+---
+
+## Todo List Status
+
+- [x] Build Developments list page for navigation
+- [x] Implement Commercial section expandable card
+- [ ] Review Sites list page on Railway
+- [ ] Review Developments list page on Railway
+- [ ] Review Commercial section on Railway
+- [ ] Complete field audit - Design section
+- [ ] Complete field audit - Planning section
+- [ ] Complete field audit - Marketing section
+- [ ] Complete field audit - Build section
 
 ---
 
@@ -85,16 +131,3 @@ npm run dev
 2. Or pull (existing): `git pull`
 3. Install dependencies: `npm install`
 4. Copy `.env` file from this machine (contains database URL and API keys)
-
----
-
-## End of Session Git Checklist
-
-Before closing any session, always run:
-```bash
-git status
-```
-
-Should show: `nothing to commit, working tree clean` and `Your branch is up to date with 'origin/master'`
-
-If not, commit and push your changes before switching machines.
