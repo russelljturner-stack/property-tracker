@@ -824,6 +824,25 @@ async function main() {
         updatedAt: daysAgo(5),
       }
     }),
+    // Dev 8: Historic development at same site as Dev 1 (for testing Related Developments)
+    prisma.development.create({
+      data: {
+        projectNo: 1008,
+        siteId: sites[0].id, // Same site as Dev 1 (Cromwell Road Digital)
+        statusId: devStatuses[12].id, // Decommissioned
+        dealTypeId: dealTypes[1].id, // Lease
+        developmentTypeId: devTypes[0].id, // New Build
+        internalDeveloper: 'Previous Developer',
+        offerAgreed: daysAgo(1000),
+        leasePerAnnum: 15000,
+        term: 10,
+        buildLiveDate: daysAgo(800),
+        buildCompletionDate: daysAgo(810),
+        probability: 100,
+        rentalValue: 100000,
+        updatedAt: daysAgo(365),
+      }
+    }),
   ]);
 
   console.log(`  Created ${developments.length} developments\n`);
