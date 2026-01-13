@@ -808,6 +808,8 @@ type ContactInfo = {
   organisation?: string | null
   phone?: string | null
   email?: string | null
+  siteRole?: string | null       // Asset Manager, Marketing, Planning, Administrator
+  decisionLevel?: string | null  // Decision Maker, Influencer
 }
 
 function collectAllContacts(development: {
@@ -819,6 +821,8 @@ function collectAllContacts(development: {
         lastName?: string | null
         phone?: string | null
         email?: string | null
+        role?: string | null
+        decisionLevel?: string | null
         organisation?: { name: string } | null
       }
     }>
@@ -828,6 +832,8 @@ function collectAllContacts(development: {
         lastName?: string | null
         phone?: string | null
         email?: string | null
+        role?: string | null
+        decisionLevel?: string | null
         organisation?: { name: string } | null
       }
     }>
@@ -871,6 +877,8 @@ function collectAllContacts(development: {
         organisation: oc.contact.organisation?.name,
         phone: oc.contact.phone,
         email: oc.contact.email,
+        siteRole: oc.contact.role,
+        decisionLevel: oc.contact.decisionLevel,
       })
     }
   })
@@ -882,6 +890,8 @@ function collectAllContacts(development: {
       contacts.push({
         role: 'Site Agent',
         name,
+        siteRole: ac.contact.role,
+        decisionLevel: ac.contact.decisionLevel,
         organisation: ac.contact.organisation?.name,
         phone: ac.contact.phone,
         email: ac.contact.email,
@@ -1424,17 +1434,40 @@ function DesignProgressIndicator({ currentStatus }: { currentStatus: string | nu
 // Component: Contact Item
 // =============================================================================
 function ContactItem({ contact }: { contact: ContactInfo }) {
+  const isDecisionMaker = contact.decisionLevel?.toLowerCase().includes('decision')
+
   return (
     <div className="px-6 py-3">
       <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">{contact.role}</p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <p className="text-xs text-gray-500 uppercase tracking-wider">{contact.role}</p>
+            {/* Decision Maker indicator */}
+            {isDecisionMaker && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800" title="Decision Maker">
+                ★ DM
+              </span>
+            )}
+            {contact.decisionLevel && !isDecisionMaker && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                {contact.decisionLevel}
+              </span>
+            )}
+          </div>
           <p className="text-sm font-medium text-gray-900 mt-0.5">{contact.name}</p>
-          {contact.organisation && (
-            <p className="text-xs text-gray-500">{contact.organisation}</p>
-          )}
+          <div className="flex items-center gap-2 mt-0.5">
+            {contact.organisation && (
+              <p className="text-xs text-gray-500">{contact.organisation}</p>
+            )}
+            {contact.siteRole && (
+              <>
+                {contact.organisation && <span className="text-xs text-gray-300">•</span>}
+                <span className="text-xs text-blue-600">{contact.siteRole}</span>
+              </>
+            )}
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-shrink-0">
           {contact.phone && (
             <a
               href={`tel:${contact.phone}`}

@@ -352,20 +352,20 @@ async function main() {
   // =========================================================================
   console.log('Creating contacts...');
 
-  // Site owner contacts
+  // Site owner contacts - with role and decisionLevel
   const ownerContacts = await Promise.all([
-    prisma.contact.create({ data: { firstName: 'James', lastName: 'Wilson', email: 'j.wilson@networkrail.co.uk', phone: '020 7557 8000', jobTitle: 'Property Manager', organisationId: siteOwners[0].id } }),
-    prisma.contact.create({ data: { firstName: 'Sarah', lastName: 'Thompson', email: 's.thompson@tfl.gov.uk', phone: '020 3054 4000', jobTitle: 'Commercial Director', organisationId: siteOwners[1].id } }),
-    prisma.contact.create({ data: { firstName: 'Michael', lastName: 'Brown', email: 'm.brown@highways.gov.uk', phone: '0300 123 5001', jobTitle: 'Asset Manager', organisationId: siteOwners[2].id } }),
-    prisma.contact.create({ data: { firstName: 'Emma', lastName: 'Davies', email: 'e.davies@bruntwood.co.uk', phone: '0161 209 3457', jobTitle: 'Head of Property', organisationId: siteOwners[3].id } }),
-    prisma.contact.create({ data: { firstName: 'Robert', lastName: 'Taylor', email: 'r.taylor@landg.com', phone: '020 3124 2001', jobTitle: 'Investment Manager', organisationId: siteOwners[4].id } }),
+    prisma.contact.create({ data: { firstName: 'James', lastName: 'Wilson', email: 'j.wilson@networkrail.co.uk', phone: '020 7557 8000', jobTitle: 'Property Manager', organisationId: siteOwners[0].id, role: 'Asset Manager', decisionLevel: 'Decision Maker' } }),
+    prisma.contact.create({ data: { firstName: 'Sarah', lastName: 'Thompson', email: 's.thompson@tfl.gov.uk', phone: '020 3054 4000', jobTitle: 'Commercial Director', organisationId: siteOwners[1].id, role: 'Marketing', decisionLevel: 'Decision Maker' } }),
+    prisma.contact.create({ data: { firstName: 'Michael', lastName: 'Brown', email: 'm.brown@highways.gov.uk', phone: '0300 123 5001', jobTitle: 'Asset Manager', organisationId: siteOwners[2].id, role: 'Asset Manager', decisionLevel: 'Influencer' } }),
+    prisma.contact.create({ data: { firstName: 'Emma', lastName: 'Davies', email: 'e.davies@bruntwood.co.uk', phone: '0161 209 3457', jobTitle: 'Head of Property', organisationId: siteOwners[3].id, role: 'Planning', decisionLevel: 'Decision Maker' } }),
+    prisma.contact.create({ data: { firstName: 'Robert', lastName: 'Taylor', email: 'r.taylor@landg.com', phone: '020 3124 2001', jobTitle: 'Investment Manager', organisationId: siteOwners[4].id, role: 'Administrator', decisionLevel: 'Influencer' } }),
   ]);
 
-  // Agent contacts
+  // Agent contacts - with role and decisionLevel
   const agentContacts = await Promise.all([
-    prisma.contact.create({ data: { firstName: 'David', lastName: 'Jones', email: 'd.jones@cbre.com', phone: '020 7182 2001', jobTitle: 'Director', organisationId: siteAgents[0].id } }),
-    prisma.contact.create({ data: { firstName: 'Lisa', lastName: 'Anderson', email: 'l.anderson@jll.com', phone: '020 7493 4934', jobTitle: 'Associate Director', organisationId: siteAgents[1].id } }),
-    prisma.contact.create({ data: { firstName: 'Mark', lastName: 'White', email: 'm.white@savills.com', phone: '020 7499 8645', jobTitle: 'Partner', organisationId: siteAgents[2].id } }),
+    prisma.contact.create({ data: { firstName: 'David', lastName: 'Jones', email: 'd.jones@cbre.com', phone: '020 7182 2001', jobTitle: 'Director', organisationId: siteAgents[0].id, role: 'Marketing', decisionLevel: 'Decision Maker' } }),
+    prisma.contact.create({ data: { firstName: 'Lisa', lastName: 'Anderson', email: 'l.anderson@jll.com', phone: '020 7493 4934', jobTitle: 'Associate Director', organisationId: siteAgents[1].id, role: 'Asset Manager', decisionLevel: 'Influencer' } }),
+    prisma.contact.create({ data: { firstName: 'Mark', lastName: 'White', email: 'm.white@savills.com', phone: '020 7499 8645', jobTitle: 'Partner', organisationId: siteAgents[2].id, role: 'Planning', decisionLevel: 'Decision Maker' } }),
   ]);
 
   // Planning case officers
