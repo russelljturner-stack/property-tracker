@@ -178,6 +178,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <span className="text-gray-900">{siteName}</span>
       </nav>
 
+      {/* What's Next Action Prompt */}
+      <WhatsNextPrompt development={development} />
+
       {/* Header section with site context thumbnails and key info */}
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex flex-col md:flex-row gap-4">
@@ -1103,6 +1106,142 @@ function StatusBadge({ name, colour }: { name: string; colour?: string | null })
     >
       {name}
     </span>
+  )
+}
+
+// =============================================================================
+// Component: What's Next Prompt
+// Shows the next action required to progress the development
+// =============================================================================
+function WhatsNextPrompt({ development }: {
+  development: {
+    status?: { name: string } | null
+    designFinalOrDraft?: string | null
+    designSignedOff?: string | null
+    planningAppStatus?: { name: string } | null
+    advertAppStatus?: { name: string } | null
+    contractSigned?: Date | null
+    mediaOwner?: { name: string } | null
+    buildStartDate?: Date | null
+    buildCompletionDate?: Date | null
+    buildLiveDate?: Date | null
+    tasks?: Array<{
+      complete: boolean
+      dueDate?: Date | null
+      description?: string | null
+    }>
+  }
+}) {
+  // Determine what's next based on current state
+  const getNextAction = (): { action: string; priority: 'high' | 'medium' | 'low'; icon: string } | null => {
+    // Check for overdue tasks first
+    const overdueTasks = development.tasks?.filter(
+      t => !t.complete && t.dueDate && new Date(t.dueDate) < new Date()
+    )
+    if (overdueTasks && overdueTasks.length > 0) {
+      return {
+        action: `${overdueTasks.length} overdue task${overdueTasks.length > 1 ? 's' : ''} need attention`,
+        priority: 'high',
+        icon: '⚠️',
+      }
+    }
+
+    // Design not signed off
+    if (development.designSignedOff !== 'Yes' && development.designFinalOrDraft !== 'Final') {
+      return {
+        action: 'Get design signed off to progress to planning',
+        priority: 'medium',
+        icon: '✏️',
+      }
+    }
+
+    // Planning submitted but awaiting decision
+    const planningStatus = development.planningAppStatus?.name?.toLowerCase() || ''
+    if (planningStatus.includes('submitted') || planningStatus.includes('consideration')) {
+      return {
+        action: 'Awaiting planning decision - chase case officer if needed',
+        priority: 'medium',
+        icon: '📋',
+      }
+    }
+
+    // Planning refused
+    if (planningStatus.includes('refused')) {
+      return {
+        action: 'Consider appeal or revised application',
+        priority: 'high',
+        icon: '🔄',
+      }
+    }
+
+    // Planning approved but no media owner
+    if (planningStatus.includes('approved') && !development.mediaOwner) {
+      return {
+        action: 'Initiate tender process to secure media owner',
+        priority: 'medium',
+        icon: '📢',
+      }
+    }
+
+    // Media owner but not in build
+    if (development.mediaOwner && !development.buildStartDate) {
+      return {
+        action: 'Schedule build commencement',
+        priority: 'medium',
+        icon: '🏗️',
+      }
+    }
+
+    // In build but not complete
+    if (development.buildStartDate && !development.buildCompletionDate) {
+      return {
+        action: 'Monitor build progress',
+        priority: 'low',
+        icon: '🔨',
+      }
+    }
+
+    // Build complete but not live
+    if (development.buildCompletionDate && !development.buildLiveDate) {
+      return {
+        action: 'Complete handover and go live',
+        priority: 'high',
+        icon: '🚀',
+      }
+    }
+
+    // Already live
+    if (development.buildLiveDate) {
+      return {
+        action: 'Site is live - monitor performance',
+        priority: 'low',
+        icon: '✅',
+      }
+    }
+
+    return null
+  }
+
+  const nextAction = getNextAction()
+
+  if (!nextAction) return null
+
+  const priorityStyles = {
+    high: 'bg-red-50 border-red-200 text-red-800',
+    medium: 'bg-amber-50 border-amber-200 text-amber-800',
+    low: 'bg-green-50 border-green-200 text-green-800',
+  }
+
+  return (
+    <div className={`rounded-lg border p-4 ${priorityStyles[nextAction.priority]}`}>
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">{nextAction.icon}</span>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider opacity-75">What&apos;s Next</p>
+          <p className="font-medium">{nextAction.action}</p>
+        </div>
+      </div>
+    </div>
   )
 }
 
