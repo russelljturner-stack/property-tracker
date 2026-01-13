@@ -821,7 +821,7 @@ function SiteContextPanel({
                 href={`https://www.google.com/maps?q=${site.address!.latitude},${site.address!.longitude}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors aspect-[4/3] max-h-28"
+                className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors aspect-[4/3] max-h-36"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -831,12 +831,12 @@ function SiteContextPanel({
                 />
               </a>
             ) : (
-              <div className="w-full aspect-[4/3] max-h-28 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+              <div className="w-full aspect-[4/3] max-h-36 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
                 No coordinates available
               </div>
             )}
             {site.address?.postcode && (
-              <p className="text-xs text-gray-500 text-center">{site.address.postcode}</p>
+              <p className="text-xs text-gray-500 mt-1">{site.address.postcode}</p>
             )}
           </div>
 
@@ -844,7 +844,7 @@ function SiteContextPanel({
           <div className="space-y-1">
             <h3 className="text-xs font-medium text-gray-500 uppercase">Site Photo</h3>
             {primaryPhoto?.photoUrl ? (
-              <div className="rounded-lg overflow-hidden border border-gray-200 aspect-[4/3] max-h-28">
+              <div className="rounded-lg overflow-hidden border border-gray-200 aspect-[4/3] max-h-36">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={primaryPhoto.photoUrl}
@@ -853,19 +853,19 @@ function SiteContextPanel({
                 />
               </div>
             ) : (
-              <div className="w-full aspect-[4/3] max-h-28 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+              <div className="w-full aspect-[4/3] max-h-36 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
                 No photo available
               </div>
             )}
             {primaryPhoto?.caption && (
-              <p className="text-xs text-gray-500 text-center truncate">{primaryPhoto.caption}</p>
+              <p className="text-xs text-gray-500 mt-1 truncate">{primaryPhoto.caption}</p>
             )}
           </div>
 
           {/* Development History Section */}
           <div className="space-y-1">
             <h3 className="text-xs font-medium text-gray-500 uppercase">Development History</h3>
-            <div className="bg-gray-50 rounded-lg p-2 aspect-[4/3] max-h-28 overflow-y-auto">
+            <div className="bg-gray-50 rounded-lg p-2 aspect-[4/3] max-h-36 overflow-y-auto">
               {otherDevelopments.length === 0 ? (
                 <p className="text-sm text-gray-500 text-center mt-8">
                   First development at this site
