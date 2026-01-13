@@ -153,6 +153,21 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     notFound()
   }
 
+  // Fetch prev/next development IDs for navigation
+  // Simple approach: order all by id and find adjacent ones
+  const [prevDevelopment, nextDevelopment] = await Promise.all([
+    db.development.findFirst({
+      where: { id: { lt: developmentId } },
+      orderBy: { id: 'desc' },
+      select: { id: true, projectNo: true }
+    }),
+    db.development.findFirst({
+      where: { id: { gt: developmentId } },
+      orderBy: { id: 'asc' },
+      select: { id: true, projectNo: true }
+    })
+  ])
+
   // Fetch lookup data for dropdowns (in parallel for efficiency)
   const [contractingEntities, lawyers, applicationStatuses, mediaOwners] = await Promise.all([
     // ContractingEntity is its own model
@@ -217,11 +232,48 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         {/* Top row: Title + Status + Buttons */}
         <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <Link href="/developments" className="text-gray-400 hover:text-gray-600">
+            <Link href="/developments" className="text-gray-400 hover:text-gray-600" title="Back to list">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
+            {/* Prev/Next navigation */}
+            <div className="flex items-center border-l border-gray-200 pl-3 ml-1">
+              {prevDevelopment ? (
+                <Link
+                  href={`/developments/${prevDevelopment.id}`}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                  title={`Previous: #${prevDevelopment.projectNo || prevDevelopment.id}`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                  </svg>
+                </Link>
+              ) : (
+                <span className="p-1.5 text-gray-200 cursor-not-allowed">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                  </svg>
+                </span>
+              )}
+              {nextDevelopment ? (
+                <Link
+                  href={`/developments/${nextDevelopment.id}`}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                  title={`Next: #${nextDevelopment.projectNo || nextDevelopment.id}`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              ) : (
+                <span className="p-1.5 text-gray-200 cursor-not-allowed">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </span>
+              )}
+            </div>
             <h1 className="text-xl font-bold text-gray-900">{siteName}</h1>
             {development.status && (
               <StatusBadge
