@@ -201,6 +201,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               {development.developmentType && (
                 <span className="px-2 py-0.5 bg-gray-100 rounded">{development.developmentType.name}</span>
               )}
+              {/* Planning Score - prominent display */}
+              <PlanningScoreBadge score={development.planningScore} />
             </div>
             <div className="flex gap-2 mt-3">
               {development.site && (
@@ -1054,6 +1056,51 @@ function PanelDetailCard({
         )}
       </div>
     </div>
+  )
+}
+
+// =============================================================================
+// Component: Planning Score Badge
+// Shows 1-5 planning score with colour coding
+// =============================================================================
+function PlanningScoreBadge({ score }: { score: number | null | undefined }) {
+  if (score === null || score === undefined) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 rounded text-gray-500">
+        <span className="text-xs">Planning Score:</span>
+        <span className="font-medium">—</span>
+      </span>
+    )
+  }
+
+  // Colour coding based on score
+  const getScoreStyle = () => {
+    if (score >= 4) return 'bg-green-100 text-green-800 border-green-200'
+    if (score === 3) return 'bg-amber-100 text-amber-800 border-amber-200'
+    return 'bg-red-100 text-red-800 border-red-200'
+  }
+
+  // Probability description
+  const getProbabilityText = () => {
+    switch (score) {
+      case 5: return 'Very likely'
+      case 4: return 'Likely'
+      case 3: return 'Possible'
+      case 2: return 'Unlikely'
+      case 1: return 'Very unlikely'
+      default: return ''
+    }
+  }
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded border ${getScoreStyle()}`}
+      title={`Planning Score: ${score}/5 - ${getProbabilityText()}`}
+    >
+      <span className="text-xs font-medium">Planning:</span>
+      <span className="font-bold">{score}/5</span>
+      <span className="text-xs opacity-75">({getProbabilityText()})</span>
+    </span>
   )
 }
 
