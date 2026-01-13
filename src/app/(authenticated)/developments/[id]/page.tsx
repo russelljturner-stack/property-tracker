@@ -271,86 +271,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       {/* What's Next Action Prompt */}
       <WhatsNextPrompt development={development} />
 
-      {/* Proposed Asset Hero Visual */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="flex flex-col md:flex-row">
-          {/* Hero Image */}
-          <div className="md:w-2/3 relative bg-gray-900">
-            {development.designUrl ? (
-              <div className="aspect-video">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={development.designUrl}
-                  alt="Proposed development visual"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            ) : (
-              <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-                <div className="text-center text-gray-400">
-                  <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <p className="text-sm">No design visual uploaded</p>
-                </div>
-              </div>
-            )}
-            {/* Design status badge overlay */}
-            <div className="absolute top-3 left-3">
-              <DesignStatusBadge status={development.designFinalOrDraft} />
-            </div>
-          </div>
-
-          {/* Design Info Panel */}
-          <div className="md:w-1/3 p-5 bg-gray-50 border-l border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Design Status
-            </h3>
-
-            {/* Design progression indicator */}
-            <div className="mb-5">
-              <DesignProgressIndicator currentStatus={development.designFinalOrDraft} />
-            </div>
-
-            {/* Sign-off status */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Internal Sign-off</span>
-                {development.designSignedOff === 'Yes' || development.designSignedOffDate ? (
-                  <span className="flex items-center gap-1 text-green-600">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    Approved
-                  </span>
-                ) : (
-                  <span className="text-gray-400">Pending</span>
-                )}
-              </div>
-
-              {development.designSignedOffDate && (
-                <div className="text-xs text-gray-500">
-                  Signed off {formatDate(development.designSignedOffDate)}
-                  {development.designSignedOffBy && ` by ${development.designSignedOffBy}`}
-                </div>
-              )}
-
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Client Sign-off</span>
-                <span className="text-gray-400">Not tracked</span>
-              </div>
-            </div>
-
-            {/* Quick actions */}
-            <div className="mt-5 pt-4 border-t border-gray-200">
-              <button className="w-full px-3 py-2 text-sm text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors">
-                Upload Design
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Progress Timeline */}
       <ProgressTimeline stages={STAGES} currentStage={currentStage} />
 
@@ -440,6 +360,35 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               isActive={currentStage === 'design'}
               isComplete={isStageComplete('design', development)}
             >
+              {/* Design Visual - smaller hero image */}
+              <div className="mb-4">
+                <div className="relative rounded-lg overflow-hidden bg-gray-900 max-w-md">
+                  {development.designUrl ? (
+                    <div className="aspect-video">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={development.designUrl}
+                        alt="Proposed development visual"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+                      <div className="text-center text-gray-400">
+                        <svg className="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p className="text-xs">No design visual</p>
+                      </div>
+                    </div>
+                  )}
+                  {/* Design status badge overlay */}
+                  <div className="absolute top-2 left-2">
+                    <DesignStatusBadge status={development.designFinalOrDraft} />
+                  </div>
+                </div>
+              </div>
+
               {/* Design Status Progression */}
               <div className="mb-4">
                 <div className="flex items-center justify-between text-xs mb-2">
