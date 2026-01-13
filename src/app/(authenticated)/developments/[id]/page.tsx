@@ -169,111 +169,109 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb navigation */}
-      <nav className="text-sm text-gray-500">
-        <Link href="/developments" className="hover:text-blue-600">
-          Developments
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-gray-900">{siteName}</span>
-      </nav>
-
-      {/* What's Next Action Prompt */}
-      <WhatsNextPrompt development={development} />
-
-      {/* Header section with site context thumbnails and key info */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Main header content */}
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900">{siteName}</h1>
-              {development.status && (
-                <StatusBadge
-                  name={development.status.name}
-                  colour={development.status.colour}
-                />
-              )}
-            </div>
-            {fullAddress && (
-              <p className="text-gray-600 mt-1">{fullAddress}</p>
+      {/* Header - Option A: Two-row layout */}
+      <div className="bg-white rounded-lg shadow">
+        {/* Top row: Title + Status + Buttons */}
+        <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <Link href="/developments" className="text-gray-400 hover:text-gray-600">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Link>
+            <h1 className="text-xl font-bold text-gray-900">{siteName}</h1>
+            {development.status && (
+              <StatusBadge
+                name={development.status.name}
+                colour={development.status.colour}
+              />
             )}
-            <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-              {development.projectNo && (
-                <span>Project #{development.projectNo}</span>
-              )}
-              {development.dealType && (
-                <span className="px-2 py-0.5 bg-gray-100 rounded">{development.dealType.name}</span>
-              )}
-              {development.developmentType && (
-                <span className="px-2 py-0.5 bg-gray-100 rounded">{development.developmentType.name}</span>
-              )}
-              {/* Planning Score - prominent display */}
-              <PlanningScoreBadge score={development.planningScore} />
-            </div>
-            <div className="flex gap-2 mt-3">
-              {development.site && (
-                <Link
-                  href={`/sites/${development.site.id}`}
-                  className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  View Site
-                </Link>
-              )}
-              <Link
-                href={`/developments/${development.id}/edit`}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Edit
-              </Link>
-            </div>
           </div>
+          <div className="flex gap-2">
+            {development.site && (
+              <Link
+                href={`/sites/${development.site.id}`}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                View Site
+              </Link>
+            )}
+            <Link
+              href={`/developments/${development.id}/edit`}
+              className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Edit
+            </Link>
+          </div>
+        </div>
+        {/* Bottom row: Address + Badges */}
+        <div className="px-6 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+          {fullAddress && (
+            <span className="text-gray-600">{fullAddress}</span>
+          )}
+          <span className="text-gray-300">|</span>
+          {development.projectNo && (
+            <span className="text-gray-500">#{development.projectNo}</span>
+          )}
+          {development.dealType && (
+            <span className="px-2 py-0.5 bg-gray-100 rounded text-gray-600">{development.dealType.name}</span>
+          )}
+          {development.developmentType && (
+            <span className="px-2 py-0.5 bg-gray-100 rounded text-gray-600">{development.developmentType.name}</span>
+          )}
+          <PlanningScoreBadge score={development.planningScore} />
         </div>
       </div>
 
-      {/* Site Context - Map and Photo thumbnails */}
+      {/* Site Context - Map and Photo thumbnails (smaller, beside each other) */}
       {development.site && (
         <div className="bg-white rounded-lg shadow p-4">
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">Site Context</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {/* Map thumbnail */}
-            {development.site.address?.latitude && development.site.address?.longitude ? (
-              <a
-                href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=400x300&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
-                  alt="Site location"
-                  className="w-full h-auto"
-                />
-              </a>
-            ) : (
-              <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm aspect-[4/3]">
-                No map available
-              </div>
-            )}
-            {/* Photo thumbnail */}
-            {development.site.photos?.[0]?.photoUrl ? (
-              <div className="rounded-lg overflow-hidden border border-gray-200">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={development.site.photos[0].photoUrl}
-                  alt="Site photo"
-                  className="w-full h-auto object-cover aspect-[4/3]"
-                />
-              </div>
-            ) : (
-              <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm aspect-[4/3]">
-                No photo available
-              </div>
-            )}
+          <div className="flex items-center gap-3">
+            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Site Context</h3>
+            {/* Thumbnails inline - fixed height ~80px, 4:3 ratio = ~107px wide */}
+            <div className="flex gap-2">
+              {/* Map thumbnail */}
+              {development.site.address?.latitude && development.site.address?.longitude ? (
+                <a
+                  href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors w-[107px] h-[80px]"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=214x160&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
+                    alt="Site location"
+                    className="w-full h-full object-cover"
+                  />
+                </a>
+              ) : (
+                <div className="bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs w-[107px] h-[80px]">
+                  No map
+                </div>
+              )}
+              {/* Photo thumbnail */}
+              {development.site.photos?.[0]?.photoUrl ? (
+                <div className="rounded overflow-hidden border border-gray-200 w-[107px] h-[80px]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={development.site.photos[0].photoUrl}
+                    alt="Site photo"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs w-[107px] h-[80px]">
+                  No photo
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
+
+      {/* What's Next Action Prompt */}
+      <WhatsNextPrompt development={development} />
 
       {/* Proposed Asset Hero Visual */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
