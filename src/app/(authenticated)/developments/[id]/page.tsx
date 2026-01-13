@@ -223,49 +223,47 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Site Context - Map and Photo thumbnails (smaller, beside each other) */}
+      {/* Site Context - Map and Photo thumbnails */}
       {development.site && (
         <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex items-center gap-3">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Site Context</h3>
-            {/* Thumbnails inline - fixed height ~80px, 4:3 ratio = ~107px wide */}
-            <div className="flex gap-2">
-              {/* Map thumbnail */}
-              {development.site.address?.latitude && development.site.address?.longitude ? (
-                <a
-                  href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block rounded overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors w-[107px] h-[80px]"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=214x160&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
-                    alt="Site location"
-                    className="w-full h-full object-cover"
-                  />
-                </a>
-              ) : (
-                <div className="bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs w-[107px] h-[80px]">
-                  No map
-                </div>
-              )}
-              {/* Photo thumbnail */}
-              {development.site.photos?.[0]?.photoUrl ? (
-                <div className="rounded overflow-hidden border border-gray-200 w-[107px] h-[80px]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={development.site.photos[0].photoUrl}
-                    alt="Site photo"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs w-[107px] h-[80px]">
-                  No photo
-                </div>
-              )}
-            </div>
+          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">Site Context</h3>
+          {/* Thumbnails - 160x120px (4:3 ratio) */}
+          <div className="flex gap-3">
+            {/* Map thumbnail */}
+            {development.site.address?.latitude && development.site.address?.longitude ? (
+              <a
+                href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors w-[160px] h-[120px]"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=320x240&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
+                  alt="Site location"
+                  className="w-full h-full object-cover"
+                />
+              </a>
+            ) : (
+              <div className="bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs w-[160px] h-[120px]">
+                No map
+              </div>
+            )}
+            {/* Photo thumbnail */}
+            {development.site.photos?.[0]?.photoUrl ? (
+              <div className="rounded overflow-hidden border border-gray-200 w-[160px] h-[120px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={development.site.photos[0].photoUrl}
+                  alt="Site photo"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs w-[160px] h-[120px]">
+                No photo
+              </div>
+            )}
           </div>
         </div>
       )}
