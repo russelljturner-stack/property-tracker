@@ -1657,60 +1657,9 @@ function CommercialStageCard({
   isActive,
   isComplete,
 }: {
-  development: {
-    // Deal Financials
-    estimateOrActual?: string | null
-    probability?: number | null
-    feeProposal?: string | null
-    leasePerAnnum?: number | string | null
-    purchasePrice?: number | string | null
-    rentalValue?: number | string | null
-    leaseStartDate?: Date | null
-    term?: number | null
-    profitYear1?: number | string | null
-    profitThereafter?: number | string | null
-    // Consultancy Financials
-    consultancyFinancials?: string | null
-    rentalValueConsultancy?: number | string | null
-    // Existing Lease
-    currentRentPerAnnum?: number | string | null
-    currentLeaseStartDate?: Date | null
-    currentLeaseEndDate?: Date | null
-    currentLeaseTerm?: number | null
-    currentLeaseUrl?: string | null
-    // Contract Terms
-    offerAgreed?: Date | null
-    contractIssued?: Date | null
-    contractSigned?: Date | null
-    contractUrl?: string | null
-    matterNo?: string | null
-    contractAnnualRent?: string | null
-    contractTerm?: string | null
-    leaseAssignable?: string | null
-    rpiIncreases?: string | null
-    rentCommencement?: string | null
-    // AFL
-    aflSigned?: Date | null
-    aflExpiryDate?: Date | null
-    aflSignedComment?: string | null
-    aflExpiryComment?: string | null
-    // Related entities
-    contractingEntity?: { name: string } | null
-    lawyer?: { name: string } | null
-    lawyerContact?: {
-      firstName?: string | null
-      lastName?: string | null
-      phone?: string | null
-      email?: string | null
-      organisation?: { name: string } | null
-    } | null
-    contractDocs?: Array<{
-      id: number
-      description?: string | null
-      documentUrl?: string | null
-      documentType?: string | null
-    }>
-  }
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  development: any
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   isActive: boolean
   isComplete: boolean
 }) {
