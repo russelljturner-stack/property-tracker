@@ -988,6 +988,7 @@ async function main() {
         assignedTo: 'Test User',
         assignedById: 'Admin User',
         needsReview: true,
+        priority: 'High',
       }
     }),
     prisma.developmentTask.create({
@@ -998,6 +999,7 @@ async function main() {
         taskTypeId: taskTypes[4].id, // Document
         assignedTo: 'Planning Team',
         needsReview: false,
+        priority: 'Medium',
       }
     }),
     prisma.developmentTask.create({
@@ -1008,6 +1010,7 @@ async function main() {
         taskTypeId: taskTypes[5].id, // Review
         assignedTo: 'Test User',
         needsReview: false,
+        priority: 'High',
       }
     }),
     // Dev 2 tasks (contracts stage)
@@ -1020,6 +1023,7 @@ async function main() {
         assignedTo: 'Test User',
         assignedById: 'Admin User',
         needsReview: true,
+        priority: 'High',
       }
     }),
     prisma.developmentTask.create({
@@ -1030,6 +1034,7 @@ async function main() {
         taskTypeId: taskTypes[2].id, // Meeting
         assignedTo: 'Test User',
         needsReview: false,
+        priority: 'Low',
       }
     }),
     // Dev 3 tasks (tender stage)
@@ -1041,6 +1046,7 @@ async function main() {
         taskTypeId: taskTypes[5].id, // Review
         assignedTo: 'Test User',
         needsReview: false,
+        priority: 'High',
       }
     }),
     prisma.developmentTask.create({
@@ -1051,6 +1057,7 @@ async function main() {
         taskTypeId: taskTypes[2].id, // Meeting
         assignedTo: 'Test User',
         needsReview: false,
+        priority: 'Medium',
       }
     }),
     // Dev 4 tasks (build stage)
@@ -1063,6 +1070,7 @@ async function main() {
         assignedTo: 'Test User',
         assignedById: 'Admin User',
         needsReview: true,
+        priority: 'Medium',
       }
     }),
     prisma.developmentTask.create({
@@ -1073,6 +1081,7 @@ async function main() {
         taskTypeId: taskTypes[0].id, // Call
         assignedTo: 'Test User',
         needsReview: false,
+        priority: 'Low',
       }
     }),
     // Dev 6 tasks (stalled)
@@ -1084,6 +1093,7 @@ async function main() {
         taskTypeId: taskTypes[1].id, // Email
         assignedTo: 'Test User',
         needsReview: false,
+        priority: 'High',
       }
     }),
     // Dev 7 tasks (appeal)
