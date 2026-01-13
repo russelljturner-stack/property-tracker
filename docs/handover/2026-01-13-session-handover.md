@@ -63,10 +63,11 @@ Each card:
 
 ## New Questions Raised (End of Session)
 
-Two UX questions added to `docs/phase4/unanswered-questions.md`:
+Three UX questions added to `docs/phase4/unanswered-questions.md`:
 
 1. **Sticky header** - Should the header and site context (map/photo) remain visible when scrolling on detail pages?
 2. **User menu location** - Should the logged-in user/sign-out be moved to the sidebar or made more compact? Currently takes up space in the header.
+3. **Visual differentiation** - Left column is workflow (stage cards), right column is reference info (contacts, activity). Should use different visual treatment to communicate this distinction.
 
 ---
 

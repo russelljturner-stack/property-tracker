@@ -125,6 +125,26 @@ Currently the logged-in user and sign-out button are in the top header area, whi
 
 ---
 
+## Visual Differentiation: Workflow vs Reference Content
+
+**Date raised:** 13 Jan 2026
+
+On the Development detail page, the two-column layout has different purposes:
+- **Left column** = Workflow progression (stage cards: Commercial → Design → Planning → Marketing → Build)
+- **Right column** = Reference/supplementary information (Key Contacts, Internal Team, Recent Activity, Quick Info)
+
+Currently both use the same white card styling, which doesn't communicate this distinction.
+
+**Question:** How should we visually differentiate these areas?
+- A) Different background colours (e.g., white cards on left, light grey or subtle tint on right)
+- B) Different card styling (e.g., bordered cards on right, filled cards on left)
+- C) Section header styling differences
+- D) Subtle background colour for the entire right column area
+
+**Goal:** Make it visually clear that the left side is "what you're working through" and the right side is "reference info you might need".
+
+---
+
 ## Review Items (Not Questions)
 
 These items need review on Railway but aren't blocking questions:
