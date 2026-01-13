@@ -1909,7 +1909,7 @@ function CommercialStageCard({
           <div className="pt-4 border-t border-gray-200">
             <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Contract Documents</h4>
             <div className="space-y-2">
-              {development.contractDocs?.map((doc) => (
+              {development.contractDocs?.map((doc: { id: number; description?: string | null; documentUrl?: string | null; documentType?: string | null }) => (
                 <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                   <div>
                     <p className="text-sm font-medium text-gray-900">{doc.description || 'Document'}</p>
