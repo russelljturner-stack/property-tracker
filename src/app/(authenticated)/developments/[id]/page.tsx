@@ -222,16 +222,16 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Site context thumbnails - map and photo (right side, stretch to match content height) */}
+          {/* Site context thumbnails - map and photo (right side, fixed size landscape 4:3) */}
           {development.site && (
-            <div className="flex gap-2 flex-shrink-0 self-stretch">
-              {/* Map thumbnail - 4:3 landscape, height matches content */}
+            <div className="hidden md:flex gap-2 flex-shrink-0">
+              {/* Map thumbnail - fixed 120x90 (4:3 landscape) */}
               {development.site.address?.latitude && development.site.address?.longitude ? (
                 <a
                   href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors aspect-[4/3]"
+                  className="block rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors w-[120px] h-[90px]"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -241,13 +241,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   />
                 </a>
               ) : (
-                <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs aspect-[4/3]">
+                <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs w-[120px] h-[90px]">
                   No map
                 </div>
               )}
-              {/* Photo thumbnail - 4:3 landscape, height matches content */}
+              {/* Photo thumbnail - fixed 120x90 (4:3 landscape) */}
               {development.site.photos?.[0]?.photoUrl ? (
-                <div className="rounded-lg overflow-hidden border border-gray-200 aspect-[4/3]">
+                <div className="rounded-lg overflow-hidden border border-gray-200 w-[120px] h-[90px]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={development.site.photos[0].photoUrl}
@@ -256,7 +256,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   />
                 </div>
               ) : (
-                <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs aspect-[4/3]">
+                <div className="bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs w-[120px] h-[90px]">
                   No photo
                 </div>
               )}
@@ -1117,14 +1117,41 @@ function TaskItem({
     complete: boolean
     needsReview?: boolean
     assignedTo?: string | null
+    priority?: string | null
     taskType?: { name: string } | null
   }
 }) {
   const isOverdue = !task.complete && task.dueDate && new Date(task.dueDate) < new Date()
 
+  // Priority colour coding
+  const getPriorityStyle = (priority: string | null | undefined) => {
+    switch (priority?.toLowerCase()) {
+      case 'high':
+        return 'bg-red-100 text-red-800 border-red-200'
+      case 'medium':
+        return 'bg-amber-100 text-amber-800 border-amber-200'
+      case 'low':
+        return 'bg-gray-100 text-gray-600 border-gray-200'
+      default:
+        return null
+    }
+  }
+
+  const priorityStyle = getPriorityStyle(task.priority)
+
   return (
     <div className={`px-6 py-4 ${task.complete ? "bg-gray-50" : ""}`}>
       <div className="flex items-start gap-3">
+        {/* Priority indicator bar */}
+        {task.priority && !task.complete && (
+          <div
+            className={`flex-shrink-0 w-1 self-stretch rounded-full ${
+              task.priority.toLowerCase() === 'high' ? 'bg-red-500' :
+              task.priority.toLowerCase() === 'medium' ? 'bg-amber-500' : 'bg-gray-300'
+            }`}
+          />
+        )}
+
         {/* Checkbox indicator */}
         <div
           className={`flex-shrink-0 w-5 h-5 rounded-full border-2 mt-0.5 ${
@@ -1150,6 +1177,12 @@ function TaskItem({
             {task.needsReview && !task.complete && (
               <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                 NEW
+              </span>
+            )}
+            {/* Priority badge */}
+            {priorityStyle && !task.complete && (
+              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium border ${priorityStyle}`}>
+                {task.priority}
               </span>
             )}
             <p
