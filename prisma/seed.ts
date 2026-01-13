@@ -1148,6 +1148,62 @@ async function main() {
   console.log('  Created 14 tasks (4 need review, 3 overdue, 2 complete)\n');
 
   // =========================================================================
+  // STEP 10b: Create Tender Offers (for Dev 3 - Out to tender)
+  // =========================================================================
+  console.log('Creating tender offers...');
+
+  await Promise.all([
+    // Dev 3 is "Out to tender" - add 5 offers
+    prisma.tenderOffer.create({
+      data: {
+        developmentId: developments[2].id,
+        offerFrom: 'Clear Channel UK',
+        offerAmount: 320000,
+        offerDate: daysAgo(7),
+        notes: 'Initial offer, willing to negotiate',
+      }
+    }),
+    prisma.tenderOffer.create({
+      data: {
+        developmentId: developments[2].id,
+        offerFrom: 'JCDecaux',
+        offerAmount: 295000,
+        offerDate: daysAgo(6),
+        notes: '5-year term preferred',
+      }
+    }),
+    prisma.tenderOffer.create({
+      data: {
+        developmentId: developments[2].id,
+        offerFrom: 'Global Media',
+        offerAmount: 310000,
+        offerDate: daysAgo(5),
+        notes: 'Flexible on terms',
+      }
+    }),
+    prisma.tenderOffer.create({
+      data: {
+        developmentId: developments[2].id,
+        offerFrom: 'Ocean Outdoor',
+        offerAmount: 285000,
+        offerDate: daysAgo(4),
+        notes: 'Looking to expand in this area',
+      }
+    }),
+    prisma.tenderOffer.create({
+      data: {
+        developmentId: developments[2].id,
+        offerFrom: 'Primesight',
+        offerAmount: 275000,
+        offerDate: daysAgo(3),
+        notes: 'Competitive rate for long-term deal',
+      }
+    }),
+  ]);
+
+  console.log('  Created 5 tender offers for Dev 3\n');
+
+  // =========================================================================
   // STEP 11: Create Notes
   // =========================================================================
   console.log('Creating development notes...');

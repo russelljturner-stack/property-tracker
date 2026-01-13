@@ -131,6 +131,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           },
         },
       },
+      // Marketing/Tender data
+      tenderOffers: {
+        orderBy: { offerDate: 'desc' },
+      },
     },
   })
 
@@ -434,11 +438,60 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               isActive={currentStage === 'design'}
               isComplete={isStageComplete('design', development)}
             >
-              <div className="grid grid-cols-2 gap-4">
-                <InfoItem label="Design Status" value={development.designFinalOrDraft} />
-                <InfoItem label="Signed Off" value={development.designSignedOff} />
-                <InfoItem label="Signed Off Date" value={development.designSignedOffDate ? formatDate(development.designSignedOffDate) : undefined} />
-                <InfoItem label="Signed Off By" value={development.designSignedOffBy} />
+              {/* Design Status Progression */}
+              <div className="mb-4">
+                <div className="flex items-center justify-between text-xs mb-2">
+                  {['Stock', 'Proposed', 'Draft', 'Final'].map((stage, index) => {
+                    const currentIndex = (() => {
+                      switch (development.designFinalOrDraft?.toLowerCase()) {
+                        case 'final': return 3
+                        case 'draft': return 2
+                        case 'proposed': return 1
+                        default: return 0
+                      }
+                    })()
+                    const isComplete = index < currentIndex
+                    const isCurrent = index === currentIndex
+                    return (
+                      <div key={stage} className="flex flex-col items-center">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium mb-1 ${
+                          isComplete ? 'bg-green-500 text-white' :
+                          isCurrent ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'
+                        }`}>
+                          {isComplete ? '✓' : index + 1}
+                        </div>
+                        <span className={isCurrent || isComplete ? 'font-medium text-gray-900' : 'text-gray-400'}>{stage}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Sign-off Status */}
+              <div className="space-y-3 pt-3 border-t border-gray-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Internal Sign-off</span>
+                  {development.designSignedOff === 'Yes' || development.designSignedOffDate ? (
+                    <span className="flex items-center gap-1 text-sm text-green-600 font-medium">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Approved
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-400">Pending</span>
+                  )}
+                </div>
+                {development.designSignedOffDate && (
+                  <p className="text-xs text-gray-500">
+                    {formatDate(development.designSignedOffDate)}
+                    {development.designSignedOffBy && ` by ${development.designSignedOffBy}`}
+                  </p>
+                )}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Client Sign-off</span>
+                  <span className="text-sm text-gray-400">Not tracked</span>
+                </div>
               </div>
             </StageCard>
 
@@ -483,6 +536,59 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 <Link href={`/developments/${development.id}/planning`} className="text-sm text-blue-600 hover:text-blue-800">
                   View full planning details →
                 </Link>
+              </div>
+            </StageCard>
+
+            {/* Marketing Stage Card */}
+            <StageCard
+              title="Marketing"
+              icon="📢"
+              isActive={currentStage === 'marketing'}
+              isComplete={isStageComplete('marketing', development)}
+            >
+              {/* Media Owner */}
+              {development.mediaOwner && (
+                <div className="mb-4 pb-4 border-b border-gray-100">
+                  <InfoItem label="Media Owner" value={development.mediaOwner.name} />
+                </div>
+              )}
+
+              {/* Tender Status */}
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Tender Status</h4>
+                {development.tenderOffers && development.tenderOffers.length > 0 ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Offers Received</span>
+                      <span className="font-semibold text-gray-900">{development.tenderOffers.length}</span>
+                    </div>
+                    {/* Offer comparison - show top offers */}
+                    <div className="mt-3 space-y-2">
+                      {development.tenderOffers.slice(0, 3).map((offer, index) => (
+                        <div
+                          key={offer.id}
+                          className={`flex items-center justify-between p-2 rounded ${
+                            index === 0 ? 'bg-green-50 border border-green-200' : 'bg-gray-50'
+                          }`}
+                        >
+                          <span className="text-sm font-medium">{offer.offerFrom || 'Unknown bidder'}</span>
+                          <span className={`text-sm font-semibold ${index === 0 ? 'text-green-700' : 'text-gray-700'}`}>
+                            {offer.offerAmount
+                              ? `£${Number(offer.offerAmount).toLocaleString()}`
+                              : 'Amount TBC'}
+                          </span>
+                        </div>
+                      ))}
+                      {development.tenderOffers.length > 3 && (
+                        <p className="text-xs text-gray-500 text-center">
+                          +{development.tenderOffers.length - 3} more offers
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No tender offers yet</p>
+                )}
               </div>
             </StageCard>
 
@@ -666,16 +772,21 @@ function determineCurrentStage(development: {
 function isStageComplete(stage: StageKey, development: {
   buildLiveDate?: Date | null
   buildCompletionDate?: Date | null
+  buildStartDate?: Date | null
   planningAppStatus?: { name: string } | null
   advertAppStatus?: { name: string } | null
   designSignedOff?: string | null
   contractSigned?: Date | null
+  mediaOwner?: { name: string } | null
 }): boolean {
   switch (stage) {
     case 'live':
       return !!development.buildLiveDate
     case 'build':
       return !!development.buildCompletionDate
+    case 'marketing':
+      // Marketing complete if media owner assigned and build started
+      return !!development.mediaOwner && !!development.buildStartDate
     case 'planning':
       // Consider complete if approved (would need to check status name)
       return development.planningAppStatus?.name?.toLowerCase().includes('approved') || false
