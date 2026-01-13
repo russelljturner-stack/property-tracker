@@ -174,10 +174,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <span className="text-gray-900">{siteName}</span>
       </nav>
 
-      {/* Header section with status and key info */}
+      {/* Header section with site context thumbnails and key info */}
       <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div>
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Main header content */}
+          <div className="flex-1">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-900">{siteName}</h1>
               {development.status && (
@@ -201,33 +202,75 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 <span className="px-2 py-0.5 bg-gray-100 rounded">{development.developmentType.name}</span>
               )}
             </div>
-          </div>
-          <div className="flex gap-2">
-            {development.site && (
+            <div className="flex gap-2 mt-3">
+              {development.site && (
+                <Link
+                  href={`/sites/${development.site.id}`}
+                  className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  View Site
+                </Link>
+              )}
               <Link
-                href={`/sites/${development.site.id}`}
-                className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                href={`/developments/${development.id}/edit`}
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
-                View Site
+                Edit
               </Link>
-            )}
-            <Link
-              href={`/developments/${development.id}/edit`}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Edit
-            </Link>
+            </div>
           </div>
+
+          {/* Site context thumbnails - map and photo (right side) */}
+          {development.site && (
+            <div className="flex gap-2 flex-shrink-0">
+              {/* Map thumbnail */}
+              {development.site.address?.latitude && development.site.address?.longitude ? (
+                <a
+                  href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-24 h-20 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors flex-shrink-0"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=200x150&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
+                    alt="Site location"
+                    className="w-full h-full object-cover"
+                  />
+                </a>
+              ) : (
+                <div className="w-24 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0">
+                  No map
+                </div>
+              )}
+              {/* Photo thumbnail */}
+              {development.site.photos?.[0]?.photoUrl ? (
+                <div className="w-24 h-20 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={development.site.photos[0].photoUrl}
+                    alt="Site photo"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-24 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs flex-shrink-0">
+                  No photo
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Site Context Panel - Map, Photo, and Development History */}
+      {/* Site Context Panel - COMMENTED OUT: Thumbnails now in header
       {development.site && (
         <SiteContextPanel
           site={development.site}
           currentDevelopmentId={development.id}
         />
       )}
+      */}
 
       {/* Progress Timeline */}
       <ProgressTimeline stages={STAGES} currentStage={currentStage} />
