@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import { CommercialCard } from "@/components/CommercialCard"
 
 // Force dynamic rendering - this page fetches data at request time
 export const dynamic = 'force-dynamic'
@@ -146,6 +147,25 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   if (!development) {
     notFound()
   }
+
+  // Fetch lookup data for dropdowns (in parallel for efficiency)
+  const [contractingEntities, lawyers] = await Promise.all([
+    // ContractingEntity is its own model
+    db.contractingEntity.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true },
+      orderBy: { sortOrder: 'asc' },
+    }),
+    // Lawyers are Organisations with developmentsAsLawyer relation
+    // For now, get all organisations that have been used as lawyers
+    db.organisation.findMany({
+      where: {
+        developmentsAsLawyer: { some: {} }
+      },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    }),
+  ])
 
   // Build display name
   const siteName = development.site?.name
@@ -334,11 +354,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
           {/* Stage Cards - Expandable sections for each workflow stage */}
           <div className="space-y-4">
-            {/* Commercial Stage Card - Full Expandable */}
-            <CommercialStageCard
-              development={development}
+            {/* Commercial Stage Card - Expandable with Edit capability */}
+            <CommercialCard
+              developmentId={development.id}
+              data={development}
               isActive={currentStage === 'commercial'}
               isComplete={isStageComplete('commercial', development)}
+              contractingEntities={contractingEntities}
+              lawyers={lawyers}
             />
 
             {/* Design Stage Card */}
@@ -1649,328 +1672,5 @@ function isExpiringSoon(date: Date | null | undefined): boolean {
   return new Date(date) <= sixMonthsFromNow && new Date(date) > new Date()
 }
 
-// =============================================================================
-// Component: Commercial Stage Card (Full Expandable)
-// =============================================================================
-function CommercialStageCard({
-  development,
-  isActive,
-  isComplete,
-}: {
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  development: any
-  /* eslint-enable @typescript-eslint/no-explicit-any */
-  isActive: boolean
-  isComplete: boolean
-}) {
-  // Check if sections have data
-  const hasConsultancyData = development.consultancyFinancials || development.rentalValueConsultancy
-  const hasExistingLeaseData = development.currentRentPerAnnum || development.currentLeaseEndDate
-  const hasAflData = development.aflSigned || development.aflExpiryDate
-  const hasContractDocs = development.contractDocs && development.contractDocs.length > 0
-
-  // Expiry warnings
-  const existingLeaseExpiringSoon = isExpiringSoon(development.currentLeaseEndDate)
-  const aflExpiringSoon = isExpiringSoon(development.aflExpiryDate)
-
-  return (
-    <section className={`
-      bg-white rounded-lg shadow overflow-hidden
-      ${isActive ? 'ring-2 ring-blue-500' : ''}
-    `}>
-      {/* Header */}
-      <div className={`
-        px-6 py-4 border-b border-gray-200 flex items-center justify-between
-        ${isActive ? 'bg-blue-50' : ''}
-      `}>
-        <div className="flex items-center gap-3">
-          <span className="text-xl">💼</span>
-          <h3 className="text-lg font-semibold text-gray-900">Commercial</h3>
-          {isComplete && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-              Complete
-            </span>
-          )}
-          {isActive && !isComplete && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-              Current
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div className="p-6 space-y-6">
-        {/* Summary Row - Always visible */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pb-4 border-b border-gray-100">
-          <InfoItem label="Offer Agreed" value={development.offerAgreed ? formatDate(development.offerAgreed) : undefined} />
-          <InfoItem label="Lease Per Annum" value={formatCurrency(Number(development.leasePerAnnum))} />
-          <InfoItem label="Contract Signed" value={development.contractSigned ? formatDate(development.contractSigned) : undefined} />
-          <InfoItem label="Probability" value={development.probability ? `${development.probability}%` : undefined} />
-        </div>
-
-        {/* Deal Financials Section */}
-        <div>
-          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Deal Financials</h4>
-
-          {/* Estimate or Actual */}
-          <div className="mb-4">
-            <span className="text-xs text-gray-500 uppercase tracking-wider">Estimate or Actual?</span>
-            <div className="mt-1 flex gap-2">
-              <span className={`px-3 py-1 rounded-full text-sm ${
-                development.estimateOrActual === 'Estimate'
-                  ? 'bg-blue-100 text-blue-800 font-medium'
-                  : 'bg-gray-100 text-gray-500'
-              }`}>
-                Estimate
-              </span>
-              <span className={`px-3 py-1 rounded-full text-sm ${
-                development.estimateOrActual === 'Actual'
-                  ? 'bg-green-100 text-green-800 font-medium'
-                  : 'bg-gray-100 text-gray-500'
-              }`}>
-                Actual
-              </span>
-            </div>
-          </div>
-
-          {/* Three column layout: Cost / Revenue / Profit */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Cost Column */}
-            <div className="space-y-3">
-              <h5 className="text-xs font-semibold text-gray-500 uppercase border-b border-gray-200 pb-1">Cost</h5>
-              <InfoItem label="Rent Per Annum" value={formatCurrency(Number(development.leasePerAnnum))} />
-              <InfoItem label="Purchase Price" value={formatCurrency(Number(development.purchasePrice))} />
-            </div>
-
-            {/* Revenue Column */}
-            <div className="space-y-3">
-              <h5 className="text-xs font-semibold text-gray-500 uppercase border-b border-gray-200 pb-1">Revenue</h5>
-              <InfoItem label="Rental Value" value={formatCurrency(Number(development.rentalValue))} />
-              <InfoItem label="Start Date" value={development.leaseStartDate ? formatDate(development.leaseStartDate) : undefined} />
-              <InfoItem label="Term (Years)" value={development.term ? `${development.term}` : undefined} />
-              <InfoItem label="End Date" value={calculateEndDate(development.leaseStartDate, development.term)} />
-            </div>
-
-            {/* Profit Column */}
-            <div className="space-y-3">
-              <h5 className="text-xs font-semibold text-gray-500 uppercase border-b border-gray-200 pb-1">Profit</h5>
-              <InfoItem label="Profit Year 1" value={formatCurrency(Number(development.profitYear1))} />
-              <InfoItem label="Profit Subsequent Years" value={formatCurrency(Number(development.profitThereafter))} />
-              <InfoItem
-                label="Total Profit"
-                value={calculateTotalProfit(
-                  Number(development.profitYear1),
-                  Number(development.profitThereafter),
-                  development.term
-                )}
-              />
-            </div>
-          </div>
-
-          {/* Fee Proposal */}
-          {development.feeProposal && (
-            <div className="mt-4">
-              <span className="text-xs text-gray-500 uppercase tracking-wider">Fee Proposal</span>
-              <p className="mt-1 text-sm text-gray-900 bg-gray-50 rounded p-3">{development.feeProposal}</p>
-            </div>
-          )}
-        </div>
-
-        {/* Consultancy Financials Section - Only show if data exists */}
-        {hasConsultancyData && (
-          <div className="pt-4 border-t border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Consultancy Financials</h4>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <InfoItem label="Rental Value (Consultancy)" value={formatCurrency(Number(development.rentalValueConsultancy))} />
-            </div>
-            {development.consultancyFinancials && (
-              <div>
-                <span className="text-xs text-gray-500 uppercase tracking-wider">Description of deal structure and expected revenue</span>
-                <p className="mt-1 text-sm text-gray-900 bg-gray-50 rounded p-3">{development.consultancyFinancials}</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Existing Lease Section - Only show if data exists */}
-        {hasExistingLeaseData && (
-          <div className="pt-4 border-t border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
-              Existing Lease (Existing Advertising Only)
-              {existingLeaseExpiringSoon && (
-                <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-800 rounded text-xs font-medium">
-                  Expiring Soon
-                </span>
-              )}
-            </h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <InfoItem label="Current Rent Per Annum" value={formatCurrency(Number(development.currentRentPerAnnum))} />
-              <InfoItem label="Lease Start Date" value={development.currentLeaseStartDate ? formatDate(development.currentLeaseStartDate) : undefined} />
-              <div>
-                <dt className="text-xs text-gray-500 uppercase tracking-wider">Lease End Date</dt>
-                <dd className={`text-sm mt-0.5 ${existingLeaseExpiringSoon ? 'text-amber-600 font-semibold' : 'text-gray-900'}`}>
-                  {development.currentLeaseEndDate ? formatDate(development.currentLeaseEndDate) : '—'}
-                  {existingLeaseExpiringSoon && ' ⚠️'}
-                </dd>
-              </div>
-              <InfoItem label="Term" value={development.currentLeaseTerm ? `${development.currentLeaseTerm} years` : undefined} />
-            </div>
-            {development.currentLeaseUrl && (
-              <div className="mt-3">
-                <a
-                  href={development.currentLeaseUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  View Current Lease Document
-                </a>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* AFL Section - Only show if data exists */}
-        {hasAflData && (
-          <div className="pt-4 border-t border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">
-              AFL (Agreement for Lease)
-              {aflExpiringSoon && (
-                <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-800 rounded text-xs font-medium">
-                  Expiring Soon
-                </span>
-              )}
-            </h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <InfoItem label="AFL Signed" value={development.aflSigned ? formatDate(development.aflSigned) : undefined} />
-              <div>
-                <dt className="text-xs text-gray-500 uppercase tracking-wider">AFL Expiry Date</dt>
-                <dd className={`text-sm mt-0.5 ${aflExpiringSoon ? 'text-amber-600 font-semibold' : 'text-gray-900'}`}>
-                  {development.aflExpiryDate ? formatDate(development.aflExpiryDate) : '—'}
-                  {aflExpiringSoon && ' ⚠️'}
-                </dd>
-              </div>
-            </div>
-            {(development.aflSignedComment || development.aflExpiryComment) && (
-              <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {development.aflSignedComment && (
-                  <div>
-                    <span className="text-xs text-gray-500 uppercase tracking-wider">AFL Signed Comments</span>
-                    <p className="mt-1 text-sm text-gray-900">{development.aflSignedComment}</p>
-                  </div>
-                )}
-                {development.aflExpiryComment && (
-                  <div>
-                    <span className="text-xs text-gray-500 uppercase tracking-wider">AFL Expiry Comments</span>
-                    <p className="mt-1 text-sm text-gray-900">{development.aflExpiryComment}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Contract Terms Section */}
-        <div className="pt-4 border-t border-gray-200">
-          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Contract Terms</h4>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <InfoItem label="Contracting Entity" value={development.contractingEntity?.name} />
-            <InfoItem label="Matter No (Clyde & Co. Ref)" value={development.matterNo} />
-            <InfoItem label="Contract Issued" value={development.contractIssued ? formatDate(development.contractIssued) : undefined} />
-            <InfoItem label="Contract Signed" value={development.contractSigned ? formatDate(development.contractSigned) : undefined} />
-            <InfoItem label="Lease Assignable" value={development.leaseAssignable} />
-            <InfoItem label="RPI Increases" value={development.rpiIncreases} />
-            <InfoItem label="Rent Commencement" value={development.rentCommencement} />
-            <InfoItem label="Contract Term" value={development.contractTerm} />
-            <InfoItem label="Contract Annual Rent" value={development.contractAnnualRent} />
-          </div>
-          {development.contractUrl && (
-            <div className="mt-3">
-              <a
-                href={development.contractUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                View Contract Document
-              </a>
-            </div>
-          )}
-        </div>
-
-        {/* Contract Documents Section - Only show if documents exist */}
-        {hasContractDocs && (
-          <div className="pt-4 border-t border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Contract Documents</h4>
-            <div className="space-y-2">
-              {development.contractDocs?.map((doc: { id: number; description?: string | null; documentUrl?: string | null; documentType?: string | null }) => (
-                <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{doc.description || 'Document'}</p>
-                    {doc.documentType && (
-                      <p className="text-xs text-gray-500">{doc.documentType}</p>
-                    )}
-                  </div>
-                  {doc.documentUrl && (
-                    <a
-                      href={doc.documentUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:text-blue-800"
-                    >
-                      View
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Legal Section */}
-        {(development.lawyer || development.lawyerContact) && (
-          <div className="pt-4 border-t border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Legal</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {development.lawyer && (
-                <div className="p-3 bg-gray-50 rounded">
-                  <p className="text-xs text-gray-500 uppercase tracking-wider">Law Firm</p>
-                  <p className="text-sm font-medium text-gray-900 mt-1">{development.lawyer.name}</p>
-                </div>
-              )}
-              {development.lawyerContact && (
-                <div className="p-3 bg-gray-50 rounded">
-                  <p className="text-xs text-gray-500 uppercase tracking-wider">Lawyer Contact</p>
-                  <p className="text-sm font-medium text-gray-900 mt-1">
-                    {`${development.lawyerContact.firstName || ''} ${development.lawyerContact.lastName || ''}`.trim() || '—'}
-                  </p>
-                  {development.lawyerContact.organisation && (
-                    <p className="text-xs text-gray-500">{development.lawyerContact.organisation.name}</p>
-                  )}
-                  <div className="flex gap-3 mt-2">
-                    {development.lawyerContact.phone && (
-                      <a href={`tel:${development.lawyerContact.phone}`} className="text-xs text-blue-600 hover:text-blue-800">
-                        📞 {development.lawyerContact.phone}
-                      </a>
-                    )}
-                    {development.lawyerContact.email && (
-                      <a href={`mailto:${development.lawyerContact.email}`} className="text-xs text-blue-600 hover:text-blue-800">
-                        ✉️ {development.lawyerContact.email}
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
-  )
-}
+// CommercialStageCard has been moved to src/components/CommercialCard.tsx
+// It now supports expand/collapse and edit functionality

@@ -336,6 +336,44 @@ When Russell adds files to this project, they will typically be:
 
 ---
 
+## Capturing Decisions and Rules
+
+When building features or having design discussions:
+
+1. **Before building** - Check `docs/decisions/` for relevant existing decisions
+2. **During discussions** - If new rules or decisions emerge, document them immediately
+3. **After building** - Update decisions docs if the implementation revealed new patterns
+
+Key decision documents:
+
+| Document | Purpose |
+|----------|---------|
+| `docs/decisions/architecture-decisions.md` | Technical and architectural choices (permanent) |
+| `docs/decisions/ux-rules.md` | UX patterns, editing rules, user workflows (permanent) |
+| `docs/phase4/unanswered-questions.md` | Open questions needing Russell's input (temporary - items removed once resolved) |
+
+---
+
+## End of Session Procedure
+
+Before ending a session, complete these steps:
+
+1. **Capture unanswered questions** - Review the session for any questions that emerged but weren't resolved. Add them to `docs/phase4/unanswered-questions.md`
+
+2. **Update decisions docs** - If any rules or decisions were made during the session, ensure they're captured in:
+   - `docs/decisions/architecture-decisions.md` (technical decisions)
+   - `docs/decisions/ux-rules.md` (UX and business rules)
+
+3. **Update handover document** - Create/update `docs/handover/[date]-session-handover.md` with:
+   - What was completed
+   - What's in progress
+   - What's next
+   - Any blockers or issues
+
+4. **Commit and push** - Ensure all changes are committed to git and pushed to remote
+
+---
+
 ## Documentation Standards
 
 This project follows industry best practices for a solo developer, with the goal of professional handover-ready code.
