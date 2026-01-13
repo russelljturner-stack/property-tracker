@@ -34,6 +34,27 @@ Before Russell uploads, shares, or pastes ANY data (CSV files, database exports,
 
 ---
 
+## IMPORTANT: Propose Before Implementing
+
+**Claude must NOT implement new features or significant changes without Russell's approval first.**
+
+When suggesting new work (pages, features, UI changes, etc.):
+
+1. **Describe what you're proposing** - explain the change and why
+2. **Wait for Russell to approve** - don't start coding until he agrees
+3. **Only then implement** - once approved, proceed with the work
+
+This applies to:
+- Building new pages or screens
+- Adding new features or functionality
+- Significant UI/layout changes
+- Database schema changes
+- Any work that isn't a direct fix to something Russell has already requested
+
+**Exception:** Small fixes, bug corrections, or direct responses to Russell's explicit requests (e.g., "make the thumbnails bigger") can be implemented immediately.
+
+---
+
 ## About This Project
 
 This project is migrating a FileMaker Pro 12 application to a modern web application. The FileMaker system is a property development tracking application with approximately 30 database tables, 15-20 layouts/screens, complex automation scripts, and Google Maps API integration.
