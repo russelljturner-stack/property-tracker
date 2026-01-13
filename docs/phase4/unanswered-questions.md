@@ -97,13 +97,41 @@ Russell mentioned wanting to:
 
 ---
 
+## Sticky Header on Detail Pages
+
+**Date raised:** 13 Jan 2026
+
+The header and site context (including map/photo thumbnails) on the Development detail page should remain visible as you scroll, so users always know which development they're looking at.
+
+**Question:** Should we make the header sticky?
+- A) Yes - header + site context both sticky
+- B) Just the header row (title, status, badges) - site context scrolls
+- C) Collapsible sticky header that shrinks on scroll
+
+---
+
+## User Menu / Sign-out Location
+
+**Date raised:** 13 Jan 2026
+
+Currently the logged-in user and sign-out button are in the top header area, which takes up space.
+
+**Question:** Where should the user menu live?
+- A) In the left navigation sidebar (common pattern - user avatar at bottom of sidebar)
+- B) Compact dropdown in header (just avatar/initials, expands on click)
+- C) Keep as-is but make more compact
+
+**Best practice note:** Most modern apps put user menu in sidebar (bottom) or as a small avatar dropdown in header. This keeps the main content area uncluttered.
+
+---
+
 ## Review Items (Not Questions)
 
 These items need review on Railway but aren't blocking questions:
 
 - [ ] Sites list page - needs review
 - [ ] Developments list page - needs review
-- [ ] Development detail page - all 8 improvements from previous session
+- [ ] Development detail page - all expandable cards
 
 ---
 
