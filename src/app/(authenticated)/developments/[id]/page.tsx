@@ -955,11 +955,10 @@ function ProgressTimeline({
                 <div
                   className={`
                     w-12 h-12 rounded-full flex items-center justify-center
-                    ${isCurrent ? 'ring-4' : ''}
+                    ${isCurrent ? 'ring-4 ring-[#fa6e60]/30' : ''}
                   `}
                   style={{
                     backgroundColor: getBgColour(),
-                    ringColor: isCurrent ? 'rgba(250, 110, 96, 0.3)' : undefined,
                   }}
                 >
                   {isPast ? (
