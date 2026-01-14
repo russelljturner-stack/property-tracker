@@ -2,64 +2,64 @@
 
 ## Session Summary
 
-This session focused on applying **Wildstone brand styling** to the development detail page. Key accomplishments:
+This session focused on the Development Detail page layout and Panel Configuration section:
 
 ### Completed
-1. **Merged header and site context** into a single unified card with coral (#fa6e60) background
-2. **Replaced emoji icons with SVG line-style icons** in all stage cards (Commercial, Design, Planning, Marketing, Build)
-3. **Changed stage card icon colours** from teal to coral (#fa6e60)
-4. **Updated ExpandableCard component** to accept ReactNode for icons (enables SVG support)
-5. **Made card headers larger** (text-xl instead of text-lg)
-6. **Added dusty rose background** to Site Context section (though Russell wanted grey instead)
-7. **Narrowed right sidebar column** (now 1/4 width instead of 1/3)
-8. **Moved What's Next and Progress Timeline** into left column
+1. **Dashboard two-column layout** - Restructured dashboard with main content (3/4) and sidebar (1/4)
+2. **Panel Configuration redesign**:
+   - Electric blue (#007aee) background
+   - Two-column layout: panel fields (2/3) + design image (1/3)
+   - SVG placeholder graphics that visually represent different panel sizes (48-Sheet, 96-Sheet, 6-Sheet, etc.) and types (Digital, Poster)
+   - Single panel = expanded view, multiple panels = collapsed summary rows
+3. **Tasks moved to sidebar** - Tasks section now at top of right sidebar with compact layout
+4. **Seed data updated** with correct dropdown values:
+   - Panel Types: Backlight, Banner, Digital, Poster, Scroller, Street Furniture, TBC, Tri-Vision
+   - Panel Sizes: 48 Sheet, 6 Sheet, 96 Sheet, Mega 48, Mega 6, Mega 96, Mini P10, Non-standard, P250, TBC, TFL CIPs, P10
+   - Structure Types: Building, Footbridge, Freestanding, Gantry, LUL Bridge, Rail Bridge, Tower, Underpass
+   - Orientations: Landscape, Portrait, TBC
 
-### Commits Made
-- `e9b0bc0` - Merge header and site context into single coral card
-- `31b60ee` - Replace emoji icons with SVG icons and adjust layout
-- `2c3034e` - Change stage card icons from teal to coral colour
+### Type Error Fix
+Fixed `PanelDetailType` to use `any` type temporarily to resolve Prisma type mismatch during Railway build.
 
 ## Current Status
 
-The development detail page now has Wildstone brand styling applied. The main layout uses:
-- **Coral header** with white text containing title, status, navigation, address, and badges
-- **Site Context section** with dusty rose background (Russell requested grey - not yet changed)
-- **Stage cards** with coral SVG icons
-- **Ocean blue sidebar** on the right (narrower)
-- **Black background** for Recent Activity section
-
-## Outstanding Tasks (Not Yet Completed)
-
-Russell requested these changes but the session ended before completion:
-
-1. **Change Site Context background to grey** (currently dusty rose #9f7865)
-2. **Make header section sticky** so it stays at top while content scrolls
-3. **Consider full-width layout** (header touching navigation, no side padding) - Russell said "not yet"
-
-## Brand Colour Reference
-
-| Colour | Hex | Usage |
-|--------|-----|-------|
-| Dark Teal | #1e434d | Primary text, icons on light backgrounds |
-| Coral | #fa6e60 | Accent, icons on dark backgrounds, header background |
-| Ocean Blue | #0078a0 | Right sidebar background |
-| Vibrant Blue | #007aee | What's Next, Planning Score badge |
-| Dusty Rose | #9f7865 | Site Context background (should be grey) |
-| Off-white | #f8f8f8 | Page background |
-| Black | #000000 | Recent Activity background |
-
-## Running Services
-
-- Railway auto-deploys from master branch
-- Production URL: https://property-tracker-production-ac30.up.railway.app
-- Test credentials: test@example.com / password123
-
-## Known Issues
-
-None currently blocking.
+- **Railway**: Deployed and building successfully at https://property-tracker-production-ac30.up.railway.app
+- **Development page**: Panel Configuration displays correctly with SVG placeholders
+- **Edit functionality**: Not yet implemented for Panel Configuration
 
 ## Next Steps
 
-1. Change Site Context background from dusty rose to grey
-2. Make header section sticky (fixed at top while content scrolls)
-3. Continue with any other brand styling refinements Russell requests
+**Priority: Implement Panel Configuration editing**
+
+A plan was created with details:
+
+1. **Create API endpoint** `/api/developments/[id]/details/route.ts`
+   - PATCH - update existing panel detail
+   - POST - create new panel detail
+   - DELETE - remove panel detail
+
+2. **Create client component** `src/components/PanelConfigurationCard.tsx`
+   - Follow same pattern as CommercialCard, DesignCard, etc.
+   - Edit mode for all panel fields (type, size, orientation, structure, digital, illuminated, sides, quantity, dimensions)
+   - "+ Add Panel" button
+   - Delete button for each panel (when multiple exist)
+
+3. **Update development page** to:
+   - Fetch lookup data (panelTypes, panelSizes, orientations, structureTypes)
+   - Pass to new PanelConfigurationCard component
+
+## Running Services
+
+- No local dev server was running - testing done on Railway
+- To start local dev: `npm run dev` (note: Turbopack issues on Windows, prefer Railway testing)
+
+## Known Issues
+
+1. **Type workaround**: `PanelDetailType` currently uses `any` - should be properly typed when PanelConfigurationCard is created
+2. **Collapse/expand for multiple panels**: Currently shows all panels (no true collapse) - needs client component with useState
+
+## Key Files Modified This Session
+
+- `src/app/(authenticated)/page.tsx` - Dashboard two-column layout
+- `src/app/(authenticated)/developments/[id]/page.tsx` - Panel Configuration redesign, Tasks in sidebar, SVG placeholders
+- `prisma/seed.ts` - Updated dropdown values for panel types, sizes, structures, orientations
