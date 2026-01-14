@@ -1296,15 +1296,15 @@ function InfoItem({ label, value }: { label: string; value?: string | null }) {
 type PanelDetailType = {
   id: number
   quantity?: number | null
-  panelType?: { name: string } | null
-  panelSize?: { name: string } | null
-  orientation?: { name: string } | null
-  structureType?: { name: string } | null
+  panelType?: { name: string; [key: string]: unknown } | null
+  panelSize?: { name: string; [key: string]: unknown } | null
+  orientation?: { name: string; [key: string]: unknown } | null
+  structureType?: { name: string; [key: string]: unknown } | null
   illuminated?: string | null
   digital?: string | null
   sides?: number | null
-  height?: number | string | null
-  width?: number | string | null
+  height?: number | string | unknown | null
+  width?: number | string | unknown | null
 }
 
 function PanelConfigurationDisplay({
