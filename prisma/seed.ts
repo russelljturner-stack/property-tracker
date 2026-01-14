@@ -251,36 +251,49 @@ async function main() {
 
   // Panel types
   const panelTypes = await Promise.all([
-    prisma.panelType.create({ data: { name: 'Digital LED', description: 'Digital LED screen', sortOrder: 1 } }),
-    prisma.panelType.create({ data: { name: 'Paper & Paste', description: 'Traditional poster', sortOrder: 2 } }),
-    prisma.panelType.create({ data: { name: 'Backlit', description: 'Illuminated static', sortOrder: 3 } }),
-    prisma.panelType.create({ data: { name: 'Tri-face', description: 'Rotating three-face unit', sortOrder: 4 } }),
-    prisma.panelType.create({ data: { name: 'Bus Shelter', description: '6-sheet bus shelter', sortOrder: 5 } }),
+    prisma.panelType.create({ data: { name: 'Backlight', description: 'Backlit illuminated panel', sortOrder: 1 } }),
+    prisma.panelType.create({ data: { name: 'Banner', description: 'Banner advertisement', sortOrder: 2 } }),
+    prisma.panelType.create({ data: { name: 'Digital', description: 'Digital LED screen', sortOrder: 3 } }),
+    prisma.panelType.create({ data: { name: 'Poster', description: 'Traditional poster', sortOrder: 4 } }),
+    prisma.panelType.create({ data: { name: 'Scroller', description: 'Scrolling panel display', sortOrder: 5 } }),
+    prisma.panelType.create({ data: { name: 'Street Furniture', description: 'Bus shelter / street furniture', sortOrder: 6 } }),
+    prisma.panelType.create({ data: { name: 'TBC', description: 'To be confirmed', sortOrder: 7 } }),
+    prisma.panelType.create({ data: { name: 'Tri-Vision', description: 'Rotating three-face unit', sortOrder: 8 } }),
   ]);
 
   // Panel sizes
   const panelSizes = await Promise.all([
-    prisma.panelSize.create({ data: { name: '6 Sheet', widthMm: 1200, heightMm: 1800, sortOrder: 1 } }),
-    prisma.panelSize.create({ data: { name: '48 Sheet', widthMm: 6096, heightMm: 3048, sortOrder: 2 } }),
+    prisma.panelSize.create({ data: { name: '48 Sheet', widthMm: 6096, heightMm: 3048, sortOrder: 1 } }),
+    prisma.panelSize.create({ data: { name: '6 Sheet', widthMm: 1200, heightMm: 1800, sortOrder: 2 } }),
     prisma.panelSize.create({ data: { name: '96 Sheet', widthMm: 12192, heightMm: 3048, sortOrder: 3 } }),
-    prisma.panelSize.create({ data: { name: 'Digital 6m x 3m', widthMm: 6000, heightMm: 3000, sortOrder: 4 } }),
-    prisma.panelSize.create({ data: { name: 'Digital 12m x 3m', widthMm: 12000, heightMm: 3000, sortOrder: 5 } }),
+    prisma.panelSize.create({ data: { name: 'Mega 48', widthMm: 6096, heightMm: 3048, sortOrder: 4 } }),
+    prisma.panelSize.create({ data: { name: 'Mega 6', widthMm: 1800, heightMm: 2700, sortOrder: 5 } }),
+    prisma.panelSize.create({ data: { name: 'Mega 96', widthMm: 12192, heightMm: 3048, sortOrder: 6 } }),
+    prisma.panelSize.create({ data: { name: 'Mini P10', sortOrder: 7 } }),
+    prisma.panelSize.create({ data: { name: 'Non-standard', sortOrder: 8 } }),
+    prisma.panelSize.create({ data: { name: 'P250', sortOrder: 9 } }),
+    prisma.panelSize.create({ data: { name: 'TBC', sortOrder: 10 } }),
+    prisma.panelSize.create({ data: { name: 'TFL CIPs', sortOrder: 11 } }),
+    prisma.panelSize.create({ data: { name: 'P10', sortOrder: 12 } }),
   ]);
 
   // Panel orientations
   const orientations = await Promise.all([
     prisma.panelOrientation.create({ data: { name: 'Landscape', sortOrder: 1 } }),
     prisma.panelOrientation.create({ data: { name: 'Portrait', sortOrder: 2 } }),
-    prisma.panelOrientation.create({ data: { name: 'Square', sortOrder: 3 } }),
+    prisma.panelOrientation.create({ data: { name: 'TBC', sortOrder: 3 } }),
   ]);
 
   // Structure types
   const structures = await Promise.all([
-    prisma.structureType.create({ data: { name: 'Monopole', description: 'Single pole structure', sortOrder: 1 } }),
-    prisma.structureType.create({ data: { name: 'Bipole', description: 'Two-pole structure', sortOrder: 2 } }),
-    prisma.structureType.create({ data: { name: 'Wall Mounted', description: 'Fixed to building', sortOrder: 3 } }),
-    prisma.structureType.create({ data: { name: 'Gantry', description: 'Bridge/gantry mount', sortOrder: 4 } }),
-    prisma.structureType.create({ data: { name: 'Freestanding', description: 'Ground-based structure', sortOrder: 5 } }),
+    prisma.structureType.create({ data: { name: 'Building', description: 'Mounted on building', sortOrder: 1 } }),
+    prisma.structureType.create({ data: { name: 'Footbridge', description: 'Pedestrian footbridge', sortOrder: 2 } }),
+    prisma.structureType.create({ data: { name: 'Freestanding', description: 'Ground-based structure', sortOrder: 3 } }),
+    prisma.structureType.create({ data: { name: 'Gantry', description: 'Road gantry mount', sortOrder: 4 } }),
+    prisma.structureType.create({ data: { name: 'LUL Bridge', description: 'London Underground bridge', sortOrder: 5 } }),
+    prisma.structureType.create({ data: { name: 'Rail Bridge', description: 'Railway bridge', sortOrder: 6 } }),
+    prisma.structureType.create({ data: { name: 'Tower', description: 'Tower structure', sortOrder: 7 } }),
+    prisma.structureType.create({ data: { name: 'Underpass', description: 'Road/rail underpass', sortOrder: 8 } }),
   ]);
 
   // Task types

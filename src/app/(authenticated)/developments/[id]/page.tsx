@@ -377,11 +377,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           {/* Progress Timeline - now within left column */}
           <ProgressTimeline stages={STAGES} currentStage={currentStage} />
 
-          {/* Panel Configuration - Two column: fields (2/3) + image (1/3) */}
-          <section className="bg-white shadow" style={{ borderRadius: 0 }}>
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Panel Configuration</h2>
-              <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
+          {/* Panel Configuration - Electric blue background, Two column: fields (2/3) + image (1/3) */}
+          <section className="shadow" style={{ backgroundColor: '#007aee', borderRadius: 0 }}>
+            <div className="px-6 py-4 border-b border-white/20 flex justify-between items-center">
+              <h2 className="text-lg font-semibold" style={{ color: '#ffffff' }}>Panel Configuration</h2>
+              <button className="text-sm hover:opacity-80 px-3 py-1 rounded-full border border-white/50" style={{ color: '#ffffff' }}>
                 Edit
               </button>
             </div>
@@ -390,13 +390,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 {/* Left column - Panel details (2/3 width) */}
                 <div className="lg:col-span-2">
                   {development.details.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {development.details.map((detail, index) => (
-                        <PanelDetailCard key={detail.id} detail={detail} index={index} />
-                      ))}
-                    </div>
+                    <PanelConfigurationDisplay
+                      details={development.details}
+                    />
                   ) : (
-                    <div className="text-gray-500 text-center py-8">
+                    <div className="text-white/70 text-center py-8">
                       No panel configuration defined yet.
                     </div>
                   )}
@@ -406,7 +404,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   <PanelImageDisplay
                     designUrl={development.designUrl}
                     designStatus={development.designFinalOrDraft}
-                    developmentType={development.developmentType?.name}
+                    panelSize={development.details[0]?.panelSize?.name}
+                    panelType={development.details[0]?.panelType?.name}
                   />
                 </div>
               </div>
@@ -524,7 +523,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         >
           {/* Tasks Section - At top of sidebar */}
           <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
-            <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Tasks</h3>
               <span className="text-sm text-gray-500">
                 {development.tasks.filter(t => !t.complete).length} open
@@ -532,7 +531,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
             <div className="divide-y divide-gray-100">
               {development.tasks.length === 0 ? (
-                <div className="px-4 py-6 text-center text-gray-500 text-sm">
+                <div className="px-6 py-6 text-center text-gray-500">
                   No tasks for this development.
                 </div>
               ) : (
@@ -541,7 +540,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 ))
               )}
             </div>
-            <div className="px-4 py-3 border-t border-gray-200 flex justify-between items-center">
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
               <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
                 + Add Task
               </button>
@@ -1291,37 +1290,198 @@ function InfoItem({ label, value }: { label: string; value?: string | null }) {
 }
 
 // =============================================================================
+// Component: Panel Configuration Display
+// Handles single panel (expanded) vs multiple panels (collapsed with expand)
+// =============================================================================
+type PanelDetailType = {
+  id: number
+  quantity?: number | null
+  panelType?: { name: string } | null
+  panelSize?: { name: string } | null
+  orientation?: { name: string } | null
+  structureType?: { name: string } | null
+  illuminated?: string | null
+  digital?: string | null
+  sides?: number | null
+  height?: number | string | null
+  width?: number | string | null
+}
+
+function PanelConfigurationDisplay({
+  details,
+}: {
+  details: PanelDetailType[]
+}) {
+  // Single panel = always expanded
+  if (details.length === 1) {
+    return <PanelDetailExpanded detail={details[0]} index={0} />
+  }
+
+  // Multiple panels = collapsed summary rows (client component handles expand state)
+  return <PanelDetailCollapsible details={details} />
+}
+
+// =============================================================================
+// Component: Panel Detail Expanded
+// Full display of all panel fields in a clear grid layout
+// =============================================================================
+function PanelDetailExpanded({
+  detail,
+  index,
+}: {
+  detail: PanelDetailType
+  index: number
+}) {
+  return (
+    <div className="bg-white/10 rounded-lg p-5">
+      {/* Panel header */}
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-base font-semibold text-white">
+          {detail.panelType?.name || 'Panel'} {index + 1}
+          {detail.quantity && detail.quantity > 1 && (
+            <span className="font-normal text-white/70"> × {detail.quantity}</span>
+          )}
+        </h4>
+        {/* Feature badges */}
+        <div className="flex gap-2">
+          {detail.digital === 'Yes' && (
+            <span className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white">Digital</span>
+          )}
+          {detail.illuminated === 'Yes' && (
+            <span className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white">Illuminated</span>
+          )}
+        </div>
+      </div>
+
+      {/* Fields grid - spread out evenly */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <PanelField label="Panel Type" value={detail.panelType?.name} />
+        <PanelField label="Size" value={detail.panelSize?.name} />
+        <PanelField label="Orientation" value={detail.orientation?.name} />
+        <PanelField label="Structure" value={detail.structureType?.name} />
+        <PanelField label="Sides" value={detail.sides?.toString()} />
+        <PanelField label="Quantity" value={detail.quantity?.toString()} />
+        <PanelField
+          label="Dimensions"
+          value={detail.height && detail.width ? `${detail.height}m × ${detail.width}m` : null}
+        />
+        <PanelField
+          label="Features"
+          value={[
+            detail.digital === 'Yes' ? 'Digital' : null,
+            detail.illuminated === 'Yes' ? 'Illuminated' : null,
+          ].filter(Boolean).join(', ') || null}
+        />
+      </div>
+    </div>
+  )
+}
+
+// =============================================================================
+// Component: Panel Field (for expanded view)
+// Label/value pair styled for electric blue background
+// =============================================================================
+function PanelField({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div>
+      <dt className="text-xs text-white/60 uppercase tracking-wider">{label}</dt>
+      <dd className="text-sm text-white font-medium mt-0.5">{value || '—'}</dd>
+    </div>
+  )
+}
+
+// =============================================================================
+// Component: Panel Detail Collapsible
+// For multiple panels - shows summary row with expandable content
+// Note: True collapse/expand requires client component - for now shows all collapsed
+// with summary visible, click would need client-side interactivity
+// =============================================================================
+function PanelDetailCollapsible({
+  details,
+}: {
+  details: PanelDetailType[]
+}) {
+  return (
+    <div className="space-y-3">
+      {details.map((detail, index) => (
+        <div key={detail.id} className="bg-white/10 rounded-lg overflow-hidden">
+          {/* Summary header - clickable row */}
+          <div className="px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold text-white">
+                {index + 1}
+              </span>
+              <div>
+                <span className="font-medium text-white">
+                  {detail.panelType?.name || 'Panel'}
+                </span>
+                <span className="text-white/70 ml-2">
+                  {[detail.panelSize?.name, detail.orientation?.name].filter(Boolean).join(' • ')}
+                </span>
+                {detail.quantity && detail.quantity > 1 && (
+                  <span className="text-white/60 ml-2">× {detail.quantity}</span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {detail.digital === 'Yes' && (
+                <span className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white">Digital</span>
+              )}
+              {detail.illuminated === 'Yes' && (
+                <span className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white">Illum</span>
+              )}
+              {/* Expand icon - indicates clickable */}
+              <svg className="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          {/* Additional details row - compact info */}
+          <div className="px-4 pb-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/60">
+            {detail.structureType?.name && <span>Structure: {detail.structureType.name}</span>}
+            {detail.sides && <span>Sides: {detail.sides}</span>}
+            {detail.height && detail.width && <span>Size: {detail.height}m × {detail.width}m</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// =============================================================================
 // Component: Panel Image Display
-// Shows design image if available, otherwise a holding image based on development type
+// Shows design image if available, otherwise SVG placeholder based on panel size/type
 // =============================================================================
 function PanelImageDisplay({
   designUrl,
   designStatus,
-  developmentType,
+  panelSize,
+  panelType,
 }: {
   designUrl?: string | null
   designStatus?: string | null
-  developmentType?: string | null
+  panelSize?: string | null
+  panelType?: string | null
 }) {
   // If we have a design image, show it
   if (designUrl) {
     return (
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-500">Design Image</span>
+          <span className="text-sm text-white/70">Design Image</span>
           <span
             className={`text-xs px-2 py-0.5 rounded-full font-medium ${
               designStatus === 'Final'
-                ? 'bg-green-100 text-green-800'
+                ? 'bg-green-500 text-white'
                 : designStatus === 'Draft'
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-gray-100 text-gray-600'
+                ? 'bg-blue-500 text-white'
+                : 'bg-white/20 text-white'
             }`}
           >
             {designStatus || 'Proposed'}
           </span>
         </div>
-        <div className="aspect-[4/3] bg-gray-100 rounded overflow-hidden border border-gray-200">
+        <div className="aspect-[4/3] bg-white rounded overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={designUrl}
@@ -1333,7 +1493,7 @@ function PanelImageDisplay({
           href={designUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-coral hover:text-coral-dark flex items-center gap-1"
+          className="text-sm text-white hover:text-white/80 flex items-center gap-1"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -1344,54 +1504,15 @@ function PanelImageDisplay({
     )
   }
 
-  // No design image - show holding image based on development type
-  // This will be a placeholder that indicates what type of panel is being developed
-  const getHoldingImageIcon = () => {
-    const type = developmentType?.toLowerCase() || ''
-    if (type.includes('48') || type.includes('sheet')) {
-      return { icon: '48-Sheet', desc: '48-Sheet Billboard' }
-    }
-    if (type.includes('96') || type.includes('large')) {
-      return { icon: '96-Sheet', desc: '96-Sheet Billboard' }
-    }
-    if (type.includes('digital') || type.includes('d48') || type.includes('d96')) {
-      return { icon: 'Digital', desc: 'Digital Billboard' }
-    }
-    if (type.includes('6') && type.includes('sheet')) {
-      return { icon: '6-Sheet', desc: '6-Sheet Panel' }
-    }
-    return { icon: 'Panel', desc: 'Advertising Panel' }
-  }
-
-  const holdingInfo = getHoldingImageIcon()
-
+  // No design image - show SVG placeholder based on panel size and type
   return (
     <div className="space-y-2">
-      <span className="text-sm text-gray-500">Design Image</span>
-      <div
-        className="aspect-[4/3] rounded overflow-hidden border-2 border-dashed border-gray-300 flex flex-col items-center justify-center"
-        style={{ backgroundColor: '#f8f8f8' }}
-      >
-        {/* Placeholder icon - billboard silhouette */}
-        <svg
-          className="w-16 h-16 text-gray-300 mb-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          strokeWidth={1}
-        >
-          <rect x="3" y="4" width="18" height="12" rx="1" />
-          <line x1="7" y1="16" x2="7" y2="20" />
-          <line x1="17" y1="16" x2="17" y2="20" />
-          <line x1="5" y1="20" x2="9" y2="20" />
-          <line x1="15" y1="20" x2="19" y2="20" />
-        </svg>
-        <span className="text-lg font-bold text-gray-400">{holdingInfo.icon}</span>
-        <span className="text-xs text-gray-400 mt-1">{holdingInfo.desc}</span>
-        <span className="text-xs text-gray-400 mt-2">No design uploaded</span>
+      <span className="text-sm text-white/70">Design Image</span>
+      <div className="bg-white/10 rounded overflow-hidden">
+        <PanelSizeSVG size={panelSize} type={panelType} />
       </div>
       <button
-        className="w-full text-sm py-2 border border-dashed border-gray-300 text-gray-500 hover:border-coral hover:text-coral transition-colors rounded"
+        className="w-full text-sm py-2 border border-dashed border-white/30 text-white/70 hover:border-white hover:text-white transition-colors rounded"
       >
         + Upload Design
       </button>
@@ -1400,7 +1521,205 @@ function PanelImageDisplay({
 }
 
 // =============================================================================
-// Component: Panel Detail Card
+// Component: Panel Size SVG
+// Generates SVG placeholder graphics based on panel size and type
+// =============================================================================
+function PanelSizeSVG({
+  size,
+  type,
+}: {
+  size?: string | null
+  type?: string | null
+}) {
+  const sizeName = size?.toLowerCase() || ''
+  const typeName = type?.toLowerCase() || ''
+  const isDigital = typeName.includes('digital')
+  const isPortrait = sizeName.includes('6 sheet') || sizeName.includes('mega 6')
+
+  // Determine panel aspect ratio and style
+  const getPanelConfig = () => {
+    // 6 Sheet variants (portrait)
+    if (sizeName.includes('6 sheet') || sizeName === 'mega 6') {
+      return { width: 60, height: 90, label: size || '6 Sheet', isPortrait: true }
+    }
+    // 48 Sheet variants (landscape)
+    if (sizeName.includes('48') || sizeName === 'mega 48') {
+      return { width: 100, height: 50, label: size || '48 Sheet', isPortrait: false }
+    }
+    // 96 Sheet variants (extra wide landscape)
+    if (sizeName.includes('96') || sizeName === 'mega 96') {
+      return { width: 120, height: 30, label: size || '96 Sheet', isPortrait: false }
+    }
+    // P10 / Mini P10
+    if (sizeName.includes('p10') || sizeName.includes('mini')) {
+      return { width: 80, height: 60, label: size || 'P10', isPortrait: false }
+    }
+    // P250
+    if (sizeName.includes('p250')) {
+      return { width: 90, height: 50, label: 'P250', isPortrait: false }
+    }
+    // TFL CIPs
+    if (sizeName.includes('tfl') || sizeName.includes('cip')) {
+      return { width: 70, height: 50, label: 'TFL CIPs', isPortrait: false }
+    }
+    // Default / TBC / Non-standard
+    return { width: 80, height: 50, label: size || 'TBC', isPortrait: false }
+  }
+
+  const config = getPanelConfig()
+
+  // Calculate viewBox dimensions to centre the panel
+  const padding = 20
+  const viewWidth = config.width + padding * 2
+  const viewHeight = config.height + padding * 2 + 30 // Extra space for legs
+
+  // Panel position
+  const panelX = padding
+  const panelY = padding
+  const legY = panelY + config.height
+
+  return (
+    <svg
+      viewBox={`0 0 ${viewWidth} ${viewHeight}`}
+      className="w-full"
+      style={{ backgroundColor: '#1a5276' }}
+    >
+      {/* Background gradient */}
+      <defs>
+        <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#1a5276" />
+          <stop offset="100%" stopColor="#0e3a5c" />
+        </linearGradient>
+        <linearGradient id="panelGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor={isDigital ? '#1a1a2e' : '#ffffff'} />
+          <stop offset="100%" stopColor={isDigital ? '#16213e' : '#f0f0f0'} />
+        </linearGradient>
+        {isDigital && (
+          <linearGradient id="screenGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#3498db" stopOpacity="0.3" />
+            <stop offset="50%" stopColor="#9b59b6" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#e74c3c" stopOpacity="0.3" />
+          </linearGradient>
+        )}
+      </defs>
+
+      {/* Sky background */}
+      <rect x="0" y="0" width={viewWidth} height={viewHeight} fill="url(#skyGradient)" />
+
+      {/* Ground line */}
+      <line
+        x1="0"
+        y1={viewHeight - 10}
+        x2={viewWidth}
+        y2={viewHeight - 10}
+        stroke="#0a2840"
+        strokeWidth="2"
+      />
+
+      {/* Support structure - legs */}
+      <rect
+        x={panelX + config.width * 0.25 - 3}
+        y={legY}
+        width="6"
+        height={viewHeight - legY - 10}
+        fill="#2c3e50"
+      />
+      <rect
+        x={panelX + config.width * 0.75 - 3}
+        y={legY}
+        width="6"
+        height={viewHeight - legY - 10}
+        fill="#2c3e50"
+      />
+
+      {/* Panel frame */}
+      <rect
+        x={panelX - 2}
+        y={panelY - 2}
+        width={config.width + 4}
+        height={config.height + 4}
+        fill="#34495e"
+        rx="2"
+      />
+
+      {/* Panel surface */}
+      <rect
+        x={panelX}
+        y={panelY}
+        width={config.width}
+        height={config.height}
+        fill="url(#panelGradient)"
+        rx="1"
+      />
+
+      {/* Digital screen effect */}
+      {isDigital && (
+        <>
+          <rect
+            x={panelX}
+            y={panelY}
+            width={config.width}
+            height={config.height}
+            fill="url(#screenGlow)"
+            rx="1"
+          />
+          {/* LED dot pattern */}
+          <pattern id="ledPattern" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="0.5" fill="#ffffff" opacity="0.1" />
+          </pattern>
+          <rect
+            x={panelX}
+            y={panelY}
+            width={config.width}
+            height={config.height}
+            fill="url(#ledPattern)"
+            rx="1"
+          />
+        </>
+      )}
+
+      {/* Panel size label */}
+      <text
+        x={panelX + config.width / 2}
+        y={panelY + config.height / 2 - 5}
+        textAnchor="middle"
+        fill={isDigital ? '#ffffff' : '#2c3e50'}
+        fontSize={config.isPortrait ? '10' : '12'}
+        fontWeight="bold"
+        fontFamily="system-ui, sans-serif"
+      >
+        {config.label}
+      </text>
+
+      {/* Panel type label */}
+      <text
+        x={panelX + config.width / 2}
+        y={panelY + config.height / 2 + 10}
+        textAnchor="middle"
+        fill={isDigital ? '#94a3b8' : '#64748b'}
+        fontSize="8"
+        fontFamily="system-ui, sans-serif"
+      >
+        {type || 'Poster'}
+      </text>
+
+      {/* "No design" indicator */}
+      <text
+        x={panelX + config.width / 2}
+        y={panelY + config.height - 8}
+        textAnchor="middle"
+        fill={isDigital ? '#64748b' : '#94a3b8'}
+        fontSize="6"
+        fontFamily="system-ui, sans-serif"
+      >
+        No design uploaded
+      </text>
+    </svg>
+  )
+}
+
+// =============================================================================
+// Component: Panel Detail Card (legacy - kept for reference)
 // =============================================================================
 function PanelDetailCard({
   detail,
@@ -1425,16 +1744,16 @@ function PanelDetailCard({
   if (detail.sides && detail.sides > 1) features.push(`${detail.sides} sides`)
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4">
+    <div className="border border-white/20 rounded-lg p-4 bg-white/5">
       <div className="flex items-start justify-between">
         <div>
-          <p className="font-medium text-gray-900">
+          <p className="font-medium text-white">
             {detail.panelType?.name || "Panel"} {index + 1}
             {detail.quantity && detail.quantity > 1 && (
-              <span className="text-gray-500 font-normal"> × {detail.quantity}</span>
+              <span className="text-white/70 font-normal"> × {detail.quantity}</span>
             )}
           </p>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-white/70 mt-1">
             {[
               detail.panelSize?.name,
               detail.orientation?.name,
@@ -1445,11 +1764,11 @@ function PanelDetailCard({
           </p>
         </div>
         {features.length > 0 && (
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1 justify-end">
             {features.map((feature) => (
               <span
                 key={feature}
-                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700"
+                className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white"
               >
                 {feature}
               </span>
@@ -1460,6 +1779,7 @@ function PanelDetailCard({
     </div>
   )
 }
+
 
 // =============================================================================
 // Component: Planning Score Badge
