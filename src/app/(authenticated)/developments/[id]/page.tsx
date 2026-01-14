@@ -31,13 +31,13 @@ type PageProps = {
 // Each stage maps to fields in the database and determines what to show
 // Icons are SVG paths (line-style, matching sidebar navigation)
 const STAGES = [
-  { key: 'survey', label: 'Survey', iconPath: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z' },
-  { key: 'commercial', label: 'Commercial', iconPath: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-  { key: 'design', label: 'Design', iconPath: 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' },
-  { key: 'planning', label: 'Planning', iconPath: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-  { key: 'marketing', label: 'Marketing', iconPath: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z' },
-  { key: 'build', label: 'Build', iconPath: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
-  { key: 'live', label: 'Live', iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+  { key: 'survey', label: 'Survey', iconPath: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z' }, // Location pin
+  { key: 'commercial', label: 'Commercial', iconPath: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }, // Pound/money circle
+  { key: 'design', label: 'Design', iconPath: 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' }, // Pencil
+  { key: 'planning', label: 'Planning', iconPath: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' }, // Clipboard with checkmark
+  { key: 'marketing', label: 'Marketing', iconPath: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z' }, // Megaphone/loudhailer
+  { key: 'build', label: 'Build', iconPath: 'M4 21h16M4 21V10l4-4m12 15V10l-4-4M8 6l4-4 4 4M12 2v8M8 21v-6h8v6' }, // Crane/construction
+  { key: 'live', label: 'Live', iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }, // Checkmark circle
 ] as const
 
 type StageKey = typeof STAGES[number]['key']
@@ -1194,22 +1194,22 @@ function WhatsNextPrompt({ development }: {
 
   if (!nextAction) return null
 
-  // Use bright yellow for emphasis - high contrast attention grabber
-  // Text is dark teal for readability on yellow background
+  // Use vibrant blue for emphasis - high contrast attention grabber
+  // Text is white for readability on blue background
   return (
     <div
       className="p-4"
       style={{
-        backgroundColor: '#fff48b', // Bright yellow for emphasis
+        backgroundColor: '#007aee', // Vibrant blue for emphasis
         borderRadius: 0,
       }}
     >
       <div className="flex items-center gap-4">
-        {/* Icon in coral for high priority, teal for others */}
+        {/* Icon - white on blue background, coral for high priority */}
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center"
           style={{
-            backgroundColor: nextAction.priority === 'high' ? '#fa6e60' : '#1e434d',
+            backgroundColor: nextAction.priority === 'high' ? '#fa6e60' : 'rgba(255, 255, 255, 0.2)',
           }}
         >
           <svg
@@ -1229,16 +1229,10 @@ function WhatsNextPrompt({ development }: {
           </svg>
         </div>
         <div>
-          <p
-            className="text-xs font-bold uppercase tracking-wider"
-            style={{ color: '#1e434d' }}
-          >
+          <p className="text-xs font-bold uppercase tracking-wider text-white/80">
             What&apos;s Next
           </p>
-          <p
-            className="font-semibold text-lg"
-            style={{ color: '#1e434d' }}
-          >
+          <p className="font-semibold text-lg text-white">
             {nextAction.action}
           </p>
         </div>
@@ -1347,13 +1341,12 @@ function PlanningScoreBadge({ score }: { score: number | null | undefined }) {
     }
   }
 
-  // Use bright yellow for emphasis with dark teal text
+  // Use vibrant blue for emphasis with white text
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-3 py-1"
+      className="inline-flex items-center gap-1.5 px-3 py-1 text-white"
       style={{
-        backgroundColor: '#fff48b', // Bright yellow
-        color: '#1e434d', // Dark teal
+        backgroundColor: '#007aee', // Vibrant blue
         borderRadius: '9999px',
       }}
       title={`Planning Score: ${score}/5 - ${getProbabilityText()}`}
@@ -1364,13 +1357,12 @@ function PlanningScoreBadge({ score }: { score: number | null | undefined }) {
         stroke="currentColor"
         viewBox="0 0 24 24"
         strokeWidth={2}
-        style={{ color: '#1e434d' }}
       >
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
       </svg>
       <span className="text-xs font-semibold">Planning:</span>
       <span className="font-bold">{score}/5</span>
-      <span className="text-xs font-medium">({getProbabilityText()})</span>
+      <span className="text-xs font-medium opacity-90">({getProbabilityText()})</span>
     </span>
   )
 }
