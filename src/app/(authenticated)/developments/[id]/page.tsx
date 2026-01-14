@@ -29,14 +29,15 @@ type PageProps = {
 
 // Define the development lifecycle stages
 // Each stage maps to fields in the database and determines what to show
+// Icons are SVG paths (line-style, matching sidebar navigation)
 const STAGES = [
-  { key: 'survey', label: 'Survey', icon: '📍' },
-  { key: 'commercial', label: 'Commercial', icon: '💼' },
-  { key: 'design', label: 'Design', icon: '✏️' },
-  { key: 'planning', label: 'Planning', icon: '📋' },
-  { key: 'marketing', label: 'Marketing', icon: '📢' },
-  { key: 'build', label: 'Build', icon: '🏗️' },
-  { key: 'live', label: 'Live', icon: '✅' },
+  { key: 'survey', label: 'Survey', iconPath: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z' },
+  { key: 'commercial', label: 'Commercial', iconPath: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+  { key: 'design', label: 'Design', iconPath: 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' },
+  { key: 'planning', label: 'Planning', iconPath: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
+  { key: 'marketing', label: 'Marketing', iconPath: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z' },
+  { key: 'build', label: 'Build', iconPath: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' },
+  { key: 'live', label: 'Live', iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
 ] as const
 
 type StageKey = typeof STAGES[number]['key']
@@ -228,16 +229,16 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       {/* Header - Option A: Two-row layout */}
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white shadow" style={{ borderRadius: 0 }}>
         {/* Top row: Title + Status + Buttons */}
         <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <Link href="/developments" className="text-gray-400 hover:text-gray-600" title="Back to list">
+            <Link href="/developments" title="Back to list" style={{ color: '#fa6e60' }} className="hover:opacity-80">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
-            <h1 className="text-xl font-bold text-gray-900">{siteName}</h1>
+            <h1 className="text-xl font-bold" style={{ color: '#1e434d' }}>{siteName}</h1>
             {development.status && (
               <StatusBadge
                 name={development.status.name}
@@ -286,14 +287,16 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             {development.site && (
               <Link
                 href={`/sites/${development.site.id}`}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+                className="px-3 py-1.5 text-sm border rounded-full hover:bg-gray-50"
+                style={{ borderColor: '#1e434d', color: '#1e434d' }}
               >
                 View Site
               </Link>
             )}
             <Link
               href={`/developments/${development.id}/edit`}
-              className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-3 py-1.5 text-sm text-white rounded-full transition-colors hover:opacity-90"
+              style={{ backgroundColor: '#1e434d' }}
             >
               Edit
             </Link>
@@ -320,8 +323,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
       {/* Site Context - Map and Photo thumbnails */}
       {development.site && (
-        <div className="bg-white rounded-lg shadow p-4">
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">Site Context</h3>
+        <div className="bg-white shadow p-4" style={{ borderRadius: 0 }}>
+          <h3 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: '#1e434d' }}>Site Context</h3>
           {/* Thumbnails - 160x120px (4:3 ratio) */}
           <div className="flex gap-3">
             {/* Map thumbnail */}
@@ -374,14 +377,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         {/* Left column: Tasks and Stage Cards (2/3 width) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Tasks Section - Most prominent */}
-          <section id="tasks" className="bg-white rounded-lg shadow">
+          <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-gray-900">Tasks</h2>
+              <h2 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Tasks</h2>
               <div className="flex items-center gap-3">
                 <span className="text-sm text-gray-500">
                   {development.tasks.filter(t => !t.complete).length} open
                 </span>
-                <button className="text-sm text-blue-600 hover:text-blue-800">
+                <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
                   + Add Task
                 </button>
               </div>
@@ -398,7 +401,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               )}
               {development.tasks.length > 5 && (
                 <div className="px-6 py-3 text-center">
-                  <button className="text-sm text-blue-600 hover:text-blue-800">
+                  <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
                     View all {development.tasks.length} tasks
                   </button>
                 </div>
@@ -408,9 +411,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
           {/* Panel Details - Always visible summary */}
           {development.details.length > 0 && (
-            <section className="bg-white rounded-lg shadow">
+            <section className="bg-white shadow" style={{ borderRadius: 0 }}>
               <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Panel Configuration</h2>
+                <h2 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Panel Configuration</h2>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -523,12 +526,18 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Right column: Sidebar (1/3 width) */}
-        <div className="space-y-6">
+        {/* Right column: Sidebar (1/3 width) - Ocean blue background */}
+        <div
+          className="space-y-6 p-4"
+          style={{
+            backgroundColor: '#0078a0', // Ocean blue
+            borderRadius: 0,
+          }}
+        >
           {/* Key Contacts Card */}
-          <section className="bg-white rounded-lg shadow">
+          <section className="bg-white shadow" style={{ borderRadius: 0 }}>
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+              <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#1e434d' }}>
                 Key Contacts
               </h3>
             </div>
@@ -546,8 +555,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </section>
 
           {/* Internal Team Card */}
-          <section className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
+          <section className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
+            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: '#1e434d' }}>
               Internal Team
             </h3>
             <div className="space-y-3">
@@ -556,21 +565,32 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           </section>
 
-          {/* Recent Activity Card */}
-          <section className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+          {/* Recent Activity Card - Black background for contrast */}
+          <section className="shadow" style={{ backgroundColor: '#000000', borderRadius: 0 }}>
+            <div className="px-6 py-4 border-b border-white/20">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-white flex items-center gap-2">
+                {/* Activity icon in coral */}
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  style={{ color: '#fa6e60' }}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 Recent Activity
               </h3>
             </div>
-            <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+            <div className="divide-y divide-white/10 max-h-80 overflow-y-auto">
               {activityItems.length === 0 ? (
-                <div className="px-6 py-4 text-sm text-gray-500">
+                <div className="px-6 py-4 text-sm text-white/60">
                   No recent activity.
                 </div>
               ) : (
                 activityItems.slice(0, 10).map((item, index) => (
-                  <ActivityItem key={index} item={item} />
+                  <ActivityItemDark key={index} item={item} />
                 ))
               )}
             </div>
@@ -578,7 +598,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
           {/* Related Developments Card - other developments at this site */}
           {development.site?.developments && development.site.developments.length > 1 && (
-            <section className="bg-white rounded-lg shadow">
+            <section className="bg-white shadow" style={{ borderRadius: 0 }}>
               <div className="px-6 py-4 border-b border-gray-200">
                 <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
                   Related Developments
@@ -621,8 +641,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           )}
 
           {/* Quick Info Card */}
-          <section className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
+          <section className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
+            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: '#1e434d' }}>
               Quick Info
             </h3>
             <div className="space-y-3">
@@ -894,6 +914,7 @@ function buildActivityLog(development: {
 
 // =============================================================================
 // Component: Progress Timeline
+// Uses brand colours: teal for complete, coral for current, muted grey for future
 // =============================================================================
 function ProgressTimeline({
   stages,
@@ -905,41 +926,83 @@ function ProgressTimeline({
   const currentIndex = stages.findIndex(s => s.key === currentStage)
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
       <div className="flex items-center justify-between">
         {stages.map((stage, index) => {
           const isPast = index < currentIndex
           const isCurrent = index === currentIndex
           const isFuture = index > currentIndex
 
+          // Colour based on status:
+          // Past/Complete = dark teal #1e434d
+          // Current = coral #fa6e60
+          // Future = muted grey
+          const getIconColour = () => {
+            if (isPast) return '#1e434d'
+            if (isCurrent) return '#fa6e60'
+            return '#9ca3af' // grey-400
+          }
+
+          const getBgColour = () => {
+            if (isPast) return 'rgba(30, 67, 77, 0.1)' // teal with opacity
+            if (isCurrent) return 'rgba(250, 110, 96, 0.15)' // coral with opacity
+            return '#f3f4f6' // grey-100
+          }
+
           return (
             <div key={stage.key} className="flex items-center flex-1 last:flex-none">
               <div className="flex flex-col items-center">
                 <div
                   className={`
-                    w-10 h-10 rounded-full flex items-center justify-center text-lg
-                    ${isPast ? 'bg-green-100 text-green-600' : ''}
-                    ${isCurrent ? 'bg-blue-600 text-white ring-4 ring-blue-100' : ''}
-                    ${isFuture ? 'bg-gray-100 text-gray-400' : ''}
+                    w-12 h-12 rounded-full flex items-center justify-center
+                    ${isCurrent ? 'ring-4' : ''}
                   `}
+                  style={{
+                    backgroundColor: getBgColour(),
+                    ringColor: isCurrent ? 'rgba(250, 110, 96, 0.3)' : undefined,
+                  }}
                 >
-                  {isPast ? '✓' : stage.icon}
+                  {isPast ? (
+                    // Checkmark for completed stages
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2.5}
+                      style={{ color: getIconColour() }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    // Stage icon
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      style={{ color: getIconColour() }}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d={stage.iconPath} />
+                    </svg>
+                  )}
                 </div>
                 <span
-                  className={`
-                    mt-2 text-xs font-medium
-                    ${isCurrent ? 'text-blue-600' : isPast ? 'text-green-600' : 'text-gray-400'}
-                  `}
+                  className="mt-2 text-xs font-medium"
+                  style={{
+                    color: isPast ? '#1e434d' : isCurrent ? '#fa6e60' : '#9ca3af',
+                  }}
                 >
                   {stage.label}
                 </span>
               </div>
               {index < stages.length - 1 && (
                 <div
-                  className={`
-                    flex-1 h-0.5 mx-2
-                    ${index < currentIndex ? 'bg-green-300' : 'bg-gray-200'}
-                  `}
+                  className="flex-1 h-0.5 mx-2"
+                  style={{
+                    backgroundColor: index < currentIndex ? '#1e434d' : '#e5e7eb',
+                  }}
                 />
               )}
             </div>
@@ -1132,19 +1195,53 @@ function WhatsNextPrompt({ development }: {
 
   if (!nextAction) return null
 
-  const priorityStyles = {
-    high: 'bg-red-50 border-red-200 text-red-800',
-    medium: 'bg-amber-50 border-amber-200 text-amber-800',
-    low: 'bg-green-50 border-green-200 text-green-800',
-  }
-
+  // Use bright yellow for emphasis - high contrast attention grabber
+  // Text is dark teal for readability on yellow background
   return (
-    <div className={`rounded-lg border p-4 ${priorityStyles[nextAction.priority]}`}>
-      <div className="flex items-center gap-3">
-        <span className="text-2xl">{nextAction.icon}</span>
+    <div
+      className="p-4"
+      style={{
+        backgroundColor: '#fff48b', // Bright yellow for emphasis
+        borderRadius: 0,
+      }}
+    >
+      <div className="flex items-center gap-4">
+        {/* Icon in coral for high priority, teal for others */}
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center"
+          style={{
+            backgroundColor: nextAction.priority === 'high' ? '#fa6e60' : '#1e434d',
+          }}
+        >
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+          >
+            {nextAction.priority === 'high' ? (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            ) : nextAction.priority === 'medium' ? (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            )}
+          </svg>
+        </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider opacity-75">What&apos;s Next</p>
-          <p className="font-medium">{nextAction.action}</p>
+          <p
+            className="text-xs font-bold uppercase tracking-wider"
+            style={{ color: '#1e434d' }}
+          >
+            What&apos;s Next
+          </p>
+          <p
+            className="font-semibold text-lg"
+            style={{ color: '#1e434d' }}
+          >
+            {nextAction.action}
+          </p>
         </div>
       </div>
     </div>
@@ -1227,23 +1324,16 @@ function PanelDetailCard({
 
 // =============================================================================
 // Component: Planning Score Badge
-// Shows 1-5 planning score with colour coding
+// Shows 1-5 planning score with bright yellow emphasis
 // =============================================================================
 function PlanningScoreBadge({ score }: { score: number | null | undefined }) {
   if (score === null || score === undefined) {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 rounded text-gray-500">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-500" style={{ borderRadius: '9999px' }}>
         <span className="text-xs">Planning Score:</span>
         <span className="font-medium">—</span>
       </span>
     )
-  }
-
-  // Colour coding based on score
-  const getScoreStyle = () => {
-    if (score >= 4) return 'bg-green-100 text-green-800 border-green-200'
-    if (score === 3) return 'bg-amber-100 text-amber-800 border-amber-200'
-    return 'bg-red-100 text-red-800 border-red-200'
   }
 
   // Probability description
@@ -1258,14 +1348,30 @@ function PlanningScoreBadge({ score }: { score: number | null | undefined }) {
     }
   }
 
+  // Use bright yellow for emphasis with dark teal text
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded border ${getScoreStyle()}`}
+      className="inline-flex items-center gap-1.5 px-3 py-1"
+      style={{
+        backgroundColor: '#fff48b', // Bright yellow
+        color: '#1e434d', // Dark teal
+        borderRadius: '9999px',
+      }}
       title={`Planning Score: ${score}/5 - ${getProbabilityText()}`}
     >
-      <span className="text-xs font-medium">Planning:</span>
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+        style={{ color: '#1e434d' }}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <span className="text-xs font-semibold">Planning:</span>
       <span className="font-bold">{score}/5</span>
-      <span className="text-xs opacity-75">({getProbabilityText()})</span>
+      <span className="text-xs font-medium">({getProbabilityText()})</span>
     </span>
   )
 }
@@ -1512,6 +1618,7 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
             )}
           </div>
         </div>
+        {/* Contact action icons - teal colour */}
         <div className="flex gap-2 flex-shrink-0">
           {contact.phone && (
             <a
@@ -1519,7 +1626,7 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
               className="p-1.5 rounded-full hover:bg-gray-100"
               title={contact.phone}
             >
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#1e434d' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
             </a>
@@ -1530,7 +1637,7 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
               className="p-1.5 rounded-full hover:bg-gray-100"
               title={contact.email}
             >
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#1e434d' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </a>
@@ -1542,7 +1649,7 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
 }
 
 // =============================================================================
-// Component: Activity Item
+// Component: Activity Item (Light background)
 // =============================================================================
 function ActivityItem({ item }: { item: ActivityLogItem }) {
   return (
@@ -1557,6 +1664,46 @@ function ActivityItem({ item }: { item: ActivityLogItem }) {
         <div className="flex-1 min-w-0">
           <p className="text-sm text-gray-900">{item.description}</p>
           <p className="text-xs text-gray-500 mt-0.5">
+            {item.by && `${item.by} • `}
+            {formatDate(item.date)}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// =============================================================================
+// Component: Activity Item Dark (Black background)
+// Uses coral accent for icons, white text
+// =============================================================================
+function ActivityItemDark({ item }: { item: ActivityLogItem }) {
+  return (
+    <div className="px-6 py-3">
+      <div className="flex items-start gap-3">
+        {/* Icon - line-style SVG in coral on dark background */}
+        <div
+          className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(250, 110, 96, 0.2)' }}
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            style={{ color: '#fa6e60' }}
+          >
+            {item.type === 'note' ? (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            )}
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-white">{item.description}</p>
+          <p className="text-xs text-white/60 mt-0.5">
             {item.by && `${item.by} • `}
             {formatDate(item.date)}
           </p>
