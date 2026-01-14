@@ -9,22 +9,22 @@ export default function ContactsPage() {
       {/* Page header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
+          <h1 className="text-2xl font-bold text-teal">Contacts</h1>
           <p className="text-gray-600">
             Manage people and companies
           </p>
         </div>
         <a
           href="/contacts/new"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-4 py-2 bg-teal text-white rounded-full hover:bg-coral transition-colors"
         >
           Add Contact
         </a>
       </div>
 
       {/* Placeholder content */}
-      <div className="bg-white rounded-lg shadow p-8 text-center">
-        <div className="text-gray-400 mb-4">
+      <div className="bg-white shadow p-8 text-center" style={{ borderRadius: 0 }}>
+        <div className="text-coral mb-4">
           <svg
             className="w-16 h-16 mx-auto"
             fill="none"
@@ -39,7 +39,7 @@ export default function ContactsPage() {
             />
           </svg>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-teal mb-2">
           Contacts
         </h2>
         <p className="text-gray-500 max-w-md mx-auto">

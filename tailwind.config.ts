@@ -1,13 +1,34 @@
 import type { Config } from 'tailwindcss'
 
 /**
- * Tailwind Configuration with Wildstone Brand Colours
+ * Property Development Tracker - Tailwind Configuration
  *
- * This defines custom colours that can be used throughout the app:
- * - bg-coral, text-coral, border-coral, etc.
- * - bg-teal, text-teal, border-teal, etc.
+ * This defines the brand design system used throughout the app.
+ * Change values here to update styling globally.
  *
- * Change a colour here and it updates everywhere.
+ * COLOUR USAGE:
+ * - teal: Primary brand colour - headers, headings, primary UI elements
+ * - coral: Accent colour - CTAs, buttons, icons, highlights
+ * - ocean: Sidebar backgrounds, secondary sections
+ * - electric: Emphasis/attention (What's Next prompts, planning scores)
+ * - brand-grey: Muted sections (Site Context background)
+ * - brand-offwhite: Page backgrounds
+ * - brand-black: High-contrast sections (Recent Activity)
+ *
+ * BUTTON STYLES:
+ * - Primary: bg-teal text-white, hover:bg-coral
+ * - Secondary: border-coral text-coral, hover:bg-coral hover:text-white
+ * - Ghost: text-coral hover:bg-coral/10
+ *
+ * CARD STYLES:
+ * - White cards with no border-radius (sharp edges)
+ * - Shadow for elevation
+ *
+ * HEADINGS:
+ * - h1: text-2xl font-bold text-teal (page titles)
+ * - h2: text-lg font-semibold text-teal (section headers)
+ * - h3: text-lg font-semibold text-teal (card headers)
+ * - On dark backgrounds: text-white
  */
 const config: Config = {
   content: [
@@ -50,6 +71,12 @@ const config: Config = {
       fontFamily: {
         heading: ['var(--font-montserrat)', 'Montserrat', 'sans-serif'],
         body: ['var(--font-roboto)', 'Roboto', 'sans-serif'],
+      },
+      // Consistent border radius - sharp edges for cards
+      borderRadius: {
+        'card': '0px',
+        'button': '9999px', // Fully rounded buttons
+        'badge': '9999px',  // Pill-shaped badges
       },
     },
   },

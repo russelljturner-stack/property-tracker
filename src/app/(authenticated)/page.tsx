@@ -164,7 +164,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Dashboard</h1>
+        <h1 className="text-2xl font-bold text-teal">My Dashboard</h1>
         <p className="text-gray-600">
           Welcome back, {userName}. Here&apos;s what needs your attention.
         </p>
@@ -203,12 +203,12 @@ export default async function DashboardPage() {
       </div>
 
       {/* Tasks section - at top for quick action */}
-      <section id="tasks" className="bg-white rounded-lg shadow">
+      <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-900">My Tasks</h2>
+          <h2 className="text-lg font-semibold text-teal">My Tasks</h2>
           <Link
             href="/tasks"
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-sm text-coral hover:text-coral-dark"
           >
             View all
           </Link>
@@ -226,14 +226,14 @@ export default async function DashboardPage() {
       </section>
 
       {/* Active Developments section */}
-      <section id="developments" className="bg-white rounded-lg shadow">
+      <section id="developments" className="bg-white shadow" style={{ borderRadius: 0 }}>
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-teal">
             My Active Developments
           </h2>
           <Link
             href="/developments"
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-sm text-coral hover:text-coral-dark"
           >
             View all
           </Link>
@@ -260,14 +260,14 @@ export default async function DashboardPage() {
       </section>
 
       {/* Pipeline Sites section */}
-      <section id="pipeline" className="bg-white rounded-lg shadow">
+      <section id="pipeline" className="bg-white shadow" style={{ borderRadius: 0 }}>
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-teal">
             My Pipeline Sites
           </h2>
           <Link
             href="/sites?filter=pipeline"
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-sm text-coral hover:text-coral-dark"
           >
             View all
           </Link>
@@ -322,7 +322,8 @@ function SummaryCard({
   return (
     <a
       href={href}
-      className={`rounded-lg shadow border p-4 hover:shadow-md transition-shadow ${variantStyles[variant]}`}
+      className={`shadow border p-4 hover:shadow-md transition-shadow ${variantStyles[variant]}`}
+      style={{ borderRadius: 0 }}
     >
       <p className="text-sm font-medium opacity-75">{title}</p>
       <p className={`text-3xl font-bold mt-1 ${valueStyles[variant]}`}>

@@ -62,14 +62,14 @@ export default async function DevelopmentsPage() {
       {/* Page header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Developments</h1>
+          <h1 className="text-2xl font-bold text-teal">Developments</h1>
           <p className="text-gray-600">
             {developments.length} development projects
           </p>
         </div>
         <Link
           href="/developments/new"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-4 py-2 bg-teal text-white rounded-full hover:bg-coral transition-colors"
         >
           Add Development
         </Link>
@@ -78,15 +78,15 @@ export default async function DevelopmentsPage() {
       {/* Status summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {topStatuses.map(([status, count]) => (
-          <div key={status} className="bg-white rounded-lg shadow p-4">
+          <div key={status} className="bg-white shadow p-4" style={{ borderRadius: 0 }}>
             <p className="text-sm text-gray-500 truncate" title={status}>{status}</p>
-            <p className="text-2xl font-bold text-gray-900">{count}</p>
+            <p className="text-2xl font-bold text-teal">{count}</p>
           </div>
         ))}
       </div>
 
       {/* Developments table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white shadow overflow-hidden" style={{ borderRadius: 0 }}>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -142,7 +142,7 @@ export default async function DevelopmentsPage() {
                     <td className="px-6 py-4">
                       <Link
                         href={`/developments/${dev.id}`}
-                        className="font-medium text-gray-900 hover:text-blue-600"
+                        className="font-medium text-gray-900 hover:text-coral"
                       >
                         {devName}
                       </Link>
@@ -180,7 +180,7 @@ export default async function DevelopmentsPage() {
                     <td className="px-6 py-4 text-right">
                       <Link
                         href={`/developments/${dev.id}`}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        className="text-coral hover:text-coral-dark text-sm font-medium"
                       >
                         View →
                       </Link>

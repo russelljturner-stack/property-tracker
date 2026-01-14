@@ -54,12 +54,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8f8f8' }}>
       <div className="max-w-md w-full mx-4">
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <div className="bg-white shadow-md p-8" style={{ borderRadius: 0 }}>
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-teal">
               Property Development Tracker
             </h1>
             <p className="text-gray-600 mt-2">Sign in to your account</p>
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
           {/* Error message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700" style={{ borderRadius: 0 }}>
               {error}
             </div>
           )}
@@ -87,7 +87,8 @@ export default function LoginPage() {
                 type="email"
                 required
                 autoComplete="email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2.5 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal focus:border-teal"
+                style={{ borderRadius: 0, backgroundColor: '#f8f8f8' }}
                 placeholder="you@example.com"
               />
             </div>
@@ -105,7 +106,8 @@ export default function LoginPage() {
                 type="password"
                 required
                 autoComplete="current-password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2.5 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal focus:border-teal"
+                style={{ borderRadius: 0, backgroundColor: '#f8f8f8' }}
                 placeholder="Enter your password"
               />
             </div>
@@ -113,7 +115,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-2.5 px-4 bg-teal hover:bg-coral text-white font-medium rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-coral disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading ? "Signing in..." : "Sign in"}
             </button>

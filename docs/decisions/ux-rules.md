@@ -112,31 +112,86 @@ When viewing a detail page after filtering a list:
 
 ---
 
-## Brand & Styling (Wildstone)
+## Brand & Styling
+
+This section defines the visual design system for the Property Development Tracker.
+
+### Tailwind Configuration
+
+The brand colours are defined in `tailwind.config.ts` and can be used throughout the app:
+
+```ts
+// Use these Tailwind classes:
+// - text-teal, bg-teal, border-teal (and -light/-dark variants)
+// - text-coral, bg-coral, border-coral (and -light/-dark variants)
+// - bg-ocean, bg-electric
+// - bg-brand-grey, bg-brand-offwhite, bg-brand-black
+```
 
 ### Colour Palette
 
-| Colour | Hex | CSS Variable | Usage |
-|--------|-----|--------------|-------|
-| Dark Teal | `#1e434d` | `--color-primary` | Primary text, headings, icons on light backgrounds |
-| Coral | `#fa6e60` | `--color-accent` | Accent colour, CTAs, icons on dark backgrounds, page headers |
-| Ocean Blue | `#0078a0` | `--color-section-blue` | Sidebar backgrounds, secondary sections |
-| Vibrant Blue | `#007aee` | `--color-section-electric` | High-emphasis elements (What's Next, Planning Score) |
-| Grey | `#6b7280` | — | Site Context background, muted sections |
-| Off-white | `#f8f8f8` | `--color-bg-light` | Page background |
-| White | `#ffffff` | `--color-bg-white` | Cards, content blocks |
-| Black | `#000000` | `--color-bg-dark` | Activity section, high contrast areas |
+| Colour | Hex | Tailwind Class | Usage |
+|--------|-----|----------------|-------|
+| Dark Teal | `#1e434d` | `text-teal`, `bg-teal` | Primary text, headings, page titles, primary buttons |
+| Coral | `#fa6e60` | `text-coral`, `bg-coral` | Accent colour, CTAs, icons, links, hover states, page headers |
+| Ocean Blue | `#0078a0` | `bg-ocean` | Sidebar backgrounds, secondary sections |
+| Electric Blue | `#007aee` | `bg-electric` | High-emphasis elements (What's Next, Planning Score) |
+| Grey | `#6b7280` | `bg-brand-grey` | Site Context background, muted sections |
+| Off-white | `#f8f8f8` | `bg-brand-offwhite` | Page background |
+| White | `#ffffff` | `bg-white` | Cards, content blocks |
+| Black | `#000000` | `bg-brand-black` | Activity section, high contrast areas |
+
+### Page Titles and Headings
+
+| Element | Classes |
+|---------|---------|
+| **h1 (Page title)** | `text-2xl font-bold text-teal` |
+| **h2 (Section header)** | `text-lg font-semibold text-teal` |
+| **h3 (Card header)** | `text-lg font-semibold text-teal` |
+| **Headings on dark backgrounds** | `text-lg font-semibold text-white` |
+
+### Button Styles
+
+| Type | Classes |
+|------|---------|
+| **Primary button** | `px-4 py-2 bg-teal text-white rounded-full hover:bg-coral transition-colors` |
+| **Secondary link** | `text-coral hover:text-coral-dark` |
+| **Edit button** | `px-3 py-1.5 text-sm text-teal hover:text-white hover:bg-coral rounded-full` |
+| **Cancel button** | `px-4 py-2 text-sm text-teal hover:bg-gray-100 rounded-full` |
+| **Save button** | `px-4 py-2 text-sm bg-teal text-white hover:bg-coral rounded-full` |
+
+### Card Styles
+
+```jsx
+// Standard card
+<div className="bg-white shadow" style={{ borderRadius: 0 }}>
+  <div className="px-6 py-4 border-b border-gray-200">
+    <h2 className="text-lg font-semibold text-teal">Card Title</h2>
+  </div>
+  <div className="p-6">
+    {/* Content */}
+  </div>
+</div>
+```
+
+### Summary/Stat Cards
+
+```jsx
+<div className="bg-white shadow p-4" style={{ borderRadius: 0 }}>
+  <p className="text-sm text-gray-500">Label</p>
+  <p className="text-2xl font-bold text-teal">42</p>
+</div>
+```
 
 ### Page Layout Patterns
 
 | Element | Style |
 |---------|-------|
-| **Page header** | Coral background, white text, sticky at top (`sticky top-0 z-10`) |
+| **Development page header** | Coral background, white text, sticky at top (`sticky top-0 z-10 -mt-4 sm:-mt-6 lg:-mt-8`) |
 | **Site Context section** | Grey background (`#6b7280`), white text, sits below header |
-| **Main content** | 3/4 width left column on desktop |
-| **Sidebar** | 1/4 width right column, ocean blue background |
+| **Two-column layout** | `grid-cols-1 lg:grid-cols-4`, main content 3/4 width, sidebar 1/4 width |
+| **Sidebar (development detail)** | Ocean blue background, white cards inside |
 | **Cards** | White background, no border-radius (`borderRadius: 0`), shadow |
-| **Card headers** | Dark teal text, `text-lg` or `text-xl`, uppercase tracking for labels |
 
 ### Component Patterns
 
@@ -145,31 +200,42 @@ When viewing a detail page after filtering a list:
 | **Stage card icons** | Coral SVG line icons (stroke, not fill), `strokeWidth={2}` |
 | **Navigation icons** | White on coral/dark backgrounds, dark teal on light |
 | **Activity section** | Black background, coral icons, white text |
-| **What's Next prompt** | Vibrant blue background, white text, coral icon for high priority |
+| **What's Next prompt** | Electric blue background, white text, coral icon for high priority |
 | **Status badges** | Semi-transparent white (`bg-white/20`) on dark backgrounds |
-| **Planning Score badge** | Vibrant blue pill with white text |
+| **Planning Score badge** | Electric blue pill with white text |
+| **View all links** | `text-sm text-coral hover:text-coral-dark` |
 
 ### Typography
 
 | Element | Font | Weight | Colour |
 |---------|------|--------|--------|
-| Headings (h1-h6) | Montserrat | Bold | Dark teal |
+| Headings (h1-h6) | Montserrat | Bold | Dark teal (`text-teal`) |
 | Body text | Roboto | Normal | Dark teal |
-| Labels/captions | Roboto | Semibold | Grey or white/90 on dark |
-| Section titles | Roboto | Semibold, uppercase, tracking-wider | Varies by background |
+| Labels/captions | Roboto | Semibold | Grey or white on dark |
+| Card header titles | — | Semibold, tracking-tight | Dark teal (`text-teal`) |
 
 ### Icon Style
 
 - Use **SVG line icons** (stroke-based, not filled)
 - `strokeWidth={2}` for consistency
 - Colour: coral on dark backgrounds, dark teal on light backgrounds
-- Size: `w-5 h-5` for inline, `w-6 h-6` for feature icons, `w-12 h-12` for large indicators
+- Size: `w-5 h-5` for inline, `w-6 h-6` for feature/nav icons, `w-12 h-12` for large indicators
 
 ### Border Radius
 
 - **Cards and sections**: No border radius (`borderRadius: 0`) - sharp edges
-- **Badges and pills**: Full radius (`rounded-full` or `rounded`)
-- **Buttons**: Rounded (`rounded` or `rounded-full` for pill buttons)
+- **Badges and pills**: Full radius (`rounded-full`)
+- **Buttons**: Pill shape (`rounded-full`)
+- **Form inputs**: No border radius, use `style={{ borderRadius: 0 }}`
+
+### Form Input Style
+
+```jsx
+<input
+  className="w-full px-3 py-2.5 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-teal focus:border-teal"
+  style={{ borderRadius: 0, backgroundColor: '#f8f8f8' }}
+/>
+```
 
 ---
 

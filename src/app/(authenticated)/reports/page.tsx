@@ -8,15 +8,15 @@ export default function ReportsPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
+        <h1 className="text-2xl font-bold text-teal">Reports</h1>
         <p className="text-gray-600">
           Analytics and summaries
         </p>
       </div>
 
       {/* Placeholder content */}
-      <div className="bg-white rounded-lg shadow p-8 text-center">
-        <div className="text-gray-400 mb-4">
+      <div className="bg-white shadow p-8 text-center" style={{ borderRadius: 0 }}>
+        <div className="text-coral mb-4">
           <svg
             className="w-16 h-16 mx-auto"
             fill="none"
@@ -31,7 +31,7 @@ export default function ReportsPage() {
             />
           </svg>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-teal mb-2">
           Reports & Analytics
         </h2>
         <p className="text-gray-500 max-w-md mx-auto">
@@ -42,26 +42,26 @@ export default function ReportsPage() {
 
       {/* Report types preview */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="font-semibold text-gray-900 mb-2">Pipeline Report</h3>
+        <div className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
+          <h3 className="font-semibold text-teal mb-2">Pipeline Report</h3>
           <p className="text-sm text-gray-500">
             Overview of all developments by status stage
           </p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="font-semibold text-gray-900 mb-2">Site Summary</h3>
+        <div className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
+          <h3 className="font-semibold text-teal mb-2">Site Summary</h3>
           <p className="text-sm text-gray-500">
             Active vs inactive sites with key details
           </p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="font-semibold text-gray-900 mb-2">Task Overview</h3>
+        <div className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
+          <h3 className="font-semibold text-teal mb-2">Task Overview</h3>
           <p className="text-sm text-gray-500">
             Overdue and upcoming tasks by assignee
           </p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="font-semibold text-gray-900 mb-2">Activity Log</h3>
+        <div className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
+          <h3 className="font-semibold text-teal mb-2">Activity Log</h3>
           <p className="text-sm text-gray-500">
             Recent changes and user activity
           </p>

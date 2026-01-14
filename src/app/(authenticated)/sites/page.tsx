@@ -57,14 +57,14 @@ export default async function SitesPage() {
       {/* Page header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sites</h1>
+          <h1 className="text-2xl font-bold text-teal">Sites</h1>
           <p className="text-gray-600">
             {sites.length} properties and land parcels
           </p>
         </div>
         <Link
           href="/sites/new"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-4 py-2 bg-teal text-white rounded-full hover:bg-coral transition-colors"
         >
           Add Site
         </Link>
@@ -73,15 +73,15 @@ export default async function SitesPage() {
       {/* Pipeline summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Object.entries(pipelineCounts).map(([status, count]) => (
-          <div key={status} className="bg-white rounded-lg shadow p-4">
+          <div key={status} className="bg-white shadow p-4" style={{ borderRadius: 0 }}>
             <p className="text-sm text-gray-500">{status}</p>
-            <p className="text-2xl font-bold text-gray-900">{count}</p>
+            <p className="text-2xl font-bold text-teal">{count}</p>
           </div>
         ))}
       </div>
 
       {/* Sites table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white shadow overflow-hidden" style={{ borderRadius: 0 }}>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -138,7 +138,7 @@ export default async function SitesPage() {
                     <td className="px-6 py-4">
                       <Link
                         href={`/sites/${site.id}`}
-                        className="font-medium text-gray-900 hover:text-blue-600"
+                        className="font-medium text-gray-900 hover:text-coral"
                       >
                         {siteName}
                       </Link>
@@ -185,7 +185,7 @@ export default async function SitesPage() {
                     <td className="px-6 py-4 text-right">
                       <Link
                         href={`/sites/${site.id}`}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        className="text-coral hover:text-coral-dark text-sm font-medium"
                       >
                         View →
                       </Link>
