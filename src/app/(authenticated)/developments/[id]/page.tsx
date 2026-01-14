@@ -228,8 +228,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header & Site Context - Combined card with coral background */}
-      <div className="shadow" style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}>
+      {/* Header & Site Context - Combined card with coral background, sticky at top */}
+      <div className="shadow sticky top-0 z-10" style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}>
         {/* Top row: Title + Status + Buttons */}
         <div className="px-6 py-4 flex items-center justify-between border-b border-white/20">
           <div className="flex items-center gap-3">
@@ -320,7 +320,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </div>
         {/* Bottom row: Site Context - Map and Photo thumbnails with muted background */}
         {development.site && (
-          <div className="px-6 py-4" style={{ backgroundColor: '#9f7865' }}>
+          <div className="px-6 py-4" style={{ backgroundColor: '#6b7280' }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-white/90">Site Context</h3>
             {/* Thumbnails - 160x120px (4:3 ratio) */}
             <div className="flex gap-3">
