@@ -324,7 +324,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         {/* Bottom row: Site Context - Map and Photo thumbnails with muted background */}
         {development.site && (
           <div className="px-6 py-4" style={{ backgroundColor: '#6b7280' }}>
-            <h3 className="text-lg font-semibold mb-3 text-white">Site Context</h3>
+            <h3 className="text-lg font-semibold mb-3" style={{ color: '#ffffff' }}>Site Context</h3>
             {/* Thumbnails - 160x120px (4:3 ratio) */}
             <div className="flex gap-3">
               {/* Map thumbnail */}
@@ -376,54 +376,42 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
           {/* Progress Timeline - now within left column */}
           <ProgressTimeline stages={STAGES} currentStage={currentStage} />
-          {/* Tasks Section - Most prominent */}
-          <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
+
+          {/* Panel Configuration - Two column: fields (2/3) + image (1/3) */}
+          <section className="bg-white shadow" style={{ borderRadius: 0 }}>
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Tasks</h2>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-500">
-                  {development.tasks.filter(t => !t.complete).length} open
-                </span>
-                <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
-                  + Add Task
-                </button>
-              </div>
+              <h2 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Panel Configuration</h2>
+              <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
+                Edit
+              </button>
             </div>
-            <div className="divide-y divide-gray-100">
-              {development.tasks.length === 0 ? (
-                <div className="px-6 py-8 text-center text-gray-500">
-                  No tasks for this development.
+            <div className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left column - Panel details (2/3 width) */}
+                <div className="lg:col-span-2">
+                  {development.details.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {development.details.map((detail, index) => (
+                        <PanelDetailCard key={detail.id} detail={detail} index={index} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-gray-500 text-center py-8">
+                      No panel configuration defined yet.
+                    </div>
+                  )}
                 </div>
-              ) : (
-                development.tasks.slice(0, 5).map((task) => (
-                  <TaskItem key={task.id} task={task} />
-                ))
-              )}
-              {development.tasks.length > 5 && (
-                <div className="px-6 py-3 text-center">
-                  <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
-                    View all {development.tasks.length} tasks
-                  </button>
+                {/* Right column - Design/Holding image (1/3 width) */}
+                <div className="lg:col-span-1">
+                  <PanelImageDisplay
+                    designUrl={development.designUrl}
+                    designStatus={development.designFinalOrDraft}
+                    developmentType={development.developmentType?.name}
+                  />
                 </div>
-              )}
+              </div>
             </div>
           </section>
-
-          {/* Panel Details - Always visible summary */}
-          {development.details.length > 0 && (
-            <section className="bg-white shadow" style={{ borderRadius: 0 }}>
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Panel Configuration</h2>
-              </div>
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {development.details.map((detail, index) => (
-                    <PanelDetailCard key={detail.id} detail={detail} index={index} />
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
 
           {/* Stage Cards - Expandable sections for each workflow stage */}
           <div className="space-y-4">
@@ -534,6 +522,37 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             borderRadius: 0,
           }}
         >
+          {/* Tasks Section - At top of sidebar */}
+          <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
+            <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Tasks</h3>
+              <span className="text-sm text-gray-500">
+                {development.tasks.filter(t => !t.complete).length} open
+              </span>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {development.tasks.length === 0 ? (
+                <div className="px-4 py-6 text-center text-gray-500 text-sm">
+                  No tasks for this development.
+                </div>
+              ) : (
+                development.tasks.slice(0, 5).map((task) => (
+                  <TaskItemCompact key={task.id} task={task} />
+                ))
+              )}
+            </div>
+            <div className="px-4 py-3 border-t border-gray-200 flex justify-between items-center">
+              <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
+                + Add Task
+              </button>
+              {development.tasks.length > 5 && (
+                <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
+                  View all ({development.tasks.length})
+                </button>
+              )}
+            </div>
+          </section>
+
           {/* Key Contacts Card */}
           <section className="bg-white shadow" style={{ borderRadius: 0 }}>
             <div className="px-6 py-4 border-b border-gray-200">
@@ -568,7 +587,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           {/* Recent Activity Card - Black background for contrast */}
           <section className="shadow" style={{ backgroundColor: '#000000', borderRadius: 0 }}>
             <div className="px-6 py-4 border-b border-white/20">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: '#ffffff' }}>
                 {/* Activity icon in coral */}
                 <svg
                   className="w-6 h-6"
@@ -1272,6 +1291,115 @@ function InfoItem({ label, value }: { label: string; value?: string | null }) {
 }
 
 // =============================================================================
+// Component: Panel Image Display
+// Shows design image if available, otherwise a holding image based on development type
+// =============================================================================
+function PanelImageDisplay({
+  designUrl,
+  designStatus,
+  developmentType,
+}: {
+  designUrl?: string | null
+  designStatus?: string | null
+  developmentType?: string | null
+}) {
+  // If we have a design image, show it
+  if (designUrl) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-500">Design Image</span>
+          <span
+            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+              designStatus === 'Final'
+                ? 'bg-green-100 text-green-800'
+                : designStatus === 'Draft'
+                ? 'bg-blue-100 text-blue-800'
+                : 'bg-gray-100 text-gray-600'
+            }`}
+          >
+            {designStatus || 'Proposed'}
+          </span>
+        </div>
+        <div className="aspect-[4/3] bg-gray-100 rounded overflow-hidden border border-gray-200">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={designUrl}
+            alt="Panel design"
+            className="w-full h-full object-contain"
+          />
+        </div>
+        <a
+          href={designUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-coral hover:text-coral-dark flex items-center gap-1"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          View full size
+        </a>
+      </div>
+    )
+  }
+
+  // No design image - show holding image based on development type
+  // This will be a placeholder that indicates what type of panel is being developed
+  const getHoldingImageIcon = () => {
+    const type = developmentType?.toLowerCase() || ''
+    if (type.includes('48') || type.includes('sheet')) {
+      return { icon: '48-Sheet', desc: '48-Sheet Billboard' }
+    }
+    if (type.includes('96') || type.includes('large')) {
+      return { icon: '96-Sheet', desc: '96-Sheet Billboard' }
+    }
+    if (type.includes('digital') || type.includes('d48') || type.includes('d96')) {
+      return { icon: 'Digital', desc: 'Digital Billboard' }
+    }
+    if (type.includes('6') && type.includes('sheet')) {
+      return { icon: '6-Sheet', desc: '6-Sheet Panel' }
+    }
+    return { icon: 'Panel', desc: 'Advertising Panel' }
+  }
+
+  const holdingInfo = getHoldingImageIcon()
+
+  return (
+    <div className="space-y-2">
+      <span className="text-sm text-gray-500">Design Image</span>
+      <div
+        className="aspect-[4/3] rounded overflow-hidden border-2 border-dashed border-gray-300 flex flex-col items-center justify-center"
+        style={{ backgroundColor: '#f8f8f8' }}
+      >
+        {/* Placeholder icon - billboard silhouette */}
+        <svg
+          className="w-16 h-16 text-gray-300 mb-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          strokeWidth={1}
+        >
+          <rect x="3" y="4" width="18" height="12" rx="1" />
+          <line x1="7" y1="16" x2="7" y2="20" />
+          <line x1="17" y1="16" x2="17" y2="20" />
+          <line x1="5" y1="20" x2="9" y2="20" />
+          <line x1="15" y1="20" x2="19" y2="20" />
+        </svg>
+        <span className="text-lg font-bold text-gray-400">{holdingInfo.icon}</span>
+        <span className="text-xs text-gray-400 mt-1">{holdingInfo.desc}</span>
+        <span className="text-xs text-gray-400 mt-2">No design uploaded</span>
+      </div>
+      <button
+        className="w-full text-sm py-2 border border-dashed border-gray-300 text-gray-500 hover:border-coral hover:text-coral transition-colors rounded"
+      >
+        + Upload Design
+      </button>
+    </div>
+  )
+}
+
+// =============================================================================
 // Component: Panel Detail Card
 // =============================================================================
 function PanelDetailCard({
@@ -1382,6 +1510,90 @@ function PlanningScoreBadge({ score }: { score: number | null | undefined }) {
       <span className="font-bold">{score}/5</span>
       <span className="text-xs font-medium opacity-90">({getProbabilityText()})</span>
     </span>
+  )
+}
+
+// =============================================================================
+// Component: Task Item Compact (for sidebar)
+// Smaller, more condensed version for the narrow sidebar column
+// =============================================================================
+function TaskItemCompact({
+  task,
+}: {
+  task: {
+    id: number
+    description?: string | null
+    dueDate?: Date | null
+    complete: boolean
+    needsReview?: boolean
+    priority?: string | null
+    taskType?: { name: string } | null
+  }
+}) {
+  const isOverdue = !task.complete && task.dueDate && new Date(task.dueDate) < new Date()
+
+  return (
+    <div className={`px-4 py-3 ${task.complete ? "bg-gray-50" : ""}`}>
+      <div className="flex items-start gap-2">
+        {/* Checkbox indicator */}
+        <div
+          className={`flex-shrink-0 w-4 h-4 rounded-full border-2 mt-0.5 ${
+            task.complete
+              ? "bg-green-500 border-green-500"
+              : isOverdue
+              ? "border-red-400"
+              : "border-gray-300"
+          }`}
+        >
+          {task.complete && (
+            <svg className="w-3 h-3 text-white m-auto" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+        </div>
+
+        {/* Task content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1 flex-wrap">
+            {task.needsReview && !task.complete && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                NEW
+              </span>
+            )}
+            {task.priority?.toLowerCase() === 'high' && !task.complete && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                HIGH
+              </span>
+            )}
+          </div>
+          <p
+            className={`text-sm leading-tight ${
+              task.complete ? "text-gray-400 line-through" : "text-gray-900"
+            }`}
+          >
+            {task.description || "Task"}
+          </p>
+          {task.dueDate && (
+            <p
+              className={`text-xs mt-1 ${
+                isOverdue
+                  ? "text-red-600 font-medium"
+                  : task.complete
+                  ? "text-gray-400"
+                  : "text-gray-500"
+              }`}
+            >
+              {isOverdue && !task.complete ? "Overdue: " : "Due: "}
+              {formatDate(task.dueDate)}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
 
