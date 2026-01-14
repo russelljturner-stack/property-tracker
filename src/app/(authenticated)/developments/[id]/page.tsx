@@ -318,10 +318,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           )}
           <PlanningScoreBadge score={development.planningScore} />
         </div>
-        {/* Bottom row: Site Context - Map and Photo thumbnails */}
+        {/* Bottom row: Site Context - Map and Photo thumbnails with muted background */}
         {development.site && (
-          <div className="px-6 py-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-white/80">Site Context</h3>
+          <div className="px-6 py-4" style={{ backgroundColor: '#9f7865' }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-white/90">Site Context</h3>
             {/* Thumbnails - 160x120px (4:3 ratio) */}
             <div className="flex gap-3">
               {/* Map thumbnail */}
@@ -364,16 +364,15 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         )}
       </div>
 
-      {/* What's Next Action Prompt */}
-      <WhatsNextPrompt development={development} />
+      {/* Main content: Two-column layout - narrower right column */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Left column: Timeline, Tasks and Stage Cards (3/4 width) */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* What's Next Action Prompt */}
+          <WhatsNextPrompt development={development} />
 
-      {/* Progress Timeline */}
-      <ProgressTimeline stages={STAGES} currentStage={currentStage} />
-
-      {/* Main content: Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column: Tasks and Stage Cards (2/3 width) */}
-        <div className="lg:col-span-2 space-y-6">
+          {/* Progress Timeline - now within left column */}
+          <ProgressTimeline stages={STAGES} currentStage={currentStage} />
           {/* Tasks Section - Most prominent */}
           <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
@@ -524,9 +523,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Right column: Sidebar (1/3 width) - Ocean blue background */}
+        {/* Right column: Sidebar (1/4 width) - Ocean blue background */}
         <div
-          className="space-y-6 p-4"
+          className="lg:col-span-1 space-y-6 p-4"
           style={{
             backgroundColor: '#0078a0', // Ocean blue
             borderRadius: 0,

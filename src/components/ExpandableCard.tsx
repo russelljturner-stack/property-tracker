@@ -19,8 +19,8 @@ import { useState, useCallback, ReactNode } from "react"
 export type ExpandableCardProps = {
   /** Title shown in the header */
   title: string
-  /** Icon shown before the title (emoji or component) */
-  icon: string
+  /** Icon shown before the title - can be emoji string or ReactNode (SVG) */
+  icon: ReactNode
   /** Whether this is the current active stage */
   isActive?: boolean
   /** Whether this stage is complete */
@@ -133,8 +133,8 @@ export function ExpandableCard({
       >
         {/* Left side: Icon, Title, Status badges */}
         <div className="flex items-center gap-3">
-          <span className="text-xl">{icon}</span>
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <span className="flex-shrink-0">{icon}</span>
+          <h3 className="text-xl font-semibold" style={{ color: '#1e434d' }}>{title}</h3>
 
           {/* Status badges - rounded for tactile feel */}
           {isComplete && (
