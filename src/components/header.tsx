@@ -22,11 +22,13 @@ export function Header({ onMenuClick }: HeaderProps) {
           className="p-2 rounded-md hover:bg-gray-100"
           aria-label="Open menu"
         >
+          {/* Hamburger icon uses coral accent */}
           <svg
-            className="w-6 h-6 text-gray-600"
+            className="w-6 h-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            style={{ color: '#fa6e60' }}
           >
             <path
               strokeLinecap="round"
@@ -36,7 +38,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             />
           </svg>
         </button>
-        <span className="ml-3 font-semibold text-gray-900">PDT</span>
+        <span className="ml-3 font-semibold" style={{ color: '#1e434d' }}>PDT</span>
       </div>
     </header>
   )

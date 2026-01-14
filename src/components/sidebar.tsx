@@ -73,24 +73,25 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Dark teal background (Wildstone brand) */}
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-full w-64 bg-gray-900 text-white
+          fixed top-0 left-0 z-50 h-full w-64 text-white
           transform transition-transform duration-300 ease-in-out
           lg:translate-x-0
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
+        style={{ backgroundColor: '#1e434d' }}
       >
         {/* Logo/Header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-white/20">
           <Link href="/" className="flex items-center">
-            <span className="text-xl font-bold">PDT</span>
+            <span className="text-xl font-bold text-white">PDT</span>
           </Link>
           {/* Close button - mobile only */}
           <button
             onClick={onClose}
-            className="lg:hidden p-2 rounded-md hover:bg-gray-800"
+            className="lg:hidden p-2 rounded-md hover:bg-white/10"
           >
             <svg
               className="w-6 h-6"
@@ -124,16 +125,18 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   flex items-center px-4 py-3 mb-1 rounded-lg
                   transition-colors duration-150
                   ${isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                    ? "bg-white/15 text-white"
+                    : "text-white/80 hover:bg-white/10 hover:text-white"
                   }
                 `}
               >
+                {/* Icons use coral accent colour on dark teal background */}
                 <svg
                   className="w-5 h-5 mr-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  style={{ color: '#fa6e60' }}
                 >
                   <path
                     strokeLinecap="round"
@@ -149,12 +152,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         {/* Footer - User info and sign out */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-gray-800">
+        <div className="absolute bottom-0 left-0 right-0 border-t border-white/20">
           {session?.user && (
             <div className="p-3">
               <div className="flex items-center gap-3">
-                {/* User avatar - initials in a circle */}
-                <div className="flex-shrink-0 w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-sm font-medium text-white">
+                {/* User avatar - initials in a circle (coral accent) */}
+                <div
+                  className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium text-white"
+                  style={{ backgroundColor: '#fa6e60' }}
+                >
                   {(session.user.name || session.user.email || "U").charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -162,15 +168,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     {session.user.name || session.user.email}
                   </p>
                   {session.user.role && (
-                    <p className="text-xs text-gray-400 truncate">{session.user.role}</p>
+                    <p className="text-xs text-white/60 truncate">{session.user.role}</p>
                   )}
                 </div>
               </div>
               <button
                 onClick={() => signOut()}
-                className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors"
+                className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-md transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#fa6e60' }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 Sign out

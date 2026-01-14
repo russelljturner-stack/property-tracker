@@ -1,26 +1,66 @@
 @import "tailwindcss";
 
+/*
+ * Wildstone Brand Colours
+ * Based on wildstone.co.uk design system
+ * High contrast palette reflecting outdoor/digital media screens
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary colours */
+  --color-primary: #1e434d;        /* Dark teal - headers, primary UI */
+  --color-accent: #fa6e60;         /* Coral - buttons, CTAs, highlights */
+
+  /* Background colours */
+  --color-bg-light: #f8f8f8;       /* Off-white - page backgrounds */
+  --color-bg-white: #ffffff;       /* White - cards, content blocks */
+  --color-bg-dark: #000000;        /* Black - footer */
+
+  /* Section colours (for emphasis/variety) */
+  --color-section-blue: #0078a0;   /* Ocean blue - text-heavy sections */
+  --color-section-warm: #9f7865;   /* Dusty rose - text-heavy sections */
+  --color-section-yellow: #fff48b; /* Bright yellow - bold headers */
+  --color-section-electric: #007aee; /* Electric blue - bold headers */
+
+  /* Legacy variables for compatibility */
+  --background: #f8f8f8;
+  --foreground: #1e434d;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-montserrat);
+  --font-body: var(--font-roboto);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Wildstone brand colours for Tailwind */
+  --color-primary: #1e434d;
+  --color-accent: #fa6e60;
+  --color-teal: #1e434d;
+  --color-coral: #fa6e60;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-roboto), 'Roboto', sans-serif;
+}
+
+/* Headlines use Montserrat */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-montserrat), 'Montserrat', sans-serif;
+  color: var(--color-primary);
+}
+
+/* Bullet points use coral accent */
+ul:not([class]) li::marker {
+  color: var(--color-accent);
+}
+
+/* Links use coral accent */
+a:not([class]) {
+  color: var(--color-accent);
+}
+
+a:not([class]):hover {
+  color: #e85a4d;
 }

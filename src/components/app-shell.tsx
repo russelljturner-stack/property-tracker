@@ -29,7 +29,7 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <SessionProvider>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen" style={{ backgroundColor: '#f8f8f8' }}>
         {/* Sidebar navigation */}
         <Sidebar
           isOpen={sidebarOpen}

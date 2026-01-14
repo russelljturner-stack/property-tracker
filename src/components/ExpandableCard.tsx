@@ -114,17 +114,18 @@ export function ExpandableCard({
   return (
     <section
       className={`
-        bg-white rounded-lg shadow overflow-hidden
-        ${isActive ? "ring-2 ring-blue-500" : ""}
+        bg-white shadow-sm overflow-hidden
+        ${isActive ? "ring-2 ring-[#fa6e60]" : ""}
         ${className}
       `}
+      style={{ borderRadius: 0 }}
     >
       {/* Header - Always visible, clickable to expand/collapse */}
       <div
         className={`
           px-6 py-4 border-b border-gray-200 flex items-center justify-between
           cursor-pointer select-none
-          ${isActive ? "bg-blue-50 hover:bg-blue-100" : "hover:bg-gray-100"}
+          ${isActive ? "bg-[#f8f8f8] hover:bg-gray-100" : "hover:bg-gray-50"}
           transition-all duration-150
           group
         `}
@@ -135,24 +136,24 @@ export function ExpandableCard({
           <span className="text-xl">{icon}</span>
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
 
-          {/* Status badges */}
+          {/* Status badges - rounded for tactile feel */}
           {isComplete && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
               Complete
             </span>
           )}
           {isActive && !isComplete && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#fa6e60]/10 text-[#fa6e60]">
               Current
             </span>
           )}
           {isEditing && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
               Editing
             </span>
           )}
           {hasChanges && isEditing && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#fa6e60]/20 text-[#fa6e60]">
               Unsaved
             </span>
           )}
@@ -167,14 +168,14 @@ export function ExpandableCard({
                 e.stopPropagation() // Don't toggle expand when clicking edit
                 handleEdit()
               }}
-              className="px-3 py-1.5 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
+              className="px-3 py-1.5 text-sm text-[#1e434d] hover:text-white hover:bg-[#fa6e60] rounded-full transition-colors"
             >
               Edit
             </button>
           )}
 
           {/* Expand/collapse text + chevron */}
-          <div className="flex items-center gap-2 text-gray-500 group-hover:text-gray-700 transition-colors">
+          <div className="flex items-center gap-2 text-[#1e434d]/70 group-hover:text-[#1e434d] transition-colors">
             <span className="text-sm font-medium">
               {isExpanded ? "Hide details" : "Show details"}
             </span>
@@ -186,6 +187,7 @@ export function ExpandableCard({
               stroke="currentColor"
               viewBox="0 0 24 24"
               strokeWidth={2.5}
+              style={{ color: '#fa6e60' }}
             >
               <path
                 strokeLinecap="round"
@@ -213,7 +215,7 @@ export function ExpandableCard({
               {/* Edit form content */}
               {editContent}
 
-              {/* Save/Cancel buttons */}
+              {/* Save/Cancel buttons - rounded corners on buttons */}
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                 {hasErrors && (
                   <span className="text-sm text-red-600 mr-auto">
@@ -223,14 +225,14 @@ export function ExpandableCard({
                 <button
                   onClick={handleCancel}
                   disabled={isSaving}
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                  className="px-4 py-2 text-sm text-[#1e434d] hover:text-[#1e434d] hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={isSaving || hasErrors}
-                  className="px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-4 py-2 text-sm bg-[#1e434d] text-white hover:bg-[#fa6e60] rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {isSaving ? (
                     <>
@@ -313,14 +315,14 @@ export function EditField({
   className?: string
 }) {
   // Taller inputs with more padding for better usability
-  // Light blue background indicates editable field
+  // Light background indicates editable field
   const inputClasses = `
     mt-1 block w-full rounded-md shadow-sm text-sm
     px-3 py-2.5
-    bg-blue-50
+    bg-[#f8f8f8]
     ${error
       ? "border-red-300 focus:border-red-500 focus:ring-red-500 focus:bg-white"
-      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500 focus:bg-white"
+      : "border-gray-300 focus:border-[#1e434d] focus:ring-[#1e434d] focus:bg-white"
     }
   `
 
@@ -399,10 +401,10 @@ export function SelectField({
         className={`
           mt-1 block w-full rounded-md shadow-sm text-sm
           px-3 py-2.5
-          bg-blue-50
+          bg-[#f8f8f8]
           ${error
             ? "border-red-300 focus:border-red-500 focus:ring-red-500 focus:bg-white"
-            : "border-gray-300 focus:border-blue-500 focus:ring-blue-500 focus:bg-white"
+            : "border-gray-300 focus:border-[#1e434d] focus:ring-[#1e434d] focus:bg-white"
           }
         `}
       >
