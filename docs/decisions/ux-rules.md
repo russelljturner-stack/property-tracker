@@ -112,4 +112,65 @@ When viewing a detail page after filtering a list:
 
 ---
 
-*Last updated: 13 January 2026*
+## Brand & Styling (Wildstone)
+
+### Colour Palette
+
+| Colour | Hex | CSS Variable | Usage |
+|--------|-----|--------------|-------|
+| Dark Teal | `#1e434d` | `--color-primary` | Primary text, headings, icons on light backgrounds |
+| Coral | `#fa6e60` | `--color-accent` | Accent colour, CTAs, icons on dark backgrounds, page headers |
+| Ocean Blue | `#0078a0` | `--color-section-blue` | Sidebar backgrounds, secondary sections |
+| Vibrant Blue | `#007aee` | `--color-section-electric` | High-emphasis elements (What's Next, Planning Score) |
+| Grey | `#6b7280` | — | Site Context background, muted sections |
+| Off-white | `#f8f8f8` | `--color-bg-light` | Page background |
+| White | `#ffffff` | `--color-bg-white` | Cards, content blocks |
+| Black | `#000000` | `--color-bg-dark` | Activity section, high contrast areas |
+
+### Page Layout Patterns
+
+| Element | Style |
+|---------|-------|
+| **Page header** | Coral background, white text, sticky at top (`sticky top-0 z-10`) |
+| **Site Context section** | Grey background (`#6b7280`), white text, sits below header |
+| **Main content** | 3/4 width left column on desktop |
+| **Sidebar** | 1/4 width right column, ocean blue background |
+| **Cards** | White background, no border-radius (`borderRadius: 0`), shadow |
+| **Card headers** | Dark teal text, `text-lg` or `text-xl`, uppercase tracking for labels |
+
+### Component Patterns
+
+| Component | Style |
+|-----------|-------|
+| **Stage card icons** | Coral SVG line icons (stroke, not fill), `strokeWidth={2}` |
+| **Navigation icons** | White on coral/dark backgrounds, dark teal on light |
+| **Activity section** | Black background, coral icons, white text |
+| **What's Next prompt** | Vibrant blue background, white text, coral icon for high priority |
+| **Status badges** | Semi-transparent white (`bg-white/20`) on dark backgrounds |
+| **Planning Score badge** | Vibrant blue pill with white text |
+
+### Typography
+
+| Element | Font | Weight | Colour |
+|---------|------|--------|--------|
+| Headings (h1-h6) | Montserrat | Bold | Dark teal |
+| Body text | Roboto | Normal | Dark teal |
+| Labels/captions | Roboto | Semibold | Grey or white/90 on dark |
+| Section titles | Roboto | Semibold, uppercase, tracking-wider | Varies by background |
+
+### Icon Style
+
+- Use **SVG line icons** (stroke-based, not filled)
+- `strokeWidth={2}` for consistency
+- Colour: coral on dark backgrounds, dark teal on light backgrounds
+- Size: `w-5 h-5` for inline, `w-6 h-6` for feature icons, `w-12 h-12` for large indicators
+
+### Border Radius
+
+- **Cards and sections**: No border radius (`borderRadius: 0`) - sharp edges
+- **Badges and pills**: Full radius (`rounded-full` or `rounded`)
+- **Buttons**: Rounded (`rounded` or `rounded-full` for pill buttons)
+
+---
+
+*Last updated: 14 January 2026*
