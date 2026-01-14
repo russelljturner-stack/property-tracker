@@ -228,9 +228,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header & Site Context - Combined card with coral background, sticky at top, full width */}
+      {/* Header & Site Context - Combined card with coral background, sticky at top */}
       <div
-        className="shadow sticky top-0 z-10 -mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8"
+        className="shadow sticky top-0 z-10 -mt-4 sm:-mt-6 lg:-mt-8"
         style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}
       >
         {/* Top row: Title + Status + Buttons */}
@@ -324,7 +324,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         {/* Bottom row: Site Context - Map and Photo thumbnails with muted background */}
         {development.site && (
           <div className="px-6 py-4" style={{ backgroundColor: '#6b7280' }}>
-            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-white/90">Site Context</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-white">Site Context</h3>
             {/* Thumbnails - 160x120px (4:3 ratio) */}
             <div className="flex gap-3">
               {/* Map thumbnail */}
@@ -368,7 +368,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </div>
 
       {/* Main content: Two-column layout - narrower right column */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 -mr-4 sm:-mr-6 lg:-mr-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Left column: Timeline, Tasks and Stage Cards (3/4 width) */}
         <div className="lg:col-span-3 space-y-6">
           {/* What's Next Action Prompt */}
@@ -526,9 +526,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Right column: Sidebar (1/4 width) - Ocean blue background, extends to right edge */}
+        {/* Right column: Sidebar (1/4 width) - Ocean blue background */}
         <div
-          className="lg:col-span-1 space-y-6 p-4 pr-4 sm:pr-6 lg:pr-8"
+          className="lg:col-span-1 space-y-6 p-4"
           style={{
             backgroundColor: '#0078a0', // Ocean blue
             borderRadius: 0,
