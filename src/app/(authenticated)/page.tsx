@@ -170,121 +170,130 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      {/* Summary cards - quick counts and red flags */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <SummaryCard
-          title="Tasks Due"
-          value={tasksDue}
-          description="Due this week"
-          variant={tasksDue > 0 ? "warning" : "default"}
-          href="#tasks"
-        />
-        <SummaryCard
-          title="Stalled"
-          value={stalledDevelopments}
-          description="No activity 30+ days"
-          variant={stalledDevelopments > 0 ? "danger" : "default"}
-          href="#developments"
-        />
-        <SummaryCard
-          title="Needs Review"
-          value={tasksNeedingReview}
-          description="New assignments"
-          variant={tasksNeedingReview > 0 ? "info" : "default"}
-          href="#tasks"
-        />
-        <SummaryCard
-          title="Pipeline"
-          value={pipelineSites}
-          description="Sites in progress"
-          variant="default"
-          href="#pipeline"
-        />
-      </div>
-
-      {/* Tasks section - at top for quick action */}
-      <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-teal">My Tasks</h2>
-          <Link
-            href="/tasks"
-            className="text-sm text-coral hover:text-coral-dark"
-          >
-            View all
-          </Link>
-        </div>
-        <div className="divide-y divide-gray-100">
-          {recentTasks.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
-              No tasks assigned. Tasks will appear here when assigned to you.
+      {/* Two-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Left column - Main content (3/4 width) */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* Tasks section - at top for quick action */}
+          <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-teal">My Tasks</h2>
+              <Link
+                href="/tasks"
+                className="text-sm text-coral hover:text-coral-dark"
+              >
+                View all
+              </Link>
             </div>
-          ) : (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            recentTasks.map((task) => <TaskRow key={task.id} task={task as any} />)
-          )}
-        </div>
-      </section>
-
-      {/* Active Developments section */}
-      <section id="developments" className="bg-white shadow" style={{ borderRadius: 0 }}>
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-teal">
-            My Active Developments
-          </h2>
-          <Link
-            href="/developments"
-            className="text-sm text-coral hover:text-coral-dark"
-          >
-            View all
-          </Link>
-        </div>
-        <div className="divide-y divide-gray-100">
-          {recentDevelopments.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
-              No active developments. Start by creating a development from a site.
-            </div>
-          ) : (
-            recentDevelopments.map((dev) => (
-              <DevelopmentRow
-                key={dev.id}
+            <div className="divide-y divide-gray-100">
+              {recentTasks.length === 0 ? (
+                <div className="px-6 py-8 text-center text-gray-500">
+                  No tasks assigned. Tasks will appear here when assigned to you.
+                </div>
+              ) : (
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                development={dev as any}
-                isStalled={
-                  new Date(dev.updatedAt) <
-                  new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-                }
-              />
-            ))
-          )}
-        </div>
-      </section>
-
-      {/* Pipeline Sites section */}
-      <section id="pipeline" className="bg-white shadow" style={{ borderRadius: 0 }}>
-        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-teal">
-            My Pipeline Sites
-          </h2>
-          <Link
-            href="/sites?filter=pipeline"
-            className="text-sm text-coral hover:text-coral-dark"
-          >
-            View all
-          </Link>
-        </div>
-        <div className="divide-y divide-gray-100">
-          {recentPipelineSites.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
-              No sites in pipeline. Add a new site to start tracking opportunities.
+                recentTasks.map((task) => <TaskRow key={task.id} task={task as any} />)
+              )}
             </div>
-          ) : (
-            recentPipelineSites.map((site) => (
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              <PipelineSiteRow key={site.id} site={site as any} />
-            ))
-          )}
+          </section>
+
+          {/* Active Developments section */}
+          <section id="developments" className="bg-white shadow" style={{ borderRadius: 0 }}>
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-teal">
+                My Active Developments
+              </h2>
+              <Link
+                href="/developments"
+                className="text-sm text-coral hover:text-coral-dark"
+              >
+                View all
+              </Link>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {recentDevelopments.length === 0 ? (
+                <div className="px-6 py-8 text-center text-gray-500">
+                  No active developments. Start by creating a development from a site.
+                </div>
+              ) : (
+                recentDevelopments.map((dev) => (
+                  <DevelopmentRow
+                    key={dev.id}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    development={dev as any}
+                    isStalled={
+                      new Date(dev.updatedAt) <
+                      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+                    }
+                  />
+                ))
+              )}
+            </div>
+          </section>
         </div>
-      </section>
+
+        {/* Right column - Sidebar (1/4 width) */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Summary cards - quick counts and red flags */}
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-4">
+            <SummaryCard
+              title="Tasks Due"
+              value={tasksDue}
+              description="Due this week"
+              variant={tasksDue > 0 ? "warning" : "default"}
+              href="#tasks"
+            />
+            <SummaryCard
+              title="Stalled"
+              value={stalledDevelopments}
+              description="No activity 30+ days"
+              variant={stalledDevelopments > 0 ? "danger" : "default"}
+              href="#developments"
+            />
+            <SummaryCard
+              title="Needs Review"
+              value={tasksNeedingReview}
+              description="New assignments"
+              variant={tasksNeedingReview > 0 ? "info" : "default"}
+              href="#tasks"
+            />
+            <SummaryCard
+              title="Pipeline"
+              value={pipelineSites}
+              description="Sites in progress"
+              variant="default"
+              href="#pipeline"
+            />
+          </div>
+
+          {/* Pipeline Sites section */}
+          <section id="pipeline" className="bg-white shadow" style={{ borderRadius: 0 }}>
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-teal">
+                Pipeline Sites
+              </h2>
+              <Link
+                href="/sites?filter=pipeline"
+                className="text-sm text-coral hover:text-coral-dark"
+              >
+                View all
+              </Link>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {recentPipelineSites.length === 0 ? (
+                <div className="px-6 py-8 text-center text-gray-500">
+                  No sites in pipeline.
+                </div>
+              ) : (
+                recentPipelineSites.map((site) => (
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  <PipelineSiteRow key={site.id} site={site as any} />
+                ))
+              )}
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
   )
 }
