@@ -1632,10 +1632,7 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
           {contact.phone && (
             <a
               href={`tel:${contact.phone}`}
-              className="p-2 rounded-full transition-colors"
-              style={{ backgroundColor: 'transparent' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1e434d'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              className="p-2 rounded-full transition-colors hover:bg-[#1e434d]"
               title={contact.phone}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#fa6e60' }}>
@@ -1646,10 +1643,7 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
           {contact.email && (
             <a
               href={`mailto:${contact.email}`}
-              className="p-2 rounded-full transition-colors"
-              style={{ backgroundColor: 'transparent' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1e434d'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              className="p-2 rounded-full transition-colors hover:bg-[#1e434d]"
               title={contact.email}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#fa6e60' }}>
