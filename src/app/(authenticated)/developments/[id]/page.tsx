@@ -324,7 +324,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         {/* Bottom row: Site Context - Map and Photo thumbnails with muted background */}
         {development.site && (
           <div className="px-6 py-4" style={{ backgroundColor: '#6b7280' }}>
-            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-white">Site Context</h3>
+            <h3 className="text-lg font-semibold mb-3 text-white">Site Context</h3>
             {/* Thumbnails - 160x120px (4:3 ratio) */}
             <div className="flex gap-3">
               {/* Map thumbnail */}
