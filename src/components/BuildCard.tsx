@@ -285,7 +285,7 @@ export function BuildCard({
     <ExpandableCard
       title="Build"
       icon={
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} style={{ color: '#1e434d' }}>
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} style={{ color: '#fa6e60' }}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 21h16M4 21V10l4-4m12 15V10l-4-4M8 6l4-4 4 4M12 2v8M8 21v-6h8v6" />
         </svg>
       }
