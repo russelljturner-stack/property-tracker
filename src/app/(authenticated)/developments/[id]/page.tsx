@@ -228,19 +228,19 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header - Option A: Two-row layout */}
-      <div className="bg-white shadow" style={{ borderRadius: 0 }}>
+      {/* Header & Site Context - Combined card with coral background */}
+      <div className="shadow" style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}>
         {/* Top row: Title + Status + Buttons */}
-        <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100">
+        <div className="px-6 py-4 flex items-center justify-between border-b border-white/20">
           <div className="flex items-center gap-3">
-            <Link href="/developments" title="Back to list" style={{ color: '#fa6e60' }} className="hover:opacity-80">
+            <Link href="/developments" title="Back to list" className="text-white hover:opacity-80">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
-            <h1 className="text-xl font-bold" style={{ color: '#1e434d' }}>{siteName}</h1>
+            <h1 className="text-xl font-bold text-white">{siteName}</h1>
             {development.status && (
-              <StatusBadge
+              <StatusBadgeDark
                 name={development.status.name}
                 colour={development.status.colour}
               />
@@ -252,7 +252,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               {prevDevelopment ? (
                 <Link
                   href={`/developments/${prevDevelopment.id}`}
-                  className="p-1.5 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded"
+                  className="p-1.5 text-white/80 hover:text-white bg-white/20 hover:bg-white/30 rounded"
                   title={`Previous: #${prevDevelopment.projectNo || prevDevelopment.id}`}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,7 +260,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   </svg>
                 </Link>
               ) : (
-                <span className="p-1.5 text-gray-300 bg-gray-50 rounded cursor-not-allowed">
+                <span className="p-1.5 text-white/40 bg-white/10 rounded cursor-not-allowed">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
@@ -269,7 +269,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               {nextDevelopment ? (
                 <Link
                   href={`/developments/${nextDevelopment.id}`}
-                  className="p-1.5 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded"
+                  className="p-1.5 text-white/80 hover:text-white bg-white/20 hover:bg-white/30 rounded"
                   title={`Next: #${nextDevelopment.projectNo || nextDevelopment.id}`}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,7 +277,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   </svg>
                 </Link>
               ) : (
-                <span className="p-1.5 text-gray-300 bg-gray-50 rounded cursor-not-allowed">
+                <span className="p-1.5 text-white/40 bg-white/10 rounded cursor-not-allowed">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -287,84 +287,82 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             {development.site && (
               <Link
                 href={`/sites/${development.site.id}`}
-                className="px-3 py-1.5 text-sm border rounded-full hover:bg-gray-50"
-                style={{ borderColor: '#1e434d', color: '#1e434d' }}
+                className="px-3 py-1.5 text-sm border border-white text-white rounded-full hover:bg-white/10"
               >
                 View Site
               </Link>
             )}
             <Link
               href={`/developments/${development.id}/edit`}
-              className="px-3 py-1.5 text-sm text-white rounded-full transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#1e434d' }}
+              className="px-3 py-1.5 text-sm rounded-full transition-colors hover:opacity-90"
+              style={{ backgroundColor: '#1e434d', color: 'white' }}
             >
               Edit
             </Link>
           </div>
         </div>
-        {/* Bottom row: Address + Badges */}
-        <div className="px-6 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+        {/* Middle row: Address + Badges */}
+        <div className="px-6 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm border-b border-white/20">
           {fullAddress && (
-            <span className="text-gray-600">{fullAddress}</span>
+            <span className="text-white/90">{fullAddress}</span>
           )}
-          <span className="text-gray-300">|</span>
+          <span className="text-white/40">|</span>
           {development.projectNo && (
-            <span className="text-gray-500">#{development.projectNo}</span>
+            <span className="text-white/80">#{development.projectNo}</span>
           )}
           {development.dealType && (
-            <span className="px-2 py-0.5 bg-gray-100 rounded text-gray-600">{development.dealType.name}</span>
+            <span className="px-2 py-0.5 bg-white/20 rounded text-white">{development.dealType.name}</span>
           )}
           {development.developmentType && (
-            <span className="px-2 py-0.5 bg-gray-100 rounded text-gray-600">{development.developmentType.name}</span>
+            <span className="px-2 py-0.5 bg-white/20 rounded text-white">{development.developmentType.name}</span>
           )}
           <PlanningScoreBadge score={development.planningScore} />
         </div>
-      </div>
-
-      {/* Site Context - Map and Photo thumbnails */}
-      {development.site && (
-        <div className="bg-white shadow p-4" style={{ borderRadius: 0 }}>
-          <h3 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: '#1e434d' }}>Site Context</h3>
-          {/* Thumbnails - 160x120px (4:3 ratio) */}
-          <div className="flex gap-3">
-            {/* Map thumbnail */}
-            {development.site.address?.latitude && development.site.address?.longitude ? (
-              <a
-                href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded overflow-hidden border border-gray-200 hover:border-blue-400 transition-colors w-[160px] h-[120px]"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=320x240&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
-                  alt="Site location"
-                  className="w-full h-full object-cover"
-                />
-              </a>
-            ) : (
-              <div className="bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs w-[160px] h-[120px]">
-                No map
-              </div>
-            )}
-            {/* Photo thumbnail */}
-            {development.site.photos?.[0]?.photoUrl ? (
-              <div className="rounded overflow-hidden border border-gray-200 w-[160px] h-[120px]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={development.site.photos[0].photoUrl}
-                  alt="Site photo"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs w-[160px] h-[120px]">
-                No photo
-              </div>
-            )}
+        {/* Bottom row: Site Context - Map and Photo thumbnails */}
+        {development.site && (
+          <div className="px-6 py-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-white/80">Site Context</h3>
+            {/* Thumbnails - 160x120px (4:3 ratio) */}
+            <div className="flex gap-3">
+              {/* Map thumbnail */}
+              {development.site.address?.latitude && development.site.address?.longitude ? (
+                <a
+                  href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors w-[160px] h-[120px]"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=320x240&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
+                    alt="Site location"
+                    className="w-full h-full object-cover"
+                  />
+                </a>
+              ) : (
+                <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-xs w-[160px] h-[120px]">
+                  No map
+                </div>
+              )}
+              {/* Photo thumbnail */}
+              {development.site.photos?.[0]?.photoUrl ? (
+                <div className="rounded overflow-hidden border-2 border-white/30 w-[160px] h-[120px]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={development.site.photos[0].photoUrl}
+                    alt="Site photo"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-xs w-[160px] h-[120px]">
+                  No photo
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* What's Next Action Prompt */}
       <WhatsNextPrompt development={development} />
@@ -1070,6 +1068,24 @@ function StatusBadge({ name, colour }: { name: string; colour?: string | null })
       style={{
         backgroundColor: colour ? `${colour}20` : "#e5e7eb",
         color: colour || "#374151",
+      }}
+    >
+      {name}
+    </span>
+  )
+}
+
+// =============================================================================
+// Component: Status Badge Dark (for coral/dark backgrounds)
+// Uses white/semi-transparent styling for readability
+// =============================================================================
+function StatusBadgeDark({ name, colour }: { name: string; colour?: string | null }) {
+  return (
+    <span
+      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+      style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.25)',
+        color: 'white',
       }}
     >
       {name}
