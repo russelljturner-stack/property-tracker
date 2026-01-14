@@ -54,6 +54,15 @@ const navigationItems = [
   },
 ]
 
+// Utility/settings items - shown separately at the bottom
+const utilityItems = [
+  {
+    name: "Style Guide",
+    href: "/style-guide",
+    icon: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01",
+  },
+]
+
 interface SidebarProps {
   isOpen: boolean
   onClose: () => void
@@ -73,7 +82,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar - Dark teal background (Wildstone brand) */}
+      {/* Sidebar - Dark teal background */}
       <aside
         className={`
           fixed top-0 left-0 z-50 h-full w-64 text-white
@@ -110,7 +119,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation Links */}
-        <nav className="mt-4 px-2">
+        <nav className="mt-4 px-2 flex-1">
           {navigationItems.map((item) => {
             // Check if this is the current page
             const isActive = pathname === item.href ||
@@ -123,7 +132,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 onClick={onClose}  // Close sidebar on mobile after clicking
                 className={`
                   flex items-center px-4 py-3 mb-1 rounded-lg
-                  transition-colors duration-150
+                  transition-colors duration-150 text-base
                   ${isActive
                     ? "bg-white/15 text-white"
                     : "text-white/80 hover:bg-white/10 hover:text-white"
@@ -132,7 +141,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               >
                 {/* Icons use coral accent colour on dark teal background */}
                 <svg
-                  className="w-5 h-5 mr-3"
+                  className="w-6 h-6 mr-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -145,42 +154,88 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     d={item.icon}
                   />
                 </svg>
-                {item.name}
+                <span className="font-medium">{item.name}</span>
               </Link>
             )
           })}
         </nav>
 
+        {/* Utility Links - separated from main nav */}
+        <div className="px-2 mb-2">
+          <div className="border-t border-white/20 pt-3">
+            {utilityItems.map((item) => {
+              const isActive = pathname === item.href ||
+                (item.href !== "/" && pathname.startsWith(item.href))
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={onClose}
+                  className={`
+                    flex items-center px-4 py-3 mb-1 rounded-lg
+                    transition-colors duration-150 text-base
+                    ${isActive
+                      ? "bg-white/15 text-white"
+                      : "text-white/80 hover:bg-white/10 hover:text-white"
+                    }
+                  `}
+                >
+                  <svg
+                    className="w-6 h-6 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    style={{ color: '#fa6e60' }}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d={item.icon}
+                    />
+                  </svg>
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+
         {/* Footer - User info and sign out */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-white/20">
+        <div className="border-t border-white/20">
           {session?.user && (
             <div className="p-3">
-              <div className="flex items-center gap-3">
+              {/* User row */}
+              <div className="flex items-center gap-3 px-1">
                 {/* User avatar - initials in a circle (coral accent) */}
                 <div
-                  className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium text-white"
+                  className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-base font-medium text-white"
                   style={{ backgroundColor: '#fa6e60' }}
                 >
                   {(session.user.name || session.user.email || "U").charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
+                  <p className="text-base font-medium text-white truncate">
                     {session.user.name || session.user.email}
                   </p>
                   {session.user.role && (
-                    <p className="text-xs text-white/60 truncate">{session.user.role}</p>
+                    <p className="text-sm text-white/60 truncate">{session.user.role}</p>
                   )}
                 </div>
               </div>
-              <button
-                onClick={() => signOut()}
-                className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-md transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#fa6e60' }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Sign out
-              </button>
+              {/* Sign out - aligned under user info */}
+              <div className="mt-2 pl-1" style={{ marginLeft: 'calc(2.5rem + 0.75rem)' }}>
+                <button
+                  onClick={() => signOut()}
+                  className="flex items-center gap-2 text-base text-white/80 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#fa6e60' }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Sign out
+                </button>
+              </div>
             </div>
           )}
         </div>
