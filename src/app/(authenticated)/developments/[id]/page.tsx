@@ -534,7 +534,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           {/* Key Contacts Card */}
           <section className="bg-white shadow" style={{ borderRadius: 0 }}>
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: '#1e434d' }}>
+              <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>
                 Key Contacts
               </h3>
             </div>
@@ -553,7 +553,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
           {/* Internal Team Card */}
           <section className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: '#1e434d' }}>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: '#1e434d' }}>
               Internal Team
             </h3>
             <div className="space-y-3">
@@ -565,10 +565,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           {/* Recent Activity Card - Black background for contrast */}
           <section className="shadow" style={{ backgroundColor: '#000000', borderRadius: 0 }}>
             <div className="px-6 py-4 border-b border-white/20">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-white flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 {/* Activity icon in coral */}
                 <svg
-                  className="w-5 h-5"
+                  className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -597,7 +597,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           {development.site?.developments && development.site.developments.length > 1 && (
             <section className="bg-white shadow" style={{ borderRadius: 0 }}>
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>
                   Related Developments
                 </h3>
               </div>
@@ -639,7 +639,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
           {/* Quick Info Card */}
           <section className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: '#1e434d' }}>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: '#1e434d' }}>
               Quick Info
             </h3>
             <div className="space-y-3">
@@ -1262,8 +1262,8 @@ function WhatsNextPrompt({ development }: {
 function InfoItem({ label, value }: { label: string; value?: string | null }) {
   return (
     <div>
-      <dt className="text-xs text-gray-500 uppercase tracking-wider">{label}</dt>
-      <dd className="text-sm text-gray-900 mt-0.5">{value || "—"}</dd>
+      <dt className="text-sm text-gray-500 uppercase tracking-wider">{label}</dt>
+      <dd className="text-base text-gray-900 mt-0.5">{value || "—"}</dd>
     </div>
   )
 }
@@ -1594,11 +1594,11 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
   const isDecisionMaker = contact.decisionLevel?.toLowerCase().includes('decision')
 
   return (
-    <div className="px-6 py-3">
+    <div className="px-6 py-4">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="text-xs text-gray-500 uppercase tracking-wider">{contact.role}</p>
+            <p className="text-sm text-gray-500 uppercase tracking-wider">{contact.role}</p>
             {/* Decision Maker indicator */}
             {isDecisionMaker && (
               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800" title="Decision Maker">
@@ -1611,15 +1611,15 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
               </span>
             )}
           </div>
-          <p className="text-sm font-medium text-gray-900 mt-0.5">{contact.name}</p>
+          <p className="text-base font-medium text-gray-900 mt-0.5">{contact.name}</p>
           <div className="flex items-center gap-2 mt-0.5">
             {contact.organisation && (
-              <p className="text-xs text-gray-500">{contact.organisation}</p>
+              <p className="text-sm text-gray-500">{contact.organisation}</p>
             )}
             {contact.siteRole && (
               <>
-                {contact.organisation && <span className="text-xs text-gray-300">•</span>}
-                <span className="text-xs text-blue-600">{contact.siteRole}</span>
+                {contact.organisation && <span className="text-sm text-gray-300">•</span>}
+                <span className="text-sm text-blue-600">{contact.siteRole}</span>
               </>
             )}
           </div>
@@ -1629,10 +1629,10 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
           {contact.phone && (
             <a
               href={`tel:${contact.phone}`}
-              className="p-1.5 rounded-full hover:bg-gray-100"
+              className="p-2 rounded-full hover:bg-gray-100"
               title={contact.phone}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#1e434d' }}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#1e434d' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
             </a>
@@ -1640,10 +1640,10 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
           {contact.email && (
             <a
               href={`mailto:${contact.email}`}
-              className="p-1.5 rounded-full hover:bg-gray-100"
+              className="p-2 rounded-full hover:bg-gray-100"
               title={contact.email}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#1e434d' }}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#1e434d' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </a>
@@ -1685,15 +1685,15 @@ function ActivityItem({ item }: { item: ActivityLogItem }) {
 // =============================================================================
 function ActivityItemDark({ item }: { item: ActivityLogItem }) {
   return (
-    <div className="px-6 py-3">
+    <div className="px-6 py-4">
       <div className="flex items-start gap-3">
         {/* Icon - line-style SVG in coral on dark background */}
         <div
-          className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+          className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
           style={{ backgroundColor: 'rgba(250, 110, 96, 0.2)' }}
         >
           <svg
-            className="w-4 h-4"
+            className="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -1708,8 +1708,8 @@ function ActivityItemDark({ item }: { item: ActivityLogItem }) {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-white">{item.description}</p>
-          <p className="text-xs text-white/60 mt-0.5">
+          <p className="text-base text-white">{item.description}</p>
+          <p className="text-sm text-white/60 mt-0.5">
             {item.by && `${item.by} • `}
             {formatDate(item.date)}
           </p>
