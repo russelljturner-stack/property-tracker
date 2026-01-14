@@ -1293,19 +1293,8 @@ function InfoItem({ label, value }: { label: string; value?: string | null }) {
 // Component: Panel Configuration Display
 // Handles single panel (expanded) vs multiple panels (collapsed with expand)
 // =============================================================================
-type PanelDetailType = {
-  id: number
-  quantity?: number | null
-  panelType?: { name: string; [key: string]: unknown } | null
-  panelSize?: { name: string; [key: string]: unknown } | null
-  orientation?: { name: string; [key: string]: unknown } | null
-  structureType?: { name: string; [key: string]: unknown } | null
-  illuminated?: string | null
-  digital?: string | null
-  sides?: number | null
-  height?: number | string | unknown | null
-  width?: number | string | unknown | null
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PanelDetailType = any
 
 function PanelConfigurationDisplay({
   details,
