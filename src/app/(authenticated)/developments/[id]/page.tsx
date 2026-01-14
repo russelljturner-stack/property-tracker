@@ -228,8 +228,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header & Site Context - Combined card with coral background, sticky at top */}
-      <div className="shadow sticky top-0 z-10" style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}>
+      {/* Header & Site Context - Combined card with coral background, sticky at top, full width */}
+      <div
+        className="shadow sticky top-0 z-10 -mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 lg:-mt-8"
+        style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}
+      >
         {/* Top row: Title + Status + Buttons */}
         <div className="px-6 py-4 flex items-center justify-between border-b border-white/20">
           <div className="flex items-center gap-3">
@@ -365,7 +368,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </div>
 
       {/* Main content: Two-column layout - narrower right column */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 -mr-4 sm:-mr-6 lg:-mr-8">
         {/* Left column: Timeline, Tasks and Stage Cards (3/4 width) */}
         <div className="lg:col-span-3 space-y-6">
           {/* What's Next Action Prompt */}
@@ -523,9 +526,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Right column: Sidebar (1/4 width) - Ocean blue background */}
+        {/* Right column: Sidebar (1/4 width) - Ocean blue background, extends to right edge */}
         <div
-          className="lg:col-span-1 space-y-6 p-4"
+          className="lg:col-span-1 space-y-6 p-4 pr-4 sm:pr-6 lg:pr-8"
           style={{
             backgroundColor: '#0078a0', // Ocean blue
             borderRadius: 0,
@@ -1624,15 +1627,18 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
             )}
           </div>
         </div>
-        {/* Contact action icons - teal colour */}
+        {/* Contact action icons - coral colour with teal hover background */}
         <div className="flex gap-2 flex-shrink-0">
           {contact.phone && (
             <a
               href={`tel:${contact.phone}`}
-              className="p-2 rounded-full hover:bg-gray-100"
+              className="p-2 rounded-full transition-colors"
+              style={{ backgroundColor: 'transparent' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1e434d'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               title={contact.phone}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#1e434d' }}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#fa6e60' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
             </a>
@@ -1640,10 +1646,13 @@ function ContactItem({ contact }: { contact: ContactInfo }) {
           {contact.email && (
             <a
               href={`mailto:${contact.email}`}
-              className="p-2 rounded-full hover:bg-gray-100"
+              className="p-2 rounded-full transition-colors"
+              style={{ backgroundColor: 'transparent' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1e434d'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               title={contact.email}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#1e434d' }}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#fa6e60' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </a>

@@ -134,7 +134,7 @@ export function ExpandableCard({
         {/* Left side: Icon, Title, Status badges */}
         <div className="flex items-center gap-3">
           <span className="flex-shrink-0">{icon}</span>
-          <h3 className="text-xl font-semibold" style={{ color: '#1e434d' }}>{title}</h3>
+          <h3 className="text-xl font-semibold tracking-tight" style={{ color: '#1e434d' }}>{title}</h3>
 
           {/* Status badges - rounded for tactile feel */}
           {isComplete && (

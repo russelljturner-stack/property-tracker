@@ -85,7 +85,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Sidebar - Dark teal background */}
       <aside
         className={`
-          fixed top-0 left-0 z-50 h-full w-64 text-white
+          fixed top-0 left-0 z-50 h-full w-64 text-white flex flex-col
           transform transition-transform duration-300 ease-in-out
           lg:translate-x-0
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -160,9 +160,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* Utility Links - separated from main nav */}
-        <div className="px-2 mb-2">
-          <div className="border-t border-white/20 pt-3">
+        {/* Utility Links - separated from main nav with more spacing */}
+        <div className="px-2 mt-6 mb-6">
+          <div className="border-t border-white/20 pt-6">
             {utilityItems.map((item) => {
               const isActive = pathname === item.href ||
                 (item.href !== "/" && pathname.startsWith(item.href))
@@ -203,11 +203,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Footer - User info and sign out */}
-        <div className="border-t border-white/20">
+        <div className="border-t border-white/20 mt-auto">
           {session?.user && (
-            <div className="p-3">
-              {/* User row */}
-              <div className="flex items-center gap-3 px-1">
+            <div className="p-4">
+              {/* User row with icon and name */}
+              <div className="flex items-start gap-3">
                 {/* User avatar - initials in a circle (coral accent) */}
                 <div
                   className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-base font-medium text-white"
@@ -224,15 +224,17 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   )}
                 </div>
               </div>
-              {/* Sign out - aligned under user info */}
-              <div className="mt-2 pl-1" style={{ marginLeft: 'calc(2.5rem + 0.75rem)' }}>
-                <button
-                  onClick={() => signOut()}
-                  className="flex items-center gap-2 text-base text-white/80 hover:text-white transition-colors"
-                >
+              {/* Sign out row - icon aligned under avatar, text aligned under name */}
+              <div className="flex items-center gap-3 mt-3">
+                <div className="flex-shrink-0 w-10 flex justify-center">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#fa6e60' }}>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="text-base text-white/80 hover:text-white transition-colors"
+                >
                   Sign out
                 </button>
               </div>
