@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { Prisma } from "@prisma/client"
 
 type RouteParams = {
   params: Promise<{ id: string }>
@@ -97,24 +98,36 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const body = await request.json()
-    const createData: Record<string, unknown> = { developmentId }
+
+    // Build the create data with proper typing
+    const createData: Prisma.DevelopmentDetailUncheckedCreateInput = {
+      developmentId,
+    }
 
     // Process allowed fields
     for (const [key, value] of Object.entries(body)) {
       if (!ALLOWED_FIELDS.includes(key)) continue
 
-      if (key.endsWith("Id")) {
-        // Foreign key - convert to number or null
-        createData[key] = value ? parseInt(String(value), 10) : null
-      } else if (key === "sides" || key === "quantity") {
-        // Integer fields
-        createData[key] = value ? parseInt(String(value), 10) : null
-      } else if (key === "height" || key === "width") {
-        // Decimal fields
-        createData[key] = value ? parseFloat(String(value)) : null
-      } else {
-        // String fields (digital, illuminated)
-        createData[key] = value === "" ? null : value
+      if (key === "panelTypeId") {
+        createData.panelTypeId = value ? parseInt(String(value), 10) : null
+      } else if (key === "panelSizeId") {
+        createData.panelSizeId = value ? parseInt(String(value), 10) : null
+      } else if (key === "orientationId") {
+        createData.orientationId = value ? parseInt(String(value), 10) : null
+      } else if (key === "structureTypeId") {
+        createData.structureTypeId = value ? parseInt(String(value), 10) : null
+      } else if (key === "sides") {
+        createData.sides = value ? parseInt(String(value), 10) : null
+      } else if (key === "quantity") {
+        createData.quantity = value ? parseInt(String(value), 10) : null
+      } else if (key === "height") {
+        createData.height = value ? new Prisma.Decimal(String(value)) : null
+      } else if (key === "width") {
+        createData.width = value ? new Prisma.Decimal(String(value)) : null
+      } else if (key === "digital") {
+        createData.digital = value === "" ? null : String(value)
+      } else if (key === "illuminated") {
+        createData.illuminated = value === "" ? null : String(value)
       }
     }
 
@@ -182,28 +195,39 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ message: "Panel detail not found" }, { status: 404 })
     }
 
-    const updateData: Record<string, unknown> = {}
+    // Build the update data with proper typing
+    const updateData: Prisma.DevelopmentDetailUncheckedUpdateInput = {}
+    let hasChanges = false
 
     // Process allowed fields
     for (const [key, value] of Object.entries(fields)) {
       if (!ALLOWED_FIELDS.includes(key)) continue
+      hasChanges = true
 
-      if (key.endsWith("Id")) {
-        // Foreign key - convert to number or null
-        updateData[key] = value ? parseInt(String(value), 10) : null
-      } else if (key === "sides" || key === "quantity") {
-        // Integer fields
-        updateData[key] = value ? parseInt(String(value), 10) : null
-      } else if (key === "height" || key === "width") {
-        // Decimal fields
-        updateData[key] = value ? parseFloat(String(value)) : null
-      } else {
-        // String fields (digital, illuminated)
-        updateData[key] = value === "" ? null : value
+      if (key === "panelTypeId") {
+        updateData.panelTypeId = value ? parseInt(String(value), 10) : null
+      } else if (key === "panelSizeId") {
+        updateData.panelSizeId = value ? parseInt(String(value), 10) : null
+      } else if (key === "orientationId") {
+        updateData.orientationId = value ? parseInt(String(value), 10) : null
+      } else if (key === "structureTypeId") {
+        updateData.structureTypeId = value ? parseInt(String(value), 10) : null
+      } else if (key === "sides") {
+        updateData.sides = value ? parseInt(String(value), 10) : null
+      } else if (key === "quantity") {
+        updateData.quantity = value ? parseInt(String(value), 10) : null
+      } else if (key === "height") {
+        updateData.height = value ? new Prisma.Decimal(String(value)) : null
+      } else if (key === "width") {
+        updateData.width = value ? new Prisma.Decimal(String(value)) : null
+      } else if (key === "digital") {
+        updateData.digital = value === "" ? null : String(value)
+      } else if (key === "illuminated") {
+        updateData.illuminated = value === "" ? null : String(value)
       }
     }
 
-    if (Object.keys(updateData).length === 0) {
+    if (!hasChanges) {
       return NextResponse.json({ message: "No valid fields to update" }, { status: 400 })
     }
 
