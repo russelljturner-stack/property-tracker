@@ -25,10 +25,10 @@ type TasksCardProps = {
 export function TasksCard({ tasks }: TasksCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const openTaskCount = tasks.filter(t => !t.complete).length
-  const hasMoreTasks = tasks.length > 5
+  const hasMoreTasks = tasks.length > 3
 
-  // Show all tasks when expanded, otherwise just first 5
-  const displayedTasks = isExpanded ? tasks : tasks.slice(0, 5)
+  // Show all tasks when expanded, otherwise just first 3
+  const displayedTasks = isExpanded ? tasks : tasks.slice(0, 3)
 
   return (
     <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
