@@ -6,6 +6,7 @@ import { DesignCard } from "@/components/DesignCard"
 import { PlanningCard } from "@/components/PlanningCard"
 import { MarketingCard } from "@/components/MarketingCard"
 import { BuildCard } from "@/components/BuildCard"
+import { PanelConfigurationCard } from "@/components/PanelConfigurationCard"
 
 // Force dynamic rendering - this page fetches data at request time
 export const dynamic = 'force-dynamic'
@@ -170,7 +171,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   ])
 
   // Fetch lookup data for dropdowns (in parallel for efficiency)
-  const [contractingEntities, lawyers, applicationStatuses, mediaOwners] = await Promise.all([
+  const [contractingEntities, lawyers, applicationStatuses, mediaOwners, panelTypes, panelSizes, orientations, structureTypes] = await Promise.all([
     // ContractingEntity is its own model
     db.contractingEntity.findMany({
       where: { isActive: true },
@@ -198,6 +199,27 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       },
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
+    }),
+    // Panel configuration lookups
+    db.panelType.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true },
+      orderBy: { sortOrder: 'asc' },
+    }),
+    db.panelSize.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true },
+      orderBy: { sortOrder: 'asc' },
+    }),
+    db.panelOrientation.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true },
+      orderBy: { sortOrder: 'asc' },
+    }),
+    db.structureType.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true },
+      orderBy: { sortOrder: 'asc' },
     }),
   ])
 
@@ -377,40 +399,35 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           {/* Progress Timeline - now within left column */}
           <ProgressTimeline stages={STAGES} currentStage={currentStage} />
 
-          {/* Panel Configuration - Electric blue background, Two column: fields (2/3) + image (1/3) */}
-          <section className="shadow" style={{ backgroundColor: '#007aee', borderRadius: 0 }}>
-            <div className="px-6 py-4 border-b border-white/20 flex justify-between items-center">
-              <h2 className="text-lg font-semibold" style={{ color: '#ffffff' }}>Panel Configuration</h2>
-              <button className="text-sm hover:opacity-80 px-3 py-1 rounded-full border border-white/50" style={{ color: '#ffffff' }}>
-                Edit
-              </button>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left column - Panel details (2/3 width) */}
-                <div className="lg:col-span-2">
-                  {development.details.length > 0 ? (
-                    <PanelConfigurationDisplay
-                      details={development.details}
-                    />
-                  ) : (
-                    <div className="text-white/70 text-center py-8">
-                      No panel configuration defined yet.
-                    </div>
-                  )}
-                </div>
-                {/* Right column - Design/Holding image (1/3 width) */}
-                <div className="lg:col-span-1">
-                  <PanelImageDisplay
-                    designUrl={development.designUrl}
-                    designStatus={development.designFinalOrDraft}
-                    panelSize={development.details[0]?.panelSize?.name}
-                    panelType={development.details[0]?.panelType?.name}
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
+          {/* Panel Configuration - Client component with edit functionality */}
+          <PanelConfigurationCard
+            developmentId={development.id}
+            details={development.details.map(d => ({
+              id: d.id,
+              panelTypeId: d.panelTypeId,
+              panelType: d.panelType,
+              panelSizeId: d.panelSizeId,
+              panelSize: d.panelSize,
+              orientationId: d.orientationId,
+              orientation: d.orientation,
+              structureTypeId: d.structureTypeId,
+              structureType: d.structureType,
+              digital: d.digital,
+              illuminated: d.illuminated,
+              sides: d.sides,
+              quantity: d.quantity,
+              height: d.height ? Number(d.height) : null,
+              width: d.width ? Number(d.width) : null,
+            }))}
+            lookups={{
+              panelTypes,
+              panelSizes,
+              orientations,
+              structureTypes,
+            }}
+            designUrl={development.designUrl}
+            designStatus={development.designFinalOrDraft}
+          />
 
           {/* Stage Cards - Expandable sections for each workflow stage */}
           <div className="space-y-4">
