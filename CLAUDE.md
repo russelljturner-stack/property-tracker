@@ -298,10 +298,19 @@ project/
 
 ### Naming Conventions
 
-- **Dates:** `YYYY-MM-DD` prefix for temporal documents
-- **Phases:** `phaseN/` folders for phase-specific work
-- **Audits:** `[layout]-schema-audit.md` for field mapping docs
-- **Handover:** `YYYY-MM-DD-sessionN-handover.md` for session notes
+**IMPORTANT: Claude MUST follow these naming conventions exactly. Do not create files with different naming patterns.**
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Handover docs | `YYYY-MM-DD-sessionN-handover.md` | `2026-01-15-session12-handover.md` |
+| Phase summaries | `00-phaseN-summary.md` | `00-phase3-summary.md` |
+| Schema audits | `[layout]-schema-audit.md` | `development-schema-audit.md` |
+| Date-prefixed | `YYYY-MM-DD-` prefix | `2026-01-15-` |
+
+**Rules:**
+- Always check existing files in a folder before creating new ones to match the pattern
+- Session numbers must be sequential (check the latest session number in `docs/handover/`)
+- Never create files like `session-11-handover.md` without the date prefix
 
 ### Architecture Decision Records (ADRs)
 
