@@ -28,7 +28,7 @@ Each layout needs a field-by-field audit comparing FileMaker → Prisma → UI.
 
 | Screen | Route | Built | Schema Complete | Fields Displayed | Edit Working | Notes |
 |--------|-------|-------|-----------------|------------------|--------------|-------|
-| Development Detail | `/developments/[id]` | YES | Partial | ~40% | YES | Expandable cards done |
+| Development Detail | `/developments/[id]` | YES | Partial | ~60% | YES | Panel config editing, expandable tasks, sidebar consistency |
 | Site Detail | `/sites/[id]` | NO | - | - | - | |
 | Contact Detail | `/contacts/[id]` | NO | - | - | - | |
 | Organisation Detail | `/organisations/[id]` | NO | - | - | - | |
@@ -119,4 +119,4 @@ See `unanswered-questions.md` for full details.
 
 ---
 
-*Last updated: 13 Jan 2026*
+*Last updated: 15 Jan 2026*
