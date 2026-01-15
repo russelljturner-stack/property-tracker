@@ -7,6 +7,7 @@ import { PlanningCard } from "@/components/PlanningCard"
 import { MarketingCard } from "@/components/MarketingCard"
 import { BuildCard } from "@/components/BuildCard"
 import { PanelConfigurationCard } from "@/components/PanelConfigurationCard"
+import { TasksCard } from "@/components/TasksCard"
 
 // Force dynamic rendering - this page fetches data at request time
 export const dynamic = 'force-dynamic'
@@ -538,36 +539,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             borderRadius: 0,
           }}
         >
-          {/* Tasks Section - At top of sidebar */}
-          <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Tasks</h3>
-              <span className="text-sm text-gray-500">
-                {development.tasks.filter(t => !t.complete).length} open
-              </span>
-            </div>
-            <div className="divide-y divide-gray-100">
-              {development.tasks.length === 0 ? (
-                <div className="px-6 py-6 text-center text-gray-500">
-                  No tasks for this development.
-                </div>
-              ) : (
-                development.tasks.slice(0, 5).map((task) => (
-                  <TaskItemCompact key={task.id} task={task} />
-                ))
-              )}
-            </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-              <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
-                + Add Task
-              </button>
-              {development.tasks.length > 5 && (
-                <button className="text-sm hover:opacity-80" style={{ color: '#fa6e60' }}>
-                  View all ({development.tasks.length})
-                </button>
-              )}
-            </div>
-          </section>
+          {/* Tasks Section - Expandable client component */}
+          <TasksCard tasks={development.tasks} />
 
           {/* Key Contacts Card */}
           <section className="bg-white shadow" style={{ borderRadius: 0 }}>
@@ -1368,90 +1341,6 @@ function PlanningScoreBadge({ score }: { score: number | null | undefined }) {
       <span className="font-bold">{score}/5</span>
       <span className="text-xs font-medium opacity-90">({getProbabilityText()})</span>
     </span>
-  )
-}
-
-// =============================================================================
-// Component: Task Item Compact (for sidebar)
-// Smaller, more condensed version for the narrow sidebar column
-// =============================================================================
-function TaskItemCompact({
-  task,
-}: {
-  task: {
-    id: number
-    description?: string | null
-    dueDate?: Date | null
-    complete: boolean
-    needsReview?: boolean
-    priority?: string | null
-    taskType?: { name: string } | null
-  }
-}) {
-  const isOverdue = !task.complete && task.dueDate && new Date(task.dueDate) < new Date()
-
-  return (
-    <div className={`px-4 py-3 ${task.complete ? "bg-gray-50" : ""}`}>
-      <div className="flex items-start gap-2">
-        {/* Checkbox indicator */}
-        <div
-          className={`flex-shrink-0 w-4 h-4 rounded-full border-2 mt-0.5 ${
-            task.complete
-              ? "bg-green-500 border-green-500"
-              : isOverdue
-              ? "border-red-400"
-              : "border-gray-300"
-          }`}
-        >
-          {task.complete && (
-            <svg className="w-3 h-3 text-white m-auto" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          )}
-        </div>
-
-        {/* Task content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1 flex-wrap">
-            {task.needsReview && !task.complete && (
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                NEW
-              </span>
-            )}
-            {task.priority?.toLowerCase() === 'high' && !task.complete && (
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                HIGH
-              </span>
-            )}
-          </div>
-          <p
-            className={`text-base leading-tight ${
-              task.complete ? "text-gray-400 line-through" : "text-gray-900"
-            }`}
-          >
-            {task.description || "Task"}
-          </p>
-          {task.dueDate && (
-            <p
-              className={`text-sm mt-1 ${
-                isOverdue
-                  ? "text-red-600 font-medium"
-                  : task.complete
-                  ? "text-gray-400"
-                  : "text-gray-500"
-              }`}
-            >
-              {isOverdue && !task.complete ? "Overdue: " : "Due: "}
-              {formatDate(task.dueDate)}
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
   )
 }
 
