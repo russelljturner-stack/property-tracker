@@ -1425,7 +1425,7 @@ function TaskItemCompact({
             )}
           </div>
           <p
-            className={`text-sm leading-tight ${
+            className={`text-base leading-tight ${
               task.complete ? "text-gray-400 line-through" : "text-gray-900"
             }`}
           >
@@ -1433,7 +1433,7 @@ function TaskItemCompact({
           </p>
           {task.dueDate && (
             <p
-              className={`text-xs mt-1 ${
+              className={`text-sm mt-1 ${
                 isOverdue
                   ? "text-red-600 font-medium"
                   : task.complete
@@ -1533,7 +1533,7 @@ function TaskItem({
               </span>
             )}
             <p
-              className={`font-medium ${
+              className={`text-base font-medium ${
                 task.complete ? "text-gray-400 line-through" : "text-gray-900"
               }`}
             >
