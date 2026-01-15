@@ -42,7 +42,7 @@
 <h1>Development Schema Audit</h1>
 <p><strong>Purpose:</strong> Compare FileMaker Development layout fields → Prisma schema → Current UI<br>
 <strong>Generated:</strong> 2026-01-13<br>
-<strong>Updated:</strong> 2026-01-13 - Added FileMaker DDR field descriptions</p>
+<strong>Updated:</strong> 2026-01-15 - Updated UI coverage after Phase 4 development</p>
 
 <div class="summary">
   <strong>Note:</strong> The markdown version (<code>development-schema-audit.md</code>) now includes a "DDR Description" column with original FileMaker field descriptions extracted from the Database Design Report. This provides valuable context about field purpose and business logic.
@@ -154,56 +154,56 @@
 <h3>Commercial - Acquisition/Lease Financials</h3>
 <table>
   <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
-  <tr><td>Estimate or Actual?</td><td>estimateOrActual</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Probability %</td><td>probability</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Fee Proposal</td><td>feeProposal</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Estimate or Actual?</td><td>estimateOrActual</td><td>[x]</td><td>Commercial card - shown as badge</td></tr>
+  <tr><td>Probability %</td><td>probability</td><td>[x]</td><td>Commercial card summary</td></tr>
+  <tr><td>Fee Proposal</td><td>feeProposal</td><td>[x]</td><td>Commercial card Deal Financials</td></tr>
   <tr><td>Rent Per Annum</td><td>leasePerAnnum</td><td>[x]</td><td>Commercial card</td></tr>
-  <tr><td>Purchase Price</td><td>purchasePrice</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Rental Value</td><td>rentalValue</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Rental Value (Consultancy)</td><td>rentalValueConsultancy</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Purchase Price</td><td>purchasePrice</td><td>[x]</td><td>Commercial card Deal Financials</td></tr>
+  <tr><td>Rental Value</td><td>rentalValue</td><td>[x]</td><td>Commercial card Deal Financials</td></tr>
+  <tr><td>Rental Value (Consultancy)</td><td>rentalValueConsultancy</td><td>[x]</td><td>Commercial card Consultancy section</td></tr>
   <tr><td>Start Date</td><td>leaseStartDate</td><td>[x]</td><td>Commercial card</td></tr>
   <tr><td>Term (Yrs)</td><td>term</td><td>[x]</td><td>Commercial card</td></tr>
-  <tr><td>End Date</td><td>(calculated)</td><td>[ ]</td><td>Could calc from start + term</td></tr>
-  <tr><td>Profit Year 1</td><td>profitYear1</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Profit Subsequent Years</td><td>profitThereafter</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Total Profit</td><td>(calculated)</td><td>[ ]</td><td>Would need calculation</td></tr>
+  <tr><td>End Date</td><td>(calculated)</td><td>[x]</td><td>Calculated from start + term</td></tr>
+  <tr><td>Profit Year 1</td><td>profitYear1</td><td>[x]</td><td>Commercial card Profit section</td></tr>
+  <tr><td>Profit Subsequent Years</td><td>profitThereafter</td><td>[x]</td><td>Commercial card Profit section</td></tr>
+  <tr><td>Total Profit</td><td>(calculated)</td><td>[x]</td><td>Calculated in Commercial card</td></tr>
 </table>
 
 <h3>Commercial - Existing Lease</h3>
 <table>
   <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
-  <tr><td>Current Rent Per Annum</td><td>currentRentPerAnnum</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Lease Start Date</td><td>currentLeaseStartDate</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Lease End Date</td><td>currentLeaseEndDate</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Current Lease document</td><td>currentLeaseUrl</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Current Rent Per Annum</td><td>currentRentPerAnnum</td><td>[x]</td><td>Commercial card Existing Lease section</td></tr>
+  <tr><td>Lease Start Date</td><td>currentLeaseStartDate</td><td>[x]</td><td>Commercial card Existing Lease section</td></tr>
+  <tr><td>Lease End Date</td><td>currentLeaseEndDate</td><td>[x]</td><td>Commercial card with expiry warning</td></tr>
+  <tr><td>Current Lease document</td><td>currentLeaseUrl</td><td>[x]</td><td>Commercial card as link</td></tr>
 </table>
 
 <h3>Commercial - Contract Terms</h3>
 <table>
   <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
-  <tr><td>Clyde &amp; Co. Reference</td><td>matterNo</td><td>[S]</td><td>In schema (matterNo), not displayed</td></tr>
+  <tr><td>Clyde &amp; Co. Reference</td><td>matterNo</td><td>[x]</td><td>Commercial card Contract Terms</td></tr>
   <tr><td>Contracting Entity</td><td>contractingEntity</td><td>[x]</td><td>Commercial card</td></tr>
-  <tr><td>Contract Term</td><td>contractTerm</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Is Lease Assignable?</td><td>leaseAssignable</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>RPI Increases</td><td>rpiIncreases</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Rent Commencement</td><td>rentCommencement</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Date AFL Signed</td><td>aflSigned</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>AFL Signed Comments</td><td>aflSignedComment</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>AFL Expiry Date</td><td>aflExpiryDate</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>AFL Expiry Comment</td><td>aflExpiryComment</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Contract Annual Rent</td><td>contractAnnualRent</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Contract Issued</td><td>contractIssued</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Contract Term</td><td>contractTerm</td><td>[x]</td><td>Commercial card Contract Terms</td></tr>
+  <tr><td>Is Lease Assignable?</td><td>leaseAssignable</td><td>[x]</td><td>Commercial card Contract Terms</td></tr>
+  <tr><td>RPI Increases</td><td>rpiIncreases</td><td>[x]</td><td>Commercial card Contract Terms</td></tr>
+  <tr><td>Rent Commencement</td><td>rentCommencement</td><td>[x]</td><td>Commercial card Contract Terms</td></tr>
+  <tr><td>Date AFL Signed</td><td>aflSigned</td><td>[x]</td><td>Commercial card AFL section</td></tr>
+  <tr><td>AFL Signed Comments</td><td>aflSignedComment</td><td>[x]</td><td>Commercial card AFL section</td></tr>
+  <tr><td>AFL Expiry Date</td><td>aflExpiryDate</td><td>[x]</td><td>Commercial card with expiry warning</td></tr>
+  <tr><td>AFL Expiry Comment</td><td>aflExpiryComment</td><td>[x]</td><td>Commercial card AFL section</td></tr>
+  <tr><td>Contract Annual Rent</td><td>contractAnnualRent</td><td>[x]</td><td>Commercial card Contract Terms</td></tr>
+  <tr><td>Contract Issued</td><td>contractIssued</td><td>[x]</td><td>Commercial card Contract Terms</td></tr>
   <tr><td>Contract Signed</td><td>contractSigned</td><td>[x]</td><td>Commercial card</td></tr>
-  <tr><td>Contract URL</td><td>contractUrl</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Contract URL</td><td>contractUrl</td><td>[x]</td><td>Commercial card as link</td></tr>
   <tr><td>Offer Agreed</td><td>offerAgreed</td><td>[x]</td><td>Commercial card</td></tr>
-  <tr><td>Lawyer (Wildstone)</td><td>lawyer</td><td>[x]</td><td>Commercial card</td></tr>
-  <tr><td>Lawyer Contact</td><td>lawyerContact</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Lawyer (Wildstone)</td><td>lawyer</td><td>[x]</td><td>Commercial card Legal section</td></tr>
+  <tr><td>Lawyer Contact</td><td>lawyerContact</td><td>[x]</td><td>Commercial card Legal section with details</td></tr>
 </table>
 
 <h3>Commercial - Contract Documents</h3>
 <table>
   <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
-  <tr><td>Contract Documents</td><td>contractDocs</td><td>[S]</td><td>Table exists, not displayed</td></tr>
+  <tr><td>Contract Documents</td><td>contractDocs</td><td>[x]</td><td>Commercial card Contract Documents section</td></tr>
 </table>
 
 <h2>Tab 4: Design</h2>
@@ -246,38 +246,39 @@
 <h3>Planning - Advertisement Application</h3>
 <table>
   <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
-  <tr><td>Status</td><td>advertAppStatus</td><td>[x]</td><td>Planning card</td></tr>
-  <tr><td>Application Description</td><td>advertApplicationDescription</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Status</td><td>advertAppStatus</td><td>[x]</td><td>Planning card Advertisement tab</td></tr>
+  <tr><td>Application Description</td><td>advertApplicationDescription</td><td>[x]</td><td>Planning card Advertisement tab</td></tr>
   <tr><td>Application Detail</td><td>advertApplicationDetail</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Date Submitted</td><td>advertApplicationSubmitted</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Date Validated</td><td>advertApplicationRegistration</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>LA Reference</td><td>advertAppRefLa</td><td>[x]</td><td>Planning card</td></tr>
-  <tr><td>Target Determination Date</td><td>advertAppDeterminationDate</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Conditions</td><td>advertConditions</td><td>[S]</td><td>In schema, not displayed</td></tr>
-  <tr><td>Conditions Number</td><td>advertConditionsNumber</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Date Submitted</td><td>advertApplicationSubmitted</td><td>[x]</td><td>Planning card Advertisement tab</td></tr>
+  <tr><td>Date Validated</td><td>advertApplicationRegistration</td><td>[x]</td><td>Planning card Advertisement tab</td></tr>
+  <tr><td>LA Reference</td><td>advertAppRefLa</td><td>[x]</td><td>Planning card Advertisement tab</td></tr>
+  <tr><td>Target Determination Date</td><td>advertAppDeterminationDate</td><td>[x]</td><td>Planning card Advertisement tab</td></tr>
+  <tr><td>Conditions</td><td>advertConditions</td><td>[x]</td><td>Planning card Advertisement tab (conditional)</td></tr>
+  <tr><td>Conditions Number</td><td>advertConditionsNumber</td><td>[x]</td><td>Planning card Advertisement tab (conditional)</td></tr>
 </table>
 
 <h3>Planning - Planning Application</h3>
 <table>
   <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
-  <tr><td>Status</td><td>planningAppStatus</td><td>[x]</td><td>Planning card</td></tr>
-  <tr><td>Application Description</td><td>planningApplicationDescription</td><td>[S]</td><td>In schema</td></tr>
-  <tr><td>Application Detail</td><td>planningApplicationDetail</td><td>[S]</td><td>In schema</td></tr>
-  <tr><td>Date Submitted</td><td>planningApplicationSubmitted</td><td>[S]</td><td>In schema</td></tr>
-  <tr><td>Date Registered</td><td>planningAppRegistration</td><td>[S]</td><td>In schema</td></tr>
-  <tr><td>LA Reference</td><td>planningAppRefLa</td><td>[x]</td><td>Planning card</td></tr>
-  <tr><td>Target Determination Date</td><td>planningAppDeterminDate</td><td>[x]</td><td>Planning card</td></tr>
-  <tr><td>Conditions</td><td>planningConditions</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Status</td><td>planningAppStatus</td><td>[x]</td><td>Planning card Planning tab</td></tr>
+  <tr><td>Application Description</td><td>planningApplicationDescription</td><td>[x]</td><td>Planning card Planning tab</td></tr>
+  <tr><td>Application Detail</td><td>planningApplicationDetail</td><td>[S]</td><td>In schema, not displayed</td></tr>
+  <tr><td>Date Submitted</td><td>planningApplicationSubmitted</td><td>[x]</td><td>Planning card Planning tab</td></tr>
+  <tr><td>Date Registered</td><td>planningAppRegistration</td><td>[x]</td><td>Planning card Planning tab</td></tr>
+  <tr><td>LA Reference</td><td>planningAppRefLa</td><td>[x]</td><td>Planning card Planning tab</td></tr>
+  <tr><td>Target Determination Date</td><td>planningAppDeterminDate</td><td>[x]</td><td>Planning card Planning tab</td></tr>
+  <tr><td>Conditions</td><td>planningConditions</td><td>[x]</td><td>Planning card Planning tab (conditional)</td></tr>
+  <tr><td>Conditions Number</td><td>planningConditionsNumber</td><td>[x]</td><td>Planning card Planning tab (conditional)</td></tr>
 </table>
 
 <h3>Planning - Appeals (Both Types)</h3>
 <table>
   <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
   <tr><td>Appeal Deadline Override</td><td>planningAppealDeadlineOverride / advertAppealDeadlineOverride</td><td>[S]</td><td>In schema</td></tr>
-  <tr><td>Appeal Submitted</td><td>planningAppealSubmitted / advertAppealSubmitted</td><td>[S]</td><td>In schema</td></tr>
-  <tr><td>Appeal Start</td><td>planningAppealStart / advertAppealStart</td><td>[S]</td><td>In schema</td></tr>
-  <tr><td>Appeal Reference</td><td>planningAppealRefLa / advertAppealRefLa</td><td>[S]</td><td>In schema</td></tr>
-  <tr><td>Appeal Procedure</td><td>planningAppealProcedure / advertAppealProcedure</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Appeal Submitted</td><td>planningAppealSubmitted / advertAppealSubmitted</td><td>[x]</td><td>Planning card Appeal sections</td></tr>
+  <tr><td>Appeal Start</td><td>planningAppealStart / advertAppealStart</td><td>[x]</td><td>Planning card Appeal sections</td></tr>
+  <tr><td>Appeal Reference</td><td>planningAppealRefLa / advertAppealRefLa</td><td>[x]</td><td>Planning card Appeal sections</td></tr>
+  <tr><td>Appeal Procedure</td><td>planningAppealProcedure / advertAppealProcedure</td><td>[x]</td><td>Planning card Appeal sections</td></tr>
   <tr><td>Appeal Representations</td><td>planningAppealRepresentations / advertAppealRepresentations</td><td>[S]</td><td>In schema</td></tr>
   <tr><td>Appeal Hearing Date</td><td>planningAppealHearing</td><td>[S]</td><td>Planning only</td></tr>
   <tr><td>Appeal Final Comments</td><td>planningAppealFinalComments</td><td>[S]</td><td>Planning only</td></tr>
@@ -308,14 +309,14 @@
 <h3>Marketing - Tender Offers</h3>
 <table>
   <tr><th>FileMaker Field</th><th>Prisma Field</th><th>In UI</th><th>Notes</th></tr>
-  <tr><td>Media Owner/Brand</td><td>tenderOffers.offerFrom</td><td>[S]</td><td>In schema (basic)</td></tr>
+  <tr><td>Media Owner/Brand</td><td>tenderOffers.offerFrom</td><td>[x]</td><td>Marketing card Tender Offers section</td></tr>
   <tr style="background:#fee2e2"><td>Main Contact</td><td>-</td><td>[ ]</td><td><strong>MISSING - need contact relation</strong></td></tr>
   <tr style="background:#fee2e2"><td>Response Received?</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
   <tr style="background:#fee2e2"><td>Response document</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
-  <tr><td>Offer amount</td><td>tenderOffers.offerAmount</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Offer amount</td><td>tenderOffers.offerAmount</td><td>[x]</td><td>Marketing card with "Best Offer" indicator</td></tr>
   <tr style="background:#fee2e2"><td>Premium</td><td>-</td><td>[ ]</td><td><strong>MISSING from schema</strong></td></tr>
   <tr><td>Offer Accepted?</td><td>tenderOffers.status</td><td>[S]</td><td>Could use status field</td></tr>
-  <tr><td>Offer Date</td><td>tenderOffers.offerDate</td><td>[S]</td><td>In schema</td></tr>
+  <tr><td>Offer Date</td><td>tenderOffers.offerDate</td><td>[x]</td><td>Marketing card Tender Offers section</td></tr>
   <tr><td>Notes</td><td>tenderOffers.notes</td><td>[S]</td><td>In schema</td></tr>
 </table>
 
@@ -419,20 +420,21 @@
 <h2>Summary</h2>
 
 <div class="summary">
-  <h3>UI Coverage by Tab</h3>
+  <h3>UI Coverage by Tab (Updated 15 Jan 2026)</h3>
   <table>
     <tr><th>Tab</th><th>Fields in FileMaker</th><th>In Schema</th><th>Displayed</th><th>Coverage</th></tr>
-    <tr><td>Development</td><td>~25</td><td>22</td><td>18</td><td>72%</td></tr>
+    <tr><td>Development</td><td>~25</td><td>22</td><td>20</td><td>80%</td></tr>
     <tr><td>Survey</td><td>~15</td><td>12</td><td>5</td><td>33%</td></tr>
-    <tr><td>Commercial</td><td>~40+</td><td>35</td><td>8</td><td>20%</td></tr>
+    <tr style="background:#dcfce7"><td>Commercial</td><td>~40+</td><td>35</td><td>32</td><td><strong>91%</strong></td></tr>
     <tr style="background:#dcfce7"><td>Design</td><td>~5</td><td>5</td><td>5</td><td><strong>100%</strong></td></tr>
-    <tr><td>Planning</td><td>~50+</td><td>45</td><td>8</td><td>16%</td></tr>
-    <tr style="background:#fee2e2"><td>Marketing</td><td>~20</td><td>4</td><td>0</td><td><strong>0%</strong></td></tr>
-    <tr><td>Build</td><td>~15</td><td>12</td><td>4</td><td>27%</td></tr>
+    <tr style="background:#dcfce7"><td>Planning</td><td>~50+</td><td>45</td><td>25</td><td><strong>56%</strong></td></tr>
+    <tr><td>Marketing</td><td>~20</td><td>4</td><td>4</td><td>20%</td></tr>
+    <tr><td>Build</td><td>~15</td><td>12</td><td>5</td><td>33%</td></tr>
     <tr><td>Consultancy</td><td>~30</td><td>30</td><td>0</td><td>DEFERRED</td></tr>
     <tr><td>Tasks &amp; Notes</td><td>~15</td><td>12</td><td>10</td><td>67%</td></tr>
-    <tr><td>Contacts</td><td>~15</td><td>10</td><td>6</td><td>40%</td></tr>
+    <tr><td>Contacts</td><td>~15</td><td>10</td><td>8</td><td>53%</td></tr>
   </table>
+  <p><strong>Overall Progress:</strong> Significant improvement since Phase 4 development. Commercial now at 91%, Planning at 56%.</p>
 </div>
 
 <div class="missing">
