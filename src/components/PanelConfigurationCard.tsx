@@ -299,7 +299,7 @@ export function PanelConfigurationCard({
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Left column - Panel details (2/3 width) */}
           <div className="lg:col-span-2">
             {details.length === 0 && newPanels.length === 0 ? (
@@ -693,8 +693,8 @@ function PanelDetailExpanded({
         </h4>
       </div>
 
-      {/* Fields grid - larger text for prominence */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5">
+      {/* Fields grid - 5 columns to fit all info on 2 lines */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-x-5 gap-y-4">
         <PanelField label="Panel Type" value={detail.panelType?.name} />
         <PanelField label="Size" value={detail.panelSize?.name} />
         <PanelField label="Orientation" value={detail.orientation?.name} />
@@ -771,6 +771,7 @@ function PanelField({ label, value }: { label: string; value?: string | null }) 
 
 /**
  * PanelImageDisplay - Design image or SVG placeholder
+ * Square corners on image container, annotation below showing design status
  */
 function PanelImageDisplay({
   designUrl,
@@ -783,25 +784,20 @@ function PanelImageDisplay({
   panelSize?: string | null
   panelType?: string | null
 }) {
+  // Determine annotation text based on design status
+  const getAnnotation = () => {
+    if (!designUrl) return 'Holding image'
+    if (designStatus === 'Final') return 'Design Final'
+    if (designStatus === 'Draft') return 'Design Draft'
+    return 'Design Proposed'
+  }
+
   // If we have a design image, show it
   if (designUrl) {
     return (
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-white/70">Design Image</span>
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-              designStatus === 'Final'
-                ? 'bg-green-500 text-white'
-                : designStatus === 'Draft'
-                ? 'bg-blue-500 text-white'
-                : 'bg-white/20 text-white'
-            }`}
-          >
-            {designStatus || 'Proposed'}
-          </span>
-        </div>
-        <div className="aspect-[4/3] bg-white rounded overflow-hidden">
+        {/* Image container - square corners */}
+        <div className="aspect-[4/3] bg-white overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={designUrl}
@@ -809,11 +805,13 @@ function PanelImageDisplay({
             className="w-full h-full object-contain"
           />
         </div>
+        {/* Annotation below image */}
+        <p className="text-sm text-white/70 text-center italic">{getAnnotation()}</p>
         <a
           href={designUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-white hover:text-white/80 flex items-center gap-1"
+          className="text-sm text-white hover:text-white/80 flex items-center justify-center gap-1"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -827,12 +825,14 @@ function PanelImageDisplay({
   // No design image - show SVG placeholder
   return (
     <div className="space-y-2">
-      <span className="text-sm text-white/70">Design Image</span>
-      <div className="bg-white/10 rounded overflow-hidden">
+      {/* Image container - square corners */}
+      <div className="bg-white/10 overflow-hidden">
         <PanelSizeSVG size={panelSize} type={panelType} />
       </div>
+      {/* Annotation below image */}
+      <p className="text-sm text-white/70 text-center italic">{getAnnotation()}</p>
       <button
-        className="w-full text-sm py-2 border border-dashed border-white/30 text-white/70 hover:border-white hover:text-white transition-colors rounded"
+        className="w-full text-sm py-2 border border-dashed border-white/30 text-white/70 hover:border-white hover:text-white transition-colors"
       >
         + Upload Design
       </button>

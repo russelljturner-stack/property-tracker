@@ -576,7 +576,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 Key Contacts
               </h3>
             </div>
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 bg-gray-50">
               {allContacts.length === 0 ? (
                 <div className="px-6 py-4 text-sm text-gray-500">
                   No contacts recorded.
@@ -590,11 +590,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </section>
 
           {/* Internal Team Card */}
-          <section className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
-            <h3 className="text-lg font-semibold mb-4" style={{ color: '#1e434d' }}>
-              Internal Team
-            </h3>
-            <div className="space-y-3">
+          <section className="bg-white shadow" style={{ borderRadius: 0 }}>
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>
+                Internal Team
+              </h3>
+            </div>
+            <div className="px-6 py-4 bg-gray-50 space-y-3">
               <InfoItem label="Developer" value={development.internalDeveloper} />
               <InfoItem label="Planner" value={development.internalPlanner} />
             </div>
@@ -639,7 +641,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   Related Developments
                 </h3>
               </div>
-              <div className="p-4">
+              <div className="p-4 bg-gray-50">
                 <p className="text-xs text-gray-500 mb-3">
                   Other developments at this site
                 </p>
@@ -650,7 +652,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                       <Link
                         key={dev.id}
                         href={`/developments/${dev.id}`}
-                        className="block p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                        className="block p-3 bg-white border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-colors"
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-gray-900">
@@ -676,11 +678,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           )}
 
           {/* Quick Info Card */}
-          <section className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
-            <h3 className="text-lg font-semibold mb-4" style={{ color: '#1e434d' }}>
-              Quick Info
-            </h3>
-            <div className="space-y-3">
+          <section className="bg-white shadow" style={{ borderRadius: 0 }}>
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>
+                Quick Info
+              </h3>
+            </div>
+            <div className="px-6 py-4 bg-gray-50 space-y-3">
               <InfoItem
                 label="Site Owner"
                 value={development.site?.siteOwner?.name}
