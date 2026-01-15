@@ -364,6 +364,7 @@ export function EditField({
 
 /**
  * Helper component for select dropdowns in edit mode
+ * Note: All values are converted to strings for consistent comparison
  */
 export function SelectField({
   label,
@@ -378,7 +379,7 @@ export function SelectField({
 }: {
   label: string
   name: string
-  value: string | number | undefined
+  value: string | number | undefined | null
   onChange: (name: string, value: string) => void
   options: Array<{ value: string | number; label: string }>
   error?: string
@@ -386,6 +387,9 @@ export function SelectField({
   placeholder?: string
   className?: string
 }) {
+  // Convert value to string for consistent comparison with option values
+  const stringValue = value != null ? String(value) : ""
+
   return (
     <div className={className}>
       <label htmlFor={name} className="block text-xs text-gray-500 uppercase tracking-wider mb-1">
@@ -396,7 +400,7 @@ export function SelectField({
       <select
         id={name}
         name={name}
-        value={value ?? ""}
+        value={stringValue}
         onChange={(e) => onChange(name, e.target.value)}
         className={`
           mt-1 block w-full rounded-md shadow-sm text-sm
@@ -410,7 +414,7 @@ export function SelectField({
       >
         <option value="">{placeholder}</option>
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
+          <option key={String(opt.value)} value={String(opt.value)}>
             {opt.label}
           </option>
         ))}
