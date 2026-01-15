@@ -162,16 +162,52 @@ The brand colours are defined in `tailwind.config.ts` and can be used throughout
 
 ### Card Styles
 
+**Standard Card (white header / grey content):**
+
+Used for sidebar cards (Key Contacts, Internal Team, Quick Info, etc.)
+
 ```jsx
-// Standard card
-<div className="bg-white shadow" style={{ borderRadius: 0 }}>
+<section className="bg-white shadow" style={{ borderRadius: 0 }}>
+  {/* White header with border */}
   <div className="px-6 py-4 border-b border-gray-200">
-    <h2 className="text-lg font-semibold text-teal">Card Title</h2>
+    <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Card Title</h3>
   </div>
-  <div className="p-6">
+  {/* Grey content area */}
+  <div className="px-6 py-4 bg-gray-50">
     {/* Content */}
   </div>
-</div>
+</section>
+```
+
+**Stage Cards (expandable):**
+
+Used for workflow stages (Commercial, Design, Planning, etc.)
+
+```jsx
+<section className="bg-white shadow" style={{ borderRadius: 0 }}>
+  <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+    <h2 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Stage Title</h2>
+    <button>Edit</button>
+  </div>
+  <div className="p-6">
+    {/* Expanded content */}
+  </div>
+</section>
+```
+
+**Blue Feature Cards:**
+
+Used for high-emphasis sections (Panel Configuration)
+
+```jsx
+<section className="shadow" style={{ backgroundColor: '#007aee', borderRadius: 0 }}>
+  <div className="px-6 py-4 border-b border-white/20 flex justify-between items-center">
+    <h2 className="text-lg font-semibold text-white">Card Title</h2>
+  </div>
+  <div className="p-6">
+    {/* Content with white/70 labels, white values */}
+  </div>
+</section>
 ```
 
 ### Summary/Stat Cards
@@ -192,6 +228,96 @@ The brand colours are defined in `tailwind.config.ts` and can be used throughout
 | **Two-column layout** | `grid-cols-1 lg:grid-cols-4`, main content 3/4 width, sidebar 1/4 width |
 | **Sidebar (development detail)** | Ocean blue background, white cards inside |
 | **Cards** | White background, no border-radius (`borderRadius: 0`), shadow |
+
+### Badges and Pills
+
+**Count Badge (e.g., Tasks "3 open"):**
+
+```jsx
+<span
+  className="text-sm font-medium px-3 py-1 rounded-full"
+  style={{
+    backgroundColor: count > 0 ? '#fa6e60' : '#10b981',  // Coral if active, green if zero
+    color: '#ffffff'
+  }}
+>
+  {count} open
+</span>
+```
+
+**Status Badge (on dark backgrounds):**
+
+```jsx
+<span className="text-xs px-2 py-0.5 rounded-full bg-white/20 text-white">
+  Status Text
+</span>
+```
+
+**Priority Badge:**
+
+```jsx
+<span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+  HIGH
+</span>
+```
+
+**Type/Category Badge:**
+
+```jsx
+<span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
+  Category
+</span>
+```
+
+### Expandable Components
+
+**Tasks Card (client component with expand/collapse):**
+
+- Shows first 5 items by default
+- "View all (X)" button expands to show all items
+- "Show less" button collapses back to 5 items
+- Header shows count in prominent pill badge
+
+```jsx
+// Header with count badge
+<div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+  <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Tasks</h3>
+  <span className="text-sm font-medium px-3 py-1 rounded-full" style={{ backgroundColor: '#fa6e60', color: '#fff' }}>
+    3 open
+  </span>
+</div>
+
+// Footer with expand button
+<div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
+  <button className="text-sm" style={{ color: '#fa6e60' }}>+ Add Task</button>
+  <button onClick={toggle} className="text-sm" style={{ color: '#fa6e60' }}>
+    {isExpanded ? 'Show less' : `View all (${count})`}
+  </button>
+</div>
+```
+
+### Image Containers
+
+**Panel/Design Images:**
+
+- Square corners (no border-radius)
+- Annotation text below showing status
+- Top-aligned with adjacent content using `items-start` on parent grid
+
+```jsx
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+  {/* Content column */}
+  <div className="lg:col-span-2">...</div>
+
+  {/* Image column - aligned to top */}
+  <div className="lg:col-span-1">
+    <div className="aspect-[4/3] bg-white overflow-hidden">
+      <img src={url} className="w-full h-full object-contain" />
+    </div>
+    <p className="text-sm text-white/70 text-center italic">Design Final</p>
+  </div>
+</div>
+```
 
 ### Component Patterns
 
@@ -239,4 +365,4 @@ The brand colours are defined in `tailwind.config.ts` and can be used throughout
 
 ---
 
-*Last updated: 14 January 2026*
+*Last updated: 15 January 2026*
