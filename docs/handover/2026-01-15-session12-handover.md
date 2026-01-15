@@ -1,8 +1,8 @@
-# Session 11 Handover - 15 January 2026
+# Session 12 Handover - 15 January 2026
 
 ## Session Summary
 
-This session focused on UI consistency and polish for the Development detail page sidebar, plus fixing a dropdown selection bug.
+This session focused on UI consistency and polish for the Development detail page sidebar, fixing a dropdown selection bug, and strengthening documentation standards.
 
 ---
 
@@ -44,6 +44,12 @@ This session focused on UI consistency and polish for the Development detail pag
   - Planning: 16% → 56%
   - Marketing: 0% → 20%
 
+### 6. Naming Convention Enforcement
+- Strengthened naming conventions in CLAUDE.md to prevent future mistakes
+- Added explicit table with patterns and examples for all document types
+- Added rules requiring Claude to check existing files before creating new ones
+- Handover file naming: `YYYY-MM-DD-sessionN-handover.md` (mandatory date prefix)
+
 ---
 
 ## Files Created/Modified
@@ -58,6 +64,7 @@ This session focused on UI consistency and polish for the Development detail pag
 - `docs/decisions/ux-rules.md` - Style guide additions
 - `docs/phase4/development-schema-audit.html` - Coverage updates
 - `docs/phase4/build-tracker.md` - Progress update
+- `CLAUDE.md` - Strengthened naming conventions with explicit rules and examples
 
 ---
 
