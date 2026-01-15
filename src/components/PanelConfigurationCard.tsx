@@ -672,6 +672,7 @@ function PanelViewDisplay({ details }: { details: PanelDetailData[] }) {
 
 /**
  * PanelDetailExpanded - Full expanded view of a single panel
+ * White background, square corners, more prominent information
  */
 function PanelDetailExpanded({
   detail,
@@ -681,44 +682,30 @@ function PanelDetailExpanded({
   index: number
 }) {
   return (
-    <div className="bg-white/10 rounded-lg p-5">
+    <div className="bg-white p-6">
       {/* Panel header */}
-      <div className="flex items-center justify-between mb-4">
-        <h4 className="text-base font-semibold text-white">
+      <div className="flex items-center justify-between mb-5 pb-4 border-b border-gray-200">
+        <h4 className="text-lg font-semibold text-gray-900">
           {detail.panelType?.name || 'Panel'} {index + 1}
           {detail.quantity && detail.quantity > 1 && (
-            <span className="font-normal text-white/70"> x {detail.quantity}</span>
+            <span className="font-normal text-gray-500"> x {detail.quantity}</span>
           )}
         </h4>
-        {/* Feature badges */}
-        <div className="flex gap-2">
-          {detail.digital === 'Yes' && (
-            <span className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white">Digital</span>
-          )}
-          {detail.illuminated === 'Yes' && (
-            <span className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white">Illuminated</span>
-          )}
-        </div>
       </div>
 
-      {/* Fields grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Fields grid - larger text for prominence */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5">
         <PanelField label="Panel Type" value={detail.panelType?.name} />
         <PanelField label="Size" value={detail.panelSize?.name} />
         <PanelField label="Orientation" value={detail.orientation?.name} />
         <PanelField label="Structure" value={detail.structureType?.name} />
         <PanelField label="Sides" value={detail.sides?.toString()} />
         <PanelField label="Quantity" value={detail.quantity?.toString()} />
+        <PanelField label="Digital" value={detail.digital} />
+        <PanelField label="Illuminated" value={detail.illuminated} />
         <PanelField
           label="Dimensions"
           value={detail.height && detail.width ? `${detail.height}m x ${detail.width}m` : null}
-        />
-        <PanelField
-          label="Features"
-          value={[
-            detail.digital === 'Yes' ? 'Digital' : null,
-            detail.illuminated === 'Yes' ? 'Illuminated' : null,
-          ].filter(Boolean).join(', ') || null}
         />
       </div>
     </div>
@@ -727,6 +714,7 @@ function PanelDetailExpanded({
 
 /**
  * PanelDetailRow - Compact row view for multiple panels
+ * White background, square corners
  */
 function PanelDetailRow({
   detail,
@@ -736,38 +724,32 @@ function PanelDetailRow({
   index: number
 }) {
   return (
-    <div className="bg-white/10 rounded-lg overflow-hidden">
+    <div className="bg-white overflow-hidden">
       {/* Summary header */}
-      <div className="px-4 py-3 flex items-center justify-between">
+      <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100">
         <div className="flex items-center gap-3">
-          <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold text-white">
+          <span className="w-7 h-7 rounded-full bg-[#007aee] flex items-center justify-center text-xs font-bold text-white">
             {index + 1}
           </span>
           <div>
-            <span className="font-medium text-white">
+            <span className="font-semibold text-gray-900">
               {detail.panelType?.name || 'Panel'}
             </span>
-            <span className="text-white/70 ml-2">
+            <span className="text-gray-600 ml-2">
               {[detail.panelSize?.name, detail.orientation?.name].filter(Boolean).join(' - ')}
             </span>
             {detail.quantity && detail.quantity > 1 && (
-              <span className="text-white/60 ml-2">x {detail.quantity}</span>
+              <span className="text-gray-500 ml-2">x {detail.quantity}</span>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {detail.digital === 'Yes' && (
-            <span className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white">Digital</span>
-          )}
-          {detail.illuminated === 'Yes' && (
-            <span className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium text-white">Illum</span>
-          )}
-        </div>
       </div>
       {/* Additional details row */}
-      <div className="px-4 pb-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/60">
+      <div className="px-5 py-3 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600">
         {detail.structureType?.name && <span>Structure: {detail.structureType.name}</span>}
         {detail.sides && <span>Sides: {detail.sides}</span>}
+        {detail.digital && <span>Digital: {detail.digital}</span>}
+        {detail.illuminated && <span>Illuminated: {detail.illuminated}</span>}
         {detail.height && detail.width && <span>Size: {detail.height}m x {detail.width}m</span>}
       </div>
     </div>
@@ -776,12 +758,13 @@ function PanelDetailRow({
 
 /**
  * PanelField - Label/value pair for view mode
+ * Now styled for white background
  */
 function PanelField({ label, value }: { label: string; value?: string | null }) {
   return (
     <div>
-      <dt className="text-xs text-white/60 uppercase tracking-wider">{label}</dt>
-      <dd className="text-sm text-white font-medium mt-0.5">{value || '—'}</dd>
+      <dt className="text-xs text-gray-500 uppercase tracking-wider font-medium">{label}</dt>
+      <dd className="text-base text-gray-900 font-medium mt-1">{value || '—'}</dd>
     </div>
   )
 }
@@ -871,33 +854,33 @@ function PanelSizeSVG({
   const typeName = type?.toLowerCase() || ''
   const isDigital = typeName.includes('digital')
 
-  // Determine panel aspect ratio and style
+  // Determine panel aspect ratio and style - reduced heights for more compact display
   const getPanelConfig = () => {
     if (sizeName.includes('6 sheet') || sizeName === 'mega 6') {
-      return { width: 60, height: 90, label: size || '6 Sheet', isPortrait: true }
+      return { width: 50, height: 60, label: size || '6 Sheet', isPortrait: true }
     }
     if (sizeName.includes('48') || sizeName === 'mega 48') {
-      return { width: 100, height: 50, label: size || '48 Sheet', isPortrait: false }
+      return { width: 80, height: 35, label: size || '48 Sheet', isPortrait: false }
     }
     if (sizeName.includes('96') || sizeName === 'mega 96') {
-      return { width: 120, height: 30, label: size || '96 Sheet', isPortrait: false }
+      return { width: 90, height: 22, label: size || '96 Sheet', isPortrait: false }
     }
     if (sizeName.includes('p10') || sizeName.includes('mini')) {
-      return { width: 80, height: 60, label: size || 'P10', isPortrait: false }
+      return { width: 65, height: 40, label: size || 'P10', isPortrait: false }
     }
     if (sizeName.includes('p250')) {
-      return { width: 90, height: 50, label: 'P250', isPortrait: false }
+      return { width: 70, height: 35, label: 'P250', isPortrait: false }
     }
     if (sizeName.includes('tfl') || sizeName.includes('cip')) {
-      return { width: 70, height: 50, label: 'TFL CIPs', isPortrait: false }
+      return { width: 55, height: 35, label: 'TFL CIPs', isPortrait: false }
     }
-    return { width: 80, height: 50, label: size || 'TBC', isPortrait: false }
+    return { width: 65, height: 35, label: size || 'TBC', isPortrait: false }
   }
 
   const config = getPanelConfig()
-  const padding = 20
+  const padding = 12
   const viewWidth = config.width + padding * 2
-  const viewHeight = config.height + padding * 2 + 30
+  const viewHeight = config.height + padding * 2 + 18
 
   const panelX = padding
   const panelY = padding
@@ -932,11 +915,11 @@ function PanelSizeSVG({
       <rect x="0" y="0" width={viewWidth} height={viewHeight} fill="url(#skyGradient)" />
 
       {/* Ground line */}
-      <line x1="0" y1={viewHeight - 10} x2={viewWidth} y2={viewHeight - 10} stroke="#0a2840" strokeWidth="2" />
+      <line x1="0" y1={viewHeight - 6} x2={viewWidth} y2={viewHeight - 6} stroke="#0a2840" strokeWidth="2" />
 
       {/* Support legs */}
-      <rect x={panelX + config.width * 0.25 - 3} y={legY} width="6" height={viewHeight - legY - 10} fill="#2c3e50" />
-      <rect x={panelX + config.width * 0.75 - 3} y={legY} width="6" height={viewHeight - legY - 10} fill="#2c3e50" />
+      <rect x={panelX + config.width * 0.25 - 2} y={legY} width="4" height={viewHeight - legY - 6} fill="#2c3e50" />
+      <rect x={panelX + config.width * 0.75 - 2} y={legY} width="4" height={viewHeight - legY - 6} fill="#2c3e50" />
 
       {/* Panel frame */}
       <rect x={panelX - 2} y={panelY - 2} width={config.width + 4} height={config.height + 4} fill="#34495e" rx="2" />
@@ -958,10 +941,10 @@ function PanelSizeSVG({
       {/* Panel size label */}
       <text
         x={panelX + config.width / 2}
-        y={panelY + config.height / 2 - 5}
+        y={panelY + config.height / 2 - 2}
         textAnchor="middle"
         fill={isDigital ? '#ffffff' : '#2c3e50'}
-        fontSize={config.isPortrait ? '10' : '12'}
+        fontSize={config.isPortrait ? '8' : '9'}
         fontWeight="bold"
         fontFamily="system-ui, sans-serif"
       >
@@ -971,25 +954,13 @@ function PanelSizeSVG({
       {/* Panel type label */}
       <text
         x={panelX + config.width / 2}
-        y={panelY + config.height / 2 + 10}
+        y={panelY + config.height / 2 + 8}
         textAnchor="middle"
         fill={isDigital ? '#94a3b8' : '#64748b'}
-        fontSize="8"
-        fontFamily="system-ui, sans-serif"
-      >
-        {type || 'Poster'}
-      </text>
-
-      {/* "No design" indicator */}
-      <text
-        x={panelX + config.width / 2}
-        y={panelY + config.height - 8}
-        textAnchor="middle"
-        fill={isDigital ? '#64748b' : '#94a3b8'}
         fontSize="6"
         fontFamily="system-ui, sans-serif"
       >
-        No design uploaded
+        {type || 'Poster'}
       </text>
     </svg>
   )
