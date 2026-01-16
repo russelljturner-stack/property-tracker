@@ -32,18 +32,45 @@ export function TasksCard({ tasks }: TasksCardProps) {
 
   return (
     <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
+      {/* Pulse animation for open tasks badge */}
+      <style>{`
+        @keyframes task-pulse {
+          0% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1.5);
+            opacity: 0;
+          }
+        }
+        .task-pulse-animation {
+          position: relative;
+        }
+        .task-pulse-animation::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: 9999px;
+          background-color: #fa6e60;
+          animation: task-pulse 1.5s ease-out infinite;
+        }
+      `}</style>
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Tasks</h3>
-        <span
-          className="text-sm font-medium px-3 py-1 rounded-full"
-          style={{
-            backgroundColor: openTaskCount > 0 ? '#fa6e60' : '#10b981',
-            color: '#ffffff'
-          }}
-        >
-          {openTaskCount} open
-        </span>
+        {/* Wrapper for pulse animation - only animate if there are open tasks */}
+        <div className={`relative ${openTaskCount > 0 ? 'task-pulse-animation' : ''}`}>
+          <span
+            className="relative z-10 text-sm font-medium px-3 py-1 rounded-full inline-block"
+            style={{
+              backgroundColor: openTaskCount > 0 ? '#fa6e60' : '#10b981',
+              color: '#ffffff'
+            }}
+          >
+            {openTaskCount} open
+          </span>
+        </div>
       </div>
 
       {/* Task list */}

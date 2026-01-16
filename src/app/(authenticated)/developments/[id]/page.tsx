@@ -342,6 +342,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             <PlanningScoreBadge score={development.planningScore} />
           )}
         </div>
+        {/* EXPERIMENTAL: Progress Timeline in header - full width (easy to revert: move back to line ~403) */}
+        <ProgressTimeline stages={STAGES} currentStage={currentStage} />
         {/* Bottom row: Site Context - Map and Photo thumbnails with muted background */}
         {development.site && (
           <div className="px-6 py-4" style={{ backgroundColor: '#6b7280' }}>
@@ -394,13 +396,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
       {/* Main content: Two-column layout - narrower right column */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Left column: Timeline, Tasks and Stage Cards (3/4 width) */}
+        {/* Left column: Stage Cards (3/4 width) */}
         <div className="lg:col-span-3 space-y-6">
           {/* What's Next Action Prompt - HIDDEN pending final decision (see unanswered-questions.md) */}
           {/* <WhatsNextPrompt development={development} /> */}
 
-          {/* Progress Timeline - now within left column */}
-          <ProgressTimeline stages={STAGES} currentStage={currentStage} />
+          {/* OLD LOCATION: Progress Timeline was here - moved to header (see line ~346) */}
+          {/* To revert: uncomment below and remove from header */}
+          {/* <ProgressTimeline stages={STAGES} currentStage={currentStage} /> */}
 
           {/* Panel Configuration - Client component with edit functionality */}
           <PanelConfigurationCard
