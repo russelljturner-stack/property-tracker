@@ -304,15 +304,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 </span>
               )}
             </div>
-            {/* View Site button - removed border, Edit button removed entirely */}
-            {development.site && (
-              <Link
-                href={`/sites/${development.site.id}`}
-                className="px-4 py-2 text-sm text-white bg-white/20 hover:bg-white/30 rounded-full transition-colors"
-              >
-                View Site
-              </Link>
-            )}
           </div>
         </div>
         {/* Middle row: Badges */}
@@ -372,10 +363,18 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 </div>
               )}
             </div>
-            {/* Address below thumbnails */}
-            {fullAddress && (
-              <p className="text-sm text-white/80 mt-3">{fullAddress}</p>
-            )}
+            {/* Address and View Site button */}
+            <div className="flex items-center justify-between mt-3">
+              {fullAddress && (
+                <p className="text-sm text-white/80">{fullAddress}</p>
+              )}
+              <Link
+                href={`/sites/${development.site.id}`}
+                className="px-4 py-2 text-sm text-white bg-white/20 hover:bg-white/30 rounded-full transition-colors flex-shrink-0 ml-4"
+              >
+                View Site
+              </Link>
+            </div>
           </div>
         )}
         {/* EXPERIMENTAL: Progress Timeline - below Site Context (easy to revert: see line ~408) */}

@@ -7,7 +7,8 @@
  * with a "View all" button to expand and show all tasks.
  */
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
+import { toggleTaskComplete } from "@/app/actions/tasks"
 
 type Task = {
   id: number
@@ -22,17 +23,36 @@ type TasksCardProps = {
   tasks: Task[]
 }
 
-export function TasksCard({ tasks }: TasksCardProps) {
+export function TasksCard({ tasks: initialTasks }: TasksCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [tasks, setTasks] = useState(initialTasks)
   const openTaskCount = tasks.filter(t => !t.complete).length
   const hasMoreTasks = tasks.length > 3
 
   // Show all tasks when expanded, otherwise just first 3
   const displayedTasks = isExpanded ? tasks : tasks.slice(0, 3)
 
+  // Handler for toggling task completion
+  const handleToggleComplete = async (taskId: number, currentComplete: boolean) => {
+    // Optimistic update
+    setTasks(prev => prev.map(t =>
+      t.id === taskId ? { ...t, complete: !currentComplete } : t
+    ))
+
+    try {
+      await toggleTaskComplete(taskId, !currentComplete)
+    } catch (error) {
+      // Revert on error
+      setTasks(prev => prev.map(t =>
+        t.id === taskId ? { ...t, complete: currentComplete } : t
+      ))
+      console.error('Failed to update task:', error)
+    }
+  }
+
   return (
-    <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
-      {/* Pulse animation for open tasks badge - smaller scale for pill size */}
+    <section id="tasks" className="bg-white shadow overflow-hidden" style={{ borderRadius: 0 }}>
+      {/* Pulse animation for open tasks badge - contained within card */}
       <style>{`
         @keyframes task-pulse {
           0% {
@@ -44,13 +64,15 @@ export function TasksCard({ tasks }: TasksCardProps) {
             opacity: 0;
           }
         }
-        .task-pulse-animation {
+        .task-pulse-wrapper {
           position: relative;
+          overflow: hidden;
+          border-radius: 9999px;
         }
-        .task-pulse-animation::before {
+        .task-pulse-wrapper::before {
           content: '';
           position: absolute;
-          inset: 0;
+          inset: -4px;
           border-radius: 9999px;
           background-color: #fa6e60;
           animation: task-pulse 1.5s ease-out infinite;
@@ -60,7 +82,7 @@ export function TasksCard({ tasks }: TasksCardProps) {
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Tasks</h3>
         {/* Wrapper for pulse animation - only animate if there are open tasks */}
-        <div className={`relative ${openTaskCount > 0 ? 'task-pulse-animation' : ''}`}>
+        <div className={`${openTaskCount > 0 ? 'task-pulse-wrapper' : ''}`}>
           <span
             className="relative z-10 text-sm font-medium px-3 py-1 rounded-full inline-block"
             style={{
@@ -81,7 +103,11 @@ export function TasksCard({ tasks }: TasksCardProps) {
           </div>
         ) : (
           displayedTasks.map((task) => (
-            <TaskItemCompact key={task.id} task={task} />
+            <TaskItemCompact
+              key={task.id}
+              task={task}
+              onToggleComplete={handleToggleComplete}
+            />
           ))
         )}
       </div>
@@ -106,53 +132,82 @@ export function TasksCard({ tasks }: TasksCardProps) {
 }
 
 /**
- * TaskItemCompact - Compact task display for sidebar
+ * TaskItemCompact - Compact task display for sidebar with checkbox
  */
-function TaskItemCompact({ task }: { task: Task }) {
+function TaskItemCompact({
+  task,
+  onToggleComplete
+}: {
+  task: Task
+  onToggleComplete: (taskId: number, currentComplete: boolean) => void
+}) {
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !task.complete
 
   return (
-    <div className="px-6 py-3">
-      {/* Top row: Type badge and priority */}
-      <div className="flex items-center gap-2 mb-1">
-        {task.taskType && (
-          <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
-            {task.taskType.name}
-          </span>
-        )}
-        {task.priority?.toLowerCase() === 'high' && !task.complete && (
-          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-            HIGH
-          </span>
-        )}
-      </div>
-      {/* Task description */}
-      <p
-        className={`text-base leading-tight ${
-          task.complete ? "text-gray-400 line-through" : "text-gray-900"
-        }`}
+    <div className="px-6 py-3 flex gap-3">
+      {/* Checkbox */}
+      <button
+        onClick={() => onToggleComplete(task.id, task.complete)}
+        className={`
+          flex-shrink-0 w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center
+          transition-colors cursor-pointer
+          ${task.complete
+            ? 'bg-emerald-500 border-emerald-500'
+            : 'border-gray-300 hover:border-gray-400'
+          }
+        `}
+        title={task.complete ? 'Mark as incomplete' : 'Mark as complete'}
       >
-        {task.description || "Task"}
-      </p>
-      {/* Due date */}
-      {task.dueDate && (
+        {task.complete && (
+          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        )}
+      </button>
+
+      {/* Task content */}
+      <div className="flex-1 min-w-0">
+        {/* Top row: Type badge and priority */}
+        <div className="flex items-center gap-2 mb-1">
+          {task.taskType && (
+            <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
+              {task.taskType.name}
+            </span>
+          )}
+          {task.priority?.toLowerCase() === 'high' && !task.complete && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+              HIGH
+            </span>
+          )}
+        </div>
+        {/* Task description */}
         <p
-          className={`text-sm mt-1 ${
-            isOverdue
-              ? "text-red-600 font-medium"
-              : task.complete
-              ? "text-gray-400"
-              : "text-gray-500"
+          className={`text-base leading-tight ${
+            task.complete ? "text-gray-400 line-through" : "text-gray-900"
           }`}
         >
-          {isOverdue && !task.complete ? "Overdue: " : "Due: "}
-          {new Date(task.dueDate).toLocaleDateString("en-GB", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
+          {task.description || "Task"}
         </p>
-      )}
+        {/* Due date */}
+        {task.dueDate && (
+          <p
+            className={`text-sm mt-1 ${
+              isOverdue
+                ? "text-red-600 font-medium"
+                : task.complete
+                ? "text-gray-400"
+                : "text-gray-500"
+            }`}
+          >
+            {isOverdue && !task.complete ? "Overdue: " : "Due: "}
+            {new Date(task.dueDate).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </p>
+        )}
+      </div>
     </div>
   )
 }

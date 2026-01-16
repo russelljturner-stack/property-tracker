@@ -4,6 +4,27 @@ This document tracks questions that have arisen during development that need Rus
 
 ---
 
+## Edit Button - Which Fields Need Editing?
+
+**Date raised:** 16 Jan 2026
+
+The Edit button was removed from the Development header to simplify the UI. However, some fields may still need editing capability (e.g., Internal Team member assignments).
+
+**Question:** Which fields on the Development detail page need to be editable?
+
+**Examples to consider:**
+- Internal Developer / Internal Planner assignments
+- Deal Type / Development Type
+- Planning Score
+- Other fields?
+
+**Options:**
+- A) Restore global Edit button - links to full edit page
+- B) Inline editing - make specific fields editable in place
+- C) Edit via sidebar cards - each card has its own edit mode
+
+---
+
 ## "What's Next" Action Prompt - Include or Remove?
 
 **Date raised:** 16 Jan 2026
