@@ -358,7 +358,14 @@ async function main() {
     prisma.organisation.create({ data: { name: 'Eversheds Sutherland', type: 'Lawyer', phone: '020 7919 4500' } }),
   ]);
 
-  console.log(`  Created ${localAuthorities.length + siteOwners.length + siteAgents.length + mediaOwners.length + lawFirms.length} organisations\n`);
+  // Developer Companies (organisations that develop advertising sites)
+  const developers = await Promise.all([
+    prisma.organisation.create({ data: { name: 'Wildstone Media', type: 'Developer', phone: '020 7123 4567' } }),
+    prisma.organisation.create({ data: { name: 'Outdoor Plus', type: 'Developer', phone: '020 7234 5678' } }),
+    prisma.organisation.create({ data: { name: 'Alight Media', type: 'Developer', phone: '0161 345 6789' } }),
+  ]);
+
+  console.log(`  Created ${localAuthorities.length + siteOwners.length + siteAgents.length + mediaOwners.length + lawFirms.length + developers.length} organisations\n`);
 
   // =========================================================================
   // STEP 5: Create Contacts
@@ -655,14 +662,15 @@ async function main() {
   const daysFromNow = (days: number) => new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
 
   const developments = await Promise.all([
-    // Dev 1: In planning - very active
+    // Dev 1: In planning - very active (Proposed Wildstone)
     prisma.development.create({
       data: {
         projectNo: 1001,
         siteId: sites[0].id,
         statusId: devStatuses[4].id, // Planning submitted
         dealTypeId: dealTypes[1].id, // Lease
-        developmentTypeId: devTypes[0].id, // New Build
+        developmentTypeId: devTypes[0].id, // Proposed Wildstone
+        developerId: developers[0].id, // Wildstone Media
         internalDeveloper: 'Test User',
         internalPlanner: 'Planning Team',
         planningAppStatusId: appStatuses[3].id, // Under consideration
@@ -689,14 +697,15 @@ async function main() {
         planningScore: 4,
       }
     }),
-    // Dev 2: Consent granted, contracts stage
+    // Dev 2: Consent granted, contracts stage (Proposed Wildstone)
     prisma.development.create({
       data: {
         projectNo: 1002,
         siteId: sites[1].id,
         statusId: devStatuses[7].id, // Contracts in negotiation
         dealTypeId: dealTypes[0].id, // Acquisition
-        developmentTypeId: devTypes[0].id, // New Build
+        developmentTypeId: devTypes[0].id, // Proposed Wildstone
+        developerId: developers[0].id, // Wildstone Media
         internalDeveloper: 'Test User',
         internalPlanner: 'Planning Team',
         planningAppStatusId: appStatuses[5].id, // Approved with conditions
@@ -727,14 +736,15 @@ async function main() {
         updatedAt: daysAgo(3),
       }
     }),
-    // Dev 3: Out to tender
+    // Dev 3: Out to tender (Proposed by Other Developer - Outdoor Plus)
     prisma.development.create({
       data: {
         projectNo: 1003,
         siteId: sites[2].id,
         statusId: devStatuses[9].id, // Out to tender
         dealTypeId: dealTypes[1].id, // Lease
-        developmentTypeId: devTypes[1].id, // Upgrade
+        developmentTypeId: devTypes[1].id, // Proposed by Other Developer
+        developerId: developers[1].id, // Outdoor Plus
         internalDeveloper: 'Test User',
         planningAppStatusId: appStatuses[4].id, // Approved
         planningAppRefLa: 'P/2024/7890',
@@ -754,14 +764,15 @@ async function main() {
         updatedAt: daysAgo(7),
       }
     }),
-    // Dev 4: In build
+    // Dev 4: In build (Proposed Wildstone)
     prisma.development.create({
       data: {
         projectNo: 1004,
         siteId: sites[3].id,
         statusId: devStatuses[10].id, // Site in development
         dealTypeId: dealTypes[1].id, // Lease
-        developmentTypeId: devTypes[0].id, // New Build
+        developmentTypeId: devTypes[0].id, // Proposed Wildstone
+        developerId: developers[0].id, // Wildstone Media
         internalDeveloper: 'Test User',
         internalPlanner: 'Planning Team',
         planningAppStatusId: appStatuses[4].id, // Approved
@@ -784,14 +795,15 @@ async function main() {
         updatedAt: daysAgo(2),
       }
     }),
-    // Dev 5: Recently completed / operational
+    // Dev 5: Recently completed / operational (Proposed Wildstone)
     prisma.development.create({
       data: {
         projectNo: 1005,
         siteId: sites[4].id,
         statusId: devStatuses[11].id, // Site operational
         dealTypeId: dealTypes[1].id, // Lease
-        developmentTypeId: devTypes[0].id, // New Build
+        developmentTypeId: devTypes[0].id, // Proposed Wildstone
+        developerId: developers[0].id, // Wildstone Media
         internalDeveloper: 'Planning Team',
         planningAppStatusId: appStatuses[4].id, // Approved
         advertAppStatusId: appStatuses[4].id, // Approved
@@ -810,14 +822,15 @@ async function main() {
         updatedAt: daysAgo(14),
       }
     }),
-    // Dev 6: STALLED - no update in 45+ days
+    // Dev 6: STALLED - no update in 45+ days (Proposed Wildstone)
     prisma.development.create({
       data: {
         projectNo: 1006,
         siteId: sites[5].id,
         statusId: devStatuses[1].id, // Head of terms agreed
         dealTypeId: dealTypes[1].id, // Lease
-        developmentTypeId: devTypes[0].id, // New Build
+        developmentTypeId: devTypes[0].id, // Proposed Wildstone
+        developerId: developers[0].id, // Wildstone Media
         internalDeveloper: 'Test User',
         offerAgreed: daysAgo(100),
         leasePerAnnum: 22000,
@@ -828,14 +841,15 @@ async function main() {
         updatedAt: daysAgo(50), // STALLED - 50 days no update
       }
     }),
-    // Dev 7: Planning refused, appeal submitted
+    // Dev 7: Planning refused, appeal submitted (Proposed by Other Developer - Alight Media)
     prisma.development.create({
       data: {
         projectNo: 1007,
         siteId: sites[6].id,
         statusId: devStatuses[5].id, // Planning refused
         dealTypeId: dealTypes[1].id, // Lease
-        developmentTypeId: devTypes[0].id, // New Build
+        developmentTypeId: devTypes[1].id, // Proposed by Other Developer
+        developerId: developers[2].id, // Alight Media
         internalDeveloper: 'Test User',
         internalPlanner: 'Planning Team',
         planningAppStatusId: appStatuses[7].id, // Appeal submitted
@@ -854,14 +868,15 @@ async function main() {
         updatedAt: daysAgo(5),
       }
     }),
-    // Dev 8: Historic development at same site as Dev 1 (for testing Related Developments)
+    // Dev 8: Historic development at same site as Dev 1 (Archived - for testing Related Developments)
     prisma.development.create({
       data: {
         projectNo: 1008,
         siteId: sites[0].id, // Same site as Dev 1 (Cromwell Road Digital)
         statusId: devStatuses[12].id, // Decommissioned
         dealTypeId: dealTypes[1].id, // Lease
-        developmentTypeId: devTypes[0].id, // New Build
+        developmentTypeId: devTypes[3].id, // Archived
+        developerId: developers[0].id, // Wildstone Media (historic)
         internalDeveloper: 'Previous Developer',
         offerAgreed: daysAgo(1000),
         leasePerAnnum: 15000,
