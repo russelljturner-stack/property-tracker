@@ -265,12 +265,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </svg>
             </Link>
             <h1 className="text-3xl font-bold text-white">{siteName}</h1>
-            {development.status && (
+            {/* Status badge removed - progress timeline now shows current stage */}
+            {/* To restore: uncomment below */}
+            {/* {development.status && (
               <StatusBadgeDark
                 name={development.status.name}
                 colour={development.status.colour}
               />
-            )}
+            )} */}
           </div>
           <div className="flex items-center gap-2">
             {/* Prev/Next navigation */}
