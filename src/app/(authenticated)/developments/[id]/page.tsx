@@ -307,7 +307,39 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
-        {/* Site Context - Development info + Map/Photo thumbnails + Site info */}
+        {/* Development info row: Key fields with labels - larger font for importance */}
+        <div className="px-6 py-4 border-b border-white/20">
+          <div className="grid grid-cols-[auto_auto] gap-x-12 gap-y-3">
+            {/* Row 1: Development Status & Planning Status */}
+            <div>
+              <span className="text-white/60 text-sm">Development Status</span>
+              <p className="text-white font-semibold text-lg">{development.status?.name || '—'}</p>
+            </div>
+            <div>
+              <span className="text-white/60 text-sm">Planning Status</span>
+              <p className="text-white font-semibold text-lg">{development.planningAppStatus?.name || '—'}</p>
+            </div>
+            {/* Row 2: Development Type & Deal Type */}
+            <div>
+              <span className="text-white/60 text-sm">Development Type</span>
+              <p className="text-white font-semibold text-lg">{development.developmentType?.name || '—'}</p>
+            </div>
+            <div>
+              <span className="text-white/60 text-sm">Deal Type</span>
+              <p className="text-white font-semibold text-lg">{development.dealType?.name || '—'}</p>
+            </div>
+            {/* Row 3: Planning Score */}
+            <div>
+              <span className="text-white/60 text-sm">Planning Score</span>
+              <p className="text-white font-semibold text-lg">
+                {development.planningScore !== null && development.planningScore !== undefined
+                  ? `${development.planningScore}/5`
+                  : '—'}
+              </p>
+            </div>
+          </div>
+        </div>
+        {/* Site Context - Map/Photo thumbnails + Site info */}
         {development.site && (
           <div className="px-6 py-5" style={{ backgroundColor: '#6b7280' }}>
             <div className="flex items-start justify-between mb-4">
@@ -319,80 +351,47 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 View Site
               </Link>
             </div>
-            {/* Two-column layout: thumbnails+dev info left, site info right */}
+            {/* Two-column layout: thumbnails left, site info right */}
             <div className="flex gap-8">
-              {/* Left column: Development info above thumbnails */}
-              <div className="flex-shrink-0">
-                {/* Development info - same width as thumbnails area (320+16+320 = 656px) */}
-                <div className="grid grid-cols-[auto_auto] gap-x-8 gap-y-3 text-sm mb-4">
-                  {/* Row 1: Development Status & Planning Status */}
-                  <div>
-                    <span className="text-white/60">Development Status</span>
-                    <p className="text-white font-medium">{development.status?.name || '—'}</p>
+              {/* Left: Thumbnails - 320x240px (4:3 ratio) */}
+              <div className="flex gap-4 flex-shrink-0">
+                {/* Map thumbnail */}
+                {development.site.address?.latitude && development.site.address?.longitude ? (
+                  <a
+                    href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors w-[320px] h-[240px]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=640x480&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
+                      alt="Site location"
+                      className="w-full h-full object-cover"
+                    />
+                  </a>
+                ) : (
+                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-sm w-[320px] h-[240px]">
+                    No map
                   </div>
-                  <div>
-                    <span className="text-white/60">Planning Status</span>
-                    <p className="text-white font-medium">{development.planningAppStatus?.name || '—'}</p>
+                )}
+                {/* Photo thumbnail */}
+                {development.site.photos?.[0]?.photoUrl ? (
+                  <div className="rounded overflow-hidden border-2 border-white/30 w-[320px] h-[240px]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={development.site.photos[0].photoUrl}
+                      alt="Site photo"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  {/* Row 2: Development Type & Deal Type */}
-                  <div>
-                    <span className="text-white/60">Development Type</span>
-                    <p className="text-white font-medium">{development.developmentType?.name || '—'}</p>
+                ) : (
+                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-sm w-[320px] h-[240px]">
+                    No photo
                   </div>
-                  <div>
-                    <span className="text-white/60">Deal Type</span>
-                    <p className="text-white font-medium">{development.dealType?.name || '—'}</p>
-                  </div>
-                  {/* Row 3: Planning Score */}
-                  <div>
-                    <span className="text-white/60">Planning Score</span>
-                    <p className="text-white font-medium">
-                      {development.planningScore !== null && development.planningScore !== undefined
-                        ? `${development.planningScore}/5`
-                        : '—'}
-                    </p>
-                  </div>
-                </div>
-                {/* Thumbnails - 320x240px (4:3 ratio) */}
-                <div className="flex gap-4">
-                  {/* Map thumbnail */}
-                  {development.site.address?.latitude && development.site.address?.longitude ? (
-                    <a
-                      href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors w-[320px] h-[240px]"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=640x480&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
-                        alt="Site location"
-                        className="w-full h-full object-cover"
-                      />
-                    </a>
-                  ) : (
-                    <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-sm w-[320px] h-[240px]">
-                      No map
-                    </div>
-                  )}
-                  {/* Photo thumbnail */}
-                  {development.site.photos?.[0]?.photoUrl ? (
-                    <div className="rounded overflow-hidden border-2 border-white/30 w-[320px] h-[240px]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={development.site.photos[0].photoUrl}
-                        alt="Site photo"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-sm w-[320px] h-[240px]">
-                      No photo
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-              {/* Right column: Site information */}
+              {/* Right: Site information */}
               <div className="grid grid-cols-[auto_auto] gap-x-8 gap-y-3 text-sm content-start">
                 {/* Row 1: Site Name & Site Owner */}
                 <div>
