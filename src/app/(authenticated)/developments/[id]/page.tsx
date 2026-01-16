@@ -938,16 +938,35 @@ function ProgressTimeline({
 
   // Brand colours for timeline
   const COLOURS = {
-    yellow: '#fff48b',        // Brand yellow - completed stages
-    yellowDark: '#d4a800',    // Darker yellow for text/icons on yellow bg
+    teal: '#1e434d',          // Dark teal - completed stages
     coral: '#fa6e60',         // Current stage
-    teal: '#1e434d',          // Dark teal for text
     grey: '#d1d5db',          // Future stages (grey-300)
     greyLight: '#f3f4f6',     // Future bg (grey-100)
   }
 
   return (
     <div className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
+      {/* Pulse animation styles for current stage */}
+      <style>{`
+        @keyframes pulse-ring {
+          0% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1.4);
+            opacity: 0;
+          }
+        }
+        .pulse-animation::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: 9999px;
+          background-color: #fa6e60;
+          animation: pulse-ring 1.5s ease-out infinite;
+        }
+      `}</style>
       <div className="flex items-center justify-between">
         {stages.map((stage, index) => {
           const isPast = index < currentIndex
@@ -955,17 +974,17 @@ function ProgressTimeline({
           const isFuture = index > currentIndex
 
           // Colour scheme:
-          // Past/Complete = Vibrant yellow with dark icon - celebratory!
-          // Current = Coral with pulse ring - "you are here"
+          // Past/Complete = Dark teal background with white icon
+          // Current = Coral with animated pulse ring - "you are here"
           // Future = Light grey outline - not yet reached
           const getIconColour = () => {
-            if (isPast) return COLOURS.teal           // Dark teal on yellow bg
+            if (isPast) return '#ffffff'              // White on teal bg
             if (isCurrent) return '#ffffff'           // White on coral bg
             return COLOURS.grey                       // Grey for future
           }
 
           const getBgColour = () => {
-            if (isPast) return COLOURS.yellow         // Solid yellow - achievement!
+            if (isPast) return COLOURS.teal           // Solid teal - completed
             if (isCurrent) return COLOURS.coral       // Solid coral - current focus
             return COLOURS.greyLight                  // Light grey - future
           }
@@ -973,43 +992,45 @@ function ProgressTimeline({
           return (
             <div key={stage.key} className="flex items-center flex-1 last:flex-none">
               <div className="flex flex-col items-center">
-                <div
-                  className={`
-                    w-14 h-14 rounded-full flex items-center justify-center
-                    transition-all duration-300
-                    ${isCurrent ? 'ring-4 ring-[#fa6e60]/40 shadow-lg' : ''}
-                    ${isPast ? 'shadow-md' : ''}
-                  `}
-                  style={{
-                    backgroundColor: getBgColour(),
-                    border: isFuture ? `2px dashed ${COLOURS.grey}` : 'none',
-                  }}
-                >
-                  {isPast ? (
-                    // Checkmark for completed stages
-                    <svg
-                      className="w-7 h-7"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      strokeWidth={3}
-                      style={{ color: getIconColour() }}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : (
-                    // Stage icon
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      style={{ color: getIconColour() }}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d={stage.iconPath} />
-                    </svg>
-                  )}
+                {/* Wrapper for pulse animation */}
+                <div className={`relative ${isCurrent ? 'pulse-animation' : ''}`}>
+                  <div
+                    className={`
+                      relative z-10 w-14 h-14 rounded-full flex items-center justify-center
+                      transition-all duration-300
+                      ${isPast ? 'shadow-md' : ''}
+                    `}
+                    style={{
+                      backgroundColor: getBgColour(),
+                      border: isFuture ? `2px dashed ${COLOURS.grey}` : 'none',
+                    }}
+                  >
+                    {isPast ? (
+                      // Checkmark for completed stages
+                      <svg
+                        className="w-7 h-7"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={3}
+                        style={{ color: getIconColour() }}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      // Stage icon
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        style={{ color: getIconColour() }}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d={stage.iconPath} />
+                      </svg>
+                    )}
+                  </div>
                 </div>
                 <span
                   className={`mt-2 text-xs font-semibold uppercase tracking-wide ${isCurrent ? 'text-sm' : ''}`}
@@ -1024,7 +1045,7 @@ function ProgressTimeline({
                 <div
                   className="flex-1 h-1 mx-2 rounded-full"
                   style={{
-                    backgroundColor: index < currentIndex ? COLOURS.yellow : '#e5e7eb',
+                    backgroundColor: index < currentIndex ? COLOURS.teal : '#e5e7eb',
                   }}
                 />
               )}
