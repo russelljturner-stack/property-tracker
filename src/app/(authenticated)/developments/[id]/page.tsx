@@ -252,9 +252,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header & Site Context - Combined card with coral background, sticky at top */}
+      {/* Header & Site Context - Combined card with coral background */}
       <div
-        className="shadow sticky top-0 z-10 -mt-4 sm:-mt-6 lg:-mt-8"
+        className="shadow -mt-4 sm:-mt-6 lg:-mt-8"
         style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}
       >
         {/* Top row: Title + Status + Navigation */}
@@ -310,23 +310,20 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
-        {/* Development info row: Key fields with labels - aligned with thumbnails below */}
+        {/* Development info row: Key fields with labels - single row of 4 */}
         <div className="px-6 py-4 border-b border-white/20">
-          {/* Grid columns match thumbnail widths: 320px + 16px gap + 320px */}
-          <div className="grid grid-cols-[320px_320px] gap-x-4 gap-y-3">
-            {/* Row 1: Development Type & Planning Status */}
+          <div className="flex gap-8">
             <div>
               <span className="text-white/60 text-sm">Development Type</span>
               <p className="text-white font-semibold text-lg">{development.developmentType?.name || '—'}</p>
             </div>
             <div>
-              <span className="text-white/60 text-sm">Planning Status</span>
-              <p className="text-white font-semibold text-lg">{development.planningAppStatus?.name || '—'}</p>
-            </div>
-            {/* Row 2: Deal Type & Planning Score */}
-            <div>
               <span className="text-white/60 text-sm">Deal Type</span>
               <p className="text-white font-semibold text-lg">{development.dealType?.name || '—'}</p>
+            </div>
+            <div>
+              <span className="text-white/60 text-sm">Planning Status</span>
+              <p className="text-white font-semibold text-lg">{development.planningAppStatus?.name || '—'}</p>
             </div>
             <div>
               <span className="text-white/60 text-sm">Planning Score</span>
