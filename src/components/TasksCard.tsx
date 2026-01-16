@@ -32,15 +32,15 @@ export function TasksCard({ tasks }: TasksCardProps) {
 
   return (
     <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
-      {/* Pulse animation for open tasks badge */}
+      {/* Pulse animation for open tasks badge - smaller scale for pill size */}
       <style>{`
         @keyframes task-pulse {
           0% {
             transform: scale(1);
-            opacity: 1;
+            opacity: 0.8;
           }
           100% {
-            transform: scale(1.5);
+            transform: scale(1.3);
             opacity: 0;
           }
         }

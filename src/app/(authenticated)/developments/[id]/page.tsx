@@ -256,40 +256,32 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         className="shadow sticky top-0 z-10 -mt-4 sm:-mt-6 lg:-mt-8"
         style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}
       >
-        {/* Top row: Title + Status + Buttons */}
-        <div className="px-6 py-4 flex items-center justify-between border-b border-white/20">
-          <div className="flex items-center gap-3">
+        {/* Top row: Title + Navigation */}
+        <div className="px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <Link href="/developments" title="Back to list" className="text-white hover:opacity-80">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
             <h1 className="text-3xl font-bold text-white">{siteName}</h1>
-            {/* Status badge removed - progress timeline now shows current stage */}
-            {/* To restore: uncomment below */}
-            {/* {development.status && (
-              <StatusBadgeDark
-                name={development.status.name}
-                colour={development.status.colour}
-              />
-            )} */}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {/* Prev/Next navigation */}
-            <div className="flex items-center gap-1 mr-2">
+            <div className="flex items-center gap-2">
               {prevDevelopment ? (
                 <Link
                   href={`/developments/${prevDevelopment.id}`}
-                  className="p-1.5 text-white/80 hover:text-white bg-white/20 hover:bg-white/30 rounded"
+                  className="p-2 text-white/80 hover:text-white bg-white/20 hover:bg-white/30 rounded"
                   title={`Previous: #${prevDevelopment.projectNo || prevDevelopment.id}`}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </Link>
               ) : (
-                <span className="p-1.5 text-white/40 bg-white/10 rounded cursor-not-allowed">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="p-2 text-white/40 bg-white/10 rounded cursor-not-allowed">
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </span>
@@ -297,36 +289,30 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               {nextDevelopment ? (
                 <Link
                   href={`/developments/${nextDevelopment.id}`}
-                  className="p-1.5 text-white/80 hover:text-white bg-white/20 hover:bg-white/30 rounded"
+                  className="p-2 text-white/80 hover:text-white bg-white/20 hover:bg-white/30 rounded"
                   title={`Next: #${nextDevelopment.projectNo || nextDevelopment.id}`}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
               ) : (
-                <span className="p-1.5 text-white/40 bg-white/10 rounded cursor-not-allowed">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <span className="p-2 text-white/40 bg-white/10 rounded cursor-not-allowed">
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </span>
               )}
             </div>
+            {/* View Site button - removed border, Edit button removed entirely */}
             {development.site && (
               <Link
                 href={`/sites/${development.site.id}`}
-                className="px-3 py-1.5 text-sm border border-white text-white rounded-full hover:bg-white/10"
+                className="px-4 py-2 text-sm text-white bg-white/20 hover:bg-white/30 rounded-full transition-colors"
               >
                 View Site
               </Link>
             )}
-            <Link
-              href={`/developments/${development.id}/edit`}
-              className="px-3 py-1.5 text-sm rounded-full transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#1e434d', color: 'white' }}
-            >
-              Edit
-            </Link>
           </div>
         </div>
         {/* Middle row: Badges */}
