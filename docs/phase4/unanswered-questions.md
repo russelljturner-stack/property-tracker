@@ -4,6 +4,25 @@ This document tracks questions that have arisen during development that need Rus
 
 ---
 
+## "What's Next" Action Prompt - Include or Remove?
+
+**Date raised:** 16 Jan 2026
+
+The Development detail page has a "What's Next" component that shows contextual guidance based on the development's current state (e.g., "Get design signed off to progress to planning", "Awaiting planning decision - chase case officer if needed").
+
+**Currently:** Hidden (commented out) pending decision.
+
+**Question:** Should we include this feature?
+- A) Yes - refine the messages and logic, then enable
+- B) No - remove the component entirely
+- C) Defer - revisit after core features complete
+
+**If keeping:** The message copy needs review to ensure it matches actual business workflows.
+
+**Location:** `WhatsNextPrompt` component in `src/app/(authenticated)/developments/[id]/page.tsx`
+
+---
+
 ## Schema Gaps - Commercial Section
 
 **Date raised:** 13 Jan 2026

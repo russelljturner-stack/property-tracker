@@ -394,8 +394,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Left column: Timeline, Tasks and Stage Cards (3/4 width) */}
         <div className="lg:col-span-3 space-y-6">
-          {/* What's Next Action Prompt */}
-          <WhatsNextPrompt development={development} />
+          {/* What's Next Action Prompt - HIDDEN pending final decision (see unanswered-questions.md) */}
+          {/* <WhatsNextPrompt development={development} /> */}
 
           {/* Progress Timeline - now within left column */}
           <ProgressTimeline stages={STAGES} currentStage={currentStage} />
@@ -542,39 +542,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           {/* Tasks Section - Expandable client component */}
           <TasksCard tasks={development.tasks} />
 
-          {/* Key Contacts Card */}
-          <section className="bg-white shadow" style={{ borderRadius: 0 }}>
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>
-                Key Contacts
-              </h3>
-            </div>
-            <div className="divide-y divide-gray-100 bg-gray-50">
-              {allContacts.length === 0 ? (
-                <div className="px-6 py-4 text-sm text-gray-500">
-                  No contacts recorded.
-                </div>
-              ) : (
-                allContacts.map((contact, index) => (
-                  <ContactItem key={`${contact.role}-${index}`} contact={contact} />
-                ))
-              )}
-            </div>
-          </section>
-
-          {/* Internal Team Card */}
-          <section className="bg-white shadow" style={{ borderRadius: 0 }}>
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>
-                Internal Team
-              </h3>
-            </div>
-            <div className="px-6 py-4 bg-gray-50 space-y-3">
-              <InfoItem label="Developer" value={development.internalDeveloper} />
-              <InfoItem label="Planner" value={development.internalPlanner} />
-            </div>
-          </section>
-
           {/* Recent Activity Card - Black background for contrast */}
           <section className="shadow" style={{ backgroundColor: '#000000', borderRadius: 0 }}>
             <div className="px-6 py-4 border-b border-white/20">
@@ -601,6 +568,39 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               ) : (
                 activityItems.slice(0, 10).map((item, index) => (
                   <ActivityItemDark key={index} item={item} />
+                ))
+              )}
+            </div>
+          </section>
+
+          {/* Internal Team Card */}
+          <section className="bg-white shadow" style={{ borderRadius: 0 }}>
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>
+                Internal Team
+              </h3>
+            </div>
+            <div className="px-6 py-4 bg-gray-50 space-y-3">
+              <InfoItem label="Developer" value={development.internalDeveloper} />
+              <InfoItem label="Planner" value={development.internalPlanner} />
+            </div>
+          </section>
+
+          {/* Key Contacts Card */}
+          <section className="bg-white shadow" style={{ borderRadius: 0 }}>
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>
+                Key Contacts
+              </h3>
+            </div>
+            <div className="divide-y divide-gray-100 bg-gray-50">
+              {allContacts.length === 0 ? (
+                <div className="px-6 py-4 text-sm text-gray-500">
+                  No contacts recorded.
+                </div>
+              ) : (
+                allContacts.map((contact, index) => (
+                  <ContactItem key={`${contact.role}-${index}`} contact={contact} />
                 ))
               )}
             </div>
@@ -937,6 +937,16 @@ function ProgressTimeline({
 }) {
   const currentIndex = stages.findIndex(s => s.key === currentStage)
 
+  // Brand colours for timeline
+  const COLOURS = {
+    yellow: '#fff48b',        // Wildstone yellow - completed stages
+    yellowDark: '#d4a800',    // Darker yellow for text/icons on yellow bg
+    coral: '#fa6e60',         // Current stage
+    teal: '#1e434d',          // Dark teal for text
+    grey: '#d1d5db',          // Future stages (grey-300)
+    greyLight: '#f3f4f6',     // Future bg (grey-100)
+  }
+
   return (
     <div className="bg-white shadow p-6" style={{ borderRadius: 0 }}>
       <div className="flex items-center justify-between">
@@ -945,20 +955,20 @@ function ProgressTimeline({
           const isCurrent = index === currentIndex
           const isFuture = index > currentIndex
 
-          // Colour based on status:
-          // Past/Complete = dark teal #1e434d
-          // Current = coral #fa6e60
-          // Future = muted grey
+          // Colour scheme:
+          // Past/Complete = Vibrant yellow with dark icon - celebratory!
+          // Current = Coral with pulse ring - "you are here"
+          // Future = Light grey outline - not yet reached
           const getIconColour = () => {
-            if (isPast) return '#1e434d'
-            if (isCurrent) return '#fa6e60'
-            return '#9ca3af' // grey-400
+            if (isPast) return COLOURS.teal           // Dark teal on yellow bg
+            if (isCurrent) return '#ffffff'           // White on coral bg
+            return COLOURS.grey                       // Grey for future
           }
 
           const getBgColour = () => {
-            if (isPast) return 'rgba(30, 67, 77, 0.1)' // teal with opacity
-            if (isCurrent) return 'rgba(250, 110, 96, 0.15)' // coral with opacity
-            return '#f3f4f6' // grey-100
+            if (isPast) return COLOURS.yellow         // Solid yellow - achievement!
+            if (isCurrent) return COLOURS.coral       // Solid coral - current focus
+            return COLOURS.greyLight                  // Light grey - future
           }
 
           return (
@@ -966,21 +976,24 @@ function ProgressTimeline({
               <div className="flex flex-col items-center">
                 <div
                   className={`
-                    w-12 h-12 rounded-full flex items-center justify-center
-                    ${isCurrent ? 'ring-4 ring-[#fa6e60]/30' : ''}
+                    w-14 h-14 rounded-full flex items-center justify-center
+                    transition-all duration-300
+                    ${isCurrent ? 'ring-4 ring-[#fa6e60]/40 shadow-lg' : ''}
+                    ${isPast ? 'shadow-md' : ''}
                   `}
                   style={{
                     backgroundColor: getBgColour(),
+                    border: isFuture ? `2px dashed ${COLOURS.grey}` : 'none',
                   }}
                 >
                   {isPast ? (
                     // Checkmark for completed stages
                     <svg
-                      className="w-6 h-6"
+                      className="w-7 h-7"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
-                      strokeWidth={2.5}
+                      strokeWidth={3}
                       style={{ color: getIconColour() }}
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -1000,9 +1013,9 @@ function ProgressTimeline({
                   )}
                 </div>
                 <span
-                  className="mt-2 text-xs font-medium"
+                  className={`mt-2 text-xs font-semibold uppercase tracking-wide ${isCurrent ? 'text-sm' : ''}`}
                   style={{
-                    color: isPast ? '#1e434d' : isCurrent ? '#fa6e60' : '#9ca3af',
+                    color: isPast ? COLOURS.teal : isCurrent ? COLOURS.coral : '#9ca3af',
                   }}
                 >
                   {stage.label}
@@ -1010,9 +1023,9 @@ function ProgressTimeline({
               </div>
               {index < stages.length - 1 && (
                 <div
-                  className="flex-1 h-0.5 mx-2"
+                  className="flex-1 h-1 mx-2 rounded-full"
                   style={{
-                    backgroundColor: index < currentIndex ? '#1e434d' : '#e5e7eb',
+                    backgroundColor: index < currentIndex ? COLOURS.yellow : '#e5e7eb',
                   }}
                 />
               )}

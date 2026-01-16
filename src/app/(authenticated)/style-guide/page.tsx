@@ -21,9 +21,10 @@ export default function StyleGuidePage() {
         <h2 className="text-xl font-bold mb-4" style={{ color: '#1e434d' }}>Colour Palette</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <ColourSwatch name="Dark Teal" hex="#1e434d" textLight usage="Primary text, headings, icons on light backgrounds" />
-          <ColourSwatch name="Coral" hex="#fa6e60" textLight usage="Accent, CTAs, icons on dark backgrounds, page headers" />
+          <ColourSwatch name="Coral" hex="#fa6e60" textLight usage="Accent, CTAs, current stage indicator, page headers" />
+          <ColourSwatch name="Wildstone Yellow" hex="#fff48b" usage="Completed stages, success states, achievements" />
           <ColourSwatch name="Ocean Blue" hex="#0078a0" textLight usage="Sidebar backgrounds, secondary sections" />
-          <ColourSwatch name="Vibrant Blue" hex="#007aee" textLight usage="High-emphasis elements (What's Next, Planning Score)" />
+          <ColourSwatch name="Vibrant Blue" hex="#007aee" textLight usage="High-emphasis elements, Planning Score" />
           <ColourSwatch name="Grey" hex="#6b7280" textLight usage="Site Context background, muted sections" />
           <ColourSwatch name="Off-white" hex="#f8f8f8" usage="Page background" />
           <ColourSwatch name="White" hex="#ffffff" usage="Cards, content blocks" />
