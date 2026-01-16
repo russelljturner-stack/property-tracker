@@ -51,48 +51,37 @@ export function TasksCard({ tasks: initialTasks }: TasksCardProps) {
   }
 
   return (
-    <section id="tasks" className="bg-white shadow overflow-hidden" style={{ borderRadius: 0 }}>
-      {/* Pulse animation for open tasks badge - contained within card */}
+    <section id="tasks" className="bg-white shadow" style={{ borderRadius: 0 }}>
+      {/* Pulse animation using box-shadow - doesn't affect layout or get clipped */}
       <style>{`
-        @keyframes task-pulse {
+        @keyframes task-badge-pulse {
           0% {
-            transform: scale(1);
-            opacity: 0.8;
+            box-shadow: 0 0 0 0 rgba(250, 110, 96, 0.7);
+          }
+          70% {
+            box-shadow: 0 0 0 8px rgba(250, 110, 96, 0);
           }
           100% {
-            transform: scale(1.3);
-            opacity: 0;
+            box-shadow: 0 0 0 0 rgba(250, 110, 96, 0);
           }
         }
-        .task-pulse-wrapper {
-          position: relative;
-          overflow: hidden;
-          border-radius: 9999px;
-        }
-        .task-pulse-wrapper::before {
-          content: '';
-          position: absolute;
-          inset: -4px;
-          border-radius: 9999px;
-          background-color: #fa6e60;
-          animation: task-pulse 1.5s ease-out infinite;
+        .task-badge-pulse {
+          animation: task-badge-pulse 1.5s ease-out infinite;
         }
       `}</style>
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <h3 className="text-lg font-semibold" style={{ color: '#1e434d' }}>Tasks</h3>
-        {/* Wrapper for pulse animation - only animate if there are open tasks */}
-        <div className={`${openTaskCount > 0 ? 'task-pulse-wrapper' : ''}`}>
-          <span
-            className="relative z-10 text-sm font-medium px-3 py-1 rounded-full inline-block"
-            style={{
-              backgroundColor: openTaskCount > 0 ? '#fa6e60' : '#10b981',
-              color: '#ffffff'
-            }}
-          >
-            {openTaskCount} open
-          </span>
-        </div>
+        {/* Badge with pulse animation - only animate if there are open tasks */}
+        <span
+          className={`text-sm font-medium px-3 py-1 rounded-full ${openTaskCount > 0 ? 'task-badge-pulse' : ''}`}
+          style={{
+            backgroundColor: openTaskCount > 0 ? '#fa6e60' : '#10b981',
+            color: '#ffffff'
+          }}
+        >
+          {openTaskCount} open
+        </span>
       </div>
 
       {/* Task list */}
