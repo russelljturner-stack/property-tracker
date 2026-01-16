@@ -344,9 +344,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             <PlanningScoreBadge score={development.planningScore} />
           )}
         </div>
-        {/* EXPERIMENTAL: Progress Timeline in header - full width (easy to revert: move back to line ~403) */}
-        <ProgressTimeline stages={STAGES} currentStage={currentStage} />
-        {/* Bottom row: Site Context - Map and Photo thumbnails with muted background */}
+        {/* Site Context - Map and Photo thumbnails with muted background */}
         {development.site && (
           <div className="px-6 py-4" style={{ backgroundColor: '#6b7280' }}>
             <h3 className="text-lg font-semibold mb-3" style={{ color: '#ffffff' }}>Site Context</h3>
@@ -394,6 +392,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             )}
           </div>
         )}
+        {/* EXPERIMENTAL: Progress Timeline - below Site Context (easy to revert: see line ~408) */}
+        <ProgressTimeline stages={STAGES} currentStage={currentStage} />
       </div>
 
       {/* Main content: Two-column layout - narrower right column */}
