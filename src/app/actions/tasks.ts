@@ -1,6 +1,6 @@
 "use server"
 
-import { prisma } from "@/lib/prisma"
+import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
 /**
@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache"
  */
 export async function toggleTaskComplete(taskId: number, complete: boolean) {
   try {
-    await prisma.task.update({
+    await db.developmentTask.update({
       where: { id: taskId },
       data: { complete },
     })

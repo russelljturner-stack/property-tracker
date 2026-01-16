@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/lib/db"
 import { TasksList } from "./TasksList"
 
 export const dynamic = "force-dynamic"
 
 export default async function TasksPage() {
   // Fetch all tasks with related development info
-  const tasks = await prisma.task.findMany({
+  const tasks = await db.developmentTask.findMany({
     include: {
       development: {
         include: {
@@ -81,7 +81,7 @@ export default async function TasksPage() {
           taskType: t.taskType,
           development: t.development ? {
             id: t.development.id,
-            name: t.development.site?.address?.street1 || `Development #${t.development.id}`,
+            name: t.development.site?.address?.line1 || `Development #${t.development.id}`,
           } : null,
         }))}
         completedTasks={completedTasks.map(t => ({
@@ -93,7 +93,7 @@ export default async function TasksPage() {
           taskType: t.taskType,
           development: t.development ? {
             id: t.development.id,
-            name: t.development.site?.address?.street1 || `Development #${t.development.id}`,
+            name: t.development.site?.address?.line1 || `Development #${t.development.id}`,
           } : null,
         }))}
       />
