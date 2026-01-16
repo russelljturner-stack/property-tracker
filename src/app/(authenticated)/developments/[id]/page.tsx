@@ -307,9 +307,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
-        {/* Development info row: Key fields with labels - larger font for importance */}
+        {/* Development info row: Key fields with labels - aligned with thumbnails below */}
         <div className="px-6 py-4 border-b border-white/20">
-          <div className="grid grid-cols-[auto_auto] gap-x-12 gap-y-3">
+          {/* Grid columns match thumbnail widths: 320px + 16px gap + 320px */}
+          <div className="grid grid-cols-[320px_320px] gap-x-4 gap-y-3">
             {/* Row 1: Development Status & Planning Status */}
             <div>
               <span className="text-white/60 text-sm">Development Status</span>
