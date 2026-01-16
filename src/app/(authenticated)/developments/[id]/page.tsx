@@ -324,8 +324,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </div>
         {/* Site Context - Map/Photo thumbnails + key info with muted background */}
         {development.site && (
-          <div className="px-6 py-4" style={{ backgroundColor: '#6b7280' }}>
-            <div className="flex items-start justify-between mb-3">
+          <div className="px-6 py-5" style={{ backgroundColor: '#6b7280' }}>
+            <div className="flex items-start justify-between mb-4">
               <h3 className="text-lg font-semibold" style={{ color: '#ffffff' }}>Site Context</h3>
               <Link
                 href={`/sites/${development.site.id}`}
@@ -335,32 +335,32 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </Link>
             </div>
             {/* Two-column layout: thumbnails left, info right */}
-            <div className="flex gap-6">
-              {/* Left: Thumbnails - 160x120px (4:3 ratio) */}
-              <div className="flex gap-3 flex-shrink-0">
+            <div className="flex gap-8">
+              {/* Left: Thumbnails - 240x180px (4:3 ratio, 1.5x original size) */}
+              <div className="flex gap-4 flex-shrink-0">
                 {/* Map thumbnail */}
                 {development.site.address?.latitude && development.site.address?.longitude ? (
                   <a
                     href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors w-[160px] h-[120px]"
+                    className="block rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors w-[240px] h-[180px]"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=320x240&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
+                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=480x360&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
                       alt="Site location"
                       className="w-full h-full object-cover"
                     />
                   </a>
                 ) : (
-                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-xs w-[160px] h-[120px]">
+                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-sm w-[240px] h-[180px]">
                     No map
                   </div>
                 )}
                 {/* Photo thumbnail */}
                 {development.site.photos?.[0]?.photoUrl ? (
-                  <div className="rounded overflow-hidden border-2 border-white/30 w-[160px] h-[120px]">
+                  <div className="rounded overflow-hidden border-2 border-white/30 w-[240px] h-[180px]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={development.site.photos[0].photoUrl}
@@ -369,13 +369,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     />
                   </div>
                 ) : (
-                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-xs w-[160px] h-[120px]">
+                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-sm w-[240px] h-[180px]">
                     No photo
                   </div>
                 )}
               </div>
-              {/* Right: Site information */}
-              <div className="flex-1 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+              {/* Right: Site information - tighter column gap */}
+              <div className="flex-1 grid grid-cols-2 gap-x-3 gap-y-3 text-sm content-start">
                 {/* Row 1: Site Name & Date Created */}
                 <div>
                   <span className="text-white/60">Site Name</span>
