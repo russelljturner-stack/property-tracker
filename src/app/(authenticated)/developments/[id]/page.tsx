@@ -329,16 +329,18 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </div>
         {/* Middle row: Badges */}
         <div className="px-6 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm border-b border-white/20">
-          {development.projectNo && (
-            <span className="text-white/80">#{development.projectNo}</span>
-          )}
           {development.dealType && (
             <span className="px-2 py-0.5 bg-white/20 rounded text-white">{development.dealType.name}</span>
           )}
           {development.developmentType && (
             <span className="px-2 py-0.5 bg-white/20 rounded text-white">{development.developmentType.name}</span>
           )}
-          <PlanningScoreBadge score={development.planningScore} />
+          {/* Only show planning score if at/before planning stage AND score is set */}
+          {development.planningScore !== null &&
+           development.planningScore !== undefined &&
+           STAGES.findIndex(s => s.key === currentStage) <= STAGES.findIndex(s => s.key === 'planning') && (
+            <PlanningScoreBadge score={development.planningScore} />
+          )}
         </div>
         {/* Bottom row: Site Context - Map and Photo thumbnails with muted background */}
         {development.site && (
