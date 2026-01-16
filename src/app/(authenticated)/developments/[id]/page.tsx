@@ -370,7 +370,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               )}
               <Link
                 href={`/sites/${development.site.id}`}
-                className="px-4 py-2 text-sm text-white bg-white/20 hover:bg-white/30 rounded-full transition-colors flex-shrink-0 ml-4"
+                className="px-4 py-2 text-sm font-medium text-white bg-white/20 hover:bg-white/30 border border-white/40 hover:border-white/60 rounded-full transition-colors flex-shrink-0 ml-4"
               >
                 View Site
               </Link>
