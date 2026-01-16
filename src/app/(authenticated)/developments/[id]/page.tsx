@@ -417,7 +417,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </div>
             </div>
           </div>
-        </div>
       )}
 
       {/* Progress Timeline - below Site Context */}
