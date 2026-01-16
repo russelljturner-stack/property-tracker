@@ -264,7 +264,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
-            <h1 className="text-2xl font-bold text-white">{siteName}</h1>
+            <h1 className="text-3xl font-bold text-white">{siteName}</h1>
             {development.status && (
               <StatusBadgeDark
                 name={development.status.name}
@@ -343,10 +343,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         {/* Bottom row: Site Context - Map and Photo thumbnails with muted background */}
         {development.site && (
           <div className="px-6 py-4" style={{ backgroundColor: '#6b7280' }}>
-            <h3 className="text-lg font-semibold" style={{ color: '#ffffff' }}>Site Context</h3>
-            {fullAddress && (
-              <p className="text-sm text-white/80 mb-3">{fullAddress}</p>
-            )}
+            <h3 className="text-lg font-semibold mb-3" style={{ color: '#ffffff' }}>Site Context</h3>
             {/* Thumbnails - 160x120px (4:3 ratio) */}
             <div className="flex gap-3">
               {/* Map thumbnail */}
@@ -385,6 +382,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 </div>
               )}
             </div>
+            {/* Address below thumbnails */}
+            {fullAddress && (
+              <p className="text-sm text-white/80 mt-3">{fullAddress}</p>
+            )}
           </div>
         )}
       </div>
