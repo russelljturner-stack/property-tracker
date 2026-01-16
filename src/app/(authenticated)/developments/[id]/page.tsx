@@ -307,20 +307,43 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
-        {/* Middle row: Badges */}
-        <div className="px-6 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm border-b border-white/20">
-          {development.dealType && (
-            <span className="px-2 py-0.5 bg-white/20 rounded text-white">{development.dealType.name}</span>
-          )}
-          {development.developmentType && (
-            <span className="px-2 py-0.5 bg-white/20 rounded text-white">{development.developmentType.name}</span>
-          )}
-          {/* Only show planning score if at/before planning stage AND score is set */}
-          {development.planningScore !== null &&
-           development.planningScore !== undefined &&
-           STAGES.findIndex(s => s.key === currentStage) <= STAGES.findIndex(s => s.key === 'planning') && (
-            <PlanningScoreBadge score={development.planningScore} />
-          )}
+        {/* Development info row: Key fields with labels */}
+        <div className="px-6 py-3 border-b border-white/20">
+          <div className="grid grid-cols-[auto_auto] gap-x-8 gap-y-2 text-sm">
+            {/* Row 1: Date Created & Development Status */}
+            <div>
+              <span className="text-white/60">Date Created</span>
+              <p className="text-white font-medium">
+                {development.createdAt ? new Date(development.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+              </p>
+            </div>
+            <div>
+              <span className="text-white/60">Development Status</span>
+              <p className="text-white font-medium">{development.status?.name || '—'}</p>
+            </div>
+            {/* Row 2: Development Type & Planning Status */}
+            <div>
+              <span className="text-white/60">Development Type</span>
+              <p className="text-white font-medium">{development.developmentType?.name || '—'}</p>
+            </div>
+            <div>
+              <span className="text-white/60">Planning Status</span>
+              <p className="text-white font-medium">{development.planningAppStatus?.name || '—'}</p>
+            </div>
+            {/* Row 3: Deal Type & Planning Score */}
+            <div>
+              <span className="text-white/60">Deal Type</span>
+              <p className="text-white font-medium">{development.dealType?.name || '—'}</p>
+            </div>
+            <div>
+              <span className="text-white/60">Planning Score</span>
+              <p className="text-white font-medium">
+                {development.planningScore !== null && development.planningScore !== undefined
+                  ? `${development.planningScore}/5`
+                  : '—'}
+              </p>
+            </div>
+          </div>
         </div>
         {/* Site Context - Map/Photo thumbnails + key info with muted background */}
         {development.site && (
@@ -376,32 +399,26 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </div>
               {/* Right: Site information - fixed width columns, not stretched */}
               <div className="grid grid-cols-[auto_auto] gap-x-8 gap-y-3 text-sm content-start">
-                {/* Row 1: Site Name & Date Created */}
+                {/* Row 1: Site Name & Site Owner */}
                 <div>
                   <span className="text-white/60">Site Name</span>
                   <p className="text-white font-medium">{development.site.name || '—'}</p>
                 </div>
                 <div>
-                  <span className="text-white/60">Date Created</span>
-                  <p className="text-white font-medium">
-                    {development.createdAt ? new Date(development.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
-                  </p>
-                </div>
-                {/* Row 2: Site Owner & Site Agent */}
-                <div>
                   <span className="text-white/60">Site Owner</span>
                   <p className="text-white font-medium">{development.site.siteOwner?.name || '—'}</p>
                 </div>
+                {/* Row 2: Site Agent & Developer */}
                 <div>
                   <span className="text-white/60">Site Agent</span>
                   <p className="text-white font-medium">{development.site.siteAgent?.name || '—'}</p>
                 </div>
-                {/* Row 3: Developer & Address */}
                 <div>
                   <span className="text-white/60">Developer</span>
                   <p className="text-white font-medium">{development.developer?.name || '—'}</p>
                 </div>
-                <div>
+                {/* Row 3: Address (full width) */}
+                <div className="col-span-2">
                   <span className="text-white/60">Address</span>
                   <p className="text-white font-medium">{fullAddress || '—'}</p>
                 </div>
