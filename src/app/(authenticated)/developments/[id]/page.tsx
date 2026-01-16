@@ -254,7 +254,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     <div className="space-y-6">
       {/* Sticky Header - Coral background with title and info */}
       <div
-        className="shadow sticky top-0 z-10 -mt-4 sm:-mt-6 lg:-mt-8"
+        className="shadow sticky top-0 z-50 -mt-4 sm:-mt-6 lg:-mt-8"
         style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}
       >
         {/* Top row: Title + Status + Navigation */}
