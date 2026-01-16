@@ -257,7 +257,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         className="shadow sticky top-0 z-10 -mt-4 sm:-mt-6 lg:-mt-8"
         style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}
       >
-        {/* Top row: Title + Navigation */}
+        {/* Top row: Title + Status + Navigation */}
         <div className="px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/developments" title="Back to list" className="text-white hover:opacity-80">
@@ -265,7 +265,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </Link>
-            <h1 className="text-3xl font-bold text-white">{siteName}</h1>
+            <div>
+              <h1 className="text-3xl font-bold text-white">{siteName}</h1>
+              <p className="text-white/80 text-lg font-medium mt-0.5">{development.status?.name || 'No status'}</p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {/* Prev/Next navigation */}
@@ -311,25 +314,20 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <div className="px-6 py-4 border-b border-white/20">
           {/* Grid columns match thumbnail widths: 320px + 16px gap + 320px */}
           <div className="grid grid-cols-[320px_320px] gap-x-4 gap-y-3">
-            {/* Row 1: Development Status & Planning Status */}
-            <div>
-              <span className="text-white/60 text-sm">Development Status</span>
-              <p className="text-white font-semibold text-lg">{development.status?.name || '—'}</p>
-            </div>
-            <div>
-              <span className="text-white/60 text-sm">Planning Status</span>
-              <p className="text-white font-semibold text-lg">{development.planningAppStatus?.name || '—'}</p>
-            </div>
-            {/* Row 2: Development Type & Deal Type */}
+            {/* Row 1: Development Type & Planning Status */}
             <div>
               <span className="text-white/60 text-sm">Development Type</span>
               <p className="text-white font-semibold text-lg">{development.developmentType?.name || '—'}</p>
             </div>
             <div>
+              <span className="text-white/60 text-sm">Planning Status</span>
+              <p className="text-white font-semibold text-lg">{development.planningAppStatus?.name || '—'}</p>
+            </div>
+            {/* Row 2: Deal Type & Planning Score */}
+            <div>
               <span className="text-white/60 text-sm">Deal Type</span>
               <p className="text-white font-semibold text-lg">{development.dealType?.name || '—'}</p>
             </div>
-            {/* Row 3: Planning Score */}
             <div>
               <span className="text-white/60 text-sm">Planning Score</span>
               <p className="text-white font-semibold text-lg">
@@ -342,7 +340,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </div>
         {/* Site Context - Map/Photo thumbnails + Site info */}
         {development.site && (
-          <div className="px-6 py-5" style={{ backgroundColor: '#6b7280' }}>
+          <div className="px-6 py-5" style={{ backgroundColor: '#1e434d' }}>
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-xl font-semibold" style={{ color: '#ffffff' }}>Site Context</h2>
               <Link
@@ -362,7 +360,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors w-[320px] h-[240px]"
+                    className="block overflow-hidden hover:opacity-90 transition-opacity w-[320px] h-[240px]"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -372,13 +370,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     />
                   </a>
                 ) : (
-                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-sm w-[320px] h-[240px]">
+                  <div className="bg-white/10 flex items-center justify-center text-white/50 text-sm w-[320px] h-[240px]">
                     No map
                   </div>
                 )}
                 {/* Photo thumbnail */}
                 {development.site.photos?.[0]?.photoUrl ? (
-                  <div className="rounded overflow-hidden border-2 border-white/30 w-[320px] h-[240px]">
+                  <div className="overflow-hidden w-[320px] h-[240px]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={development.site.photos[0].photoUrl}
@@ -387,7 +385,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     />
                   </div>
                 ) : (
-                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-sm w-[320px] h-[240px]">
+                  <div className="bg-white/10 flex items-center justify-center text-white/50 text-sm w-[320px] h-[240px]">
                     No photo
                   </div>
                 )}

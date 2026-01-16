@@ -176,20 +176,15 @@ export function ExpandableCard({
 
           {/* Expand/collapse circular button with animated plus/cross */}
           <div
-            className={`
-              w-10 h-10 rounded-full bg-white shadow-md
-              flex items-center justify-center
-              transition-all duration-300 ease-in-out
-              group-hover:shadow-lg
-              ${isExpanded ? 'bg-[#fa6e60]' : 'bg-white'}
-            `}
+            className="w-10 h-10 rounded-full shadow-md flex items-center justify-center transition-all duration-300 ease-in-out group-hover:shadow-lg"
+            style={{ backgroundColor: '#fa6e60' }}
           >
             <svg
               className={`w-5 h-5 transition-transform duration-300 ease-in-out ${
                 isExpanded ? "rotate-45" : "rotate-0"
               }`}
               fill="none"
-              stroke={isExpanded ? "white" : "#fa6e60"}
+              stroke="white"
               viewBox="0 0 24 24"
               strokeWidth={2.5}
             >
