@@ -174,25 +174,30 @@ export function ExpandableCard({
             </button>
           )}
 
-          {/* Expand/collapse text + chevron */}
-          <div className="flex items-center gap-2 text-[#1e434d]/70 group-hover:text-[#1e434d] transition-colors">
-            <span className="text-sm font-medium">
-              {isExpanded ? "Hide details" : "Show details"}
-            </span>
+          {/* Expand/collapse circular button with animated plus/cross */}
+          <div
+            className={`
+              w-10 h-10 rounded-full bg-white shadow-md
+              flex items-center justify-center
+              transition-all duration-300 ease-in-out
+              group-hover:shadow-lg
+              ${isExpanded ? 'bg-[#fa6e60]' : 'bg-white'}
+            `}
+          >
             <svg
-              className={`w-5 h-5 transition-transform duration-200 ${
-                isExpanded ? "rotate-180" : ""
+              className={`w-5 h-5 transition-transform duration-300 ease-in-out ${
+                isExpanded ? "rotate-45" : "rotate-0"
               }`}
               fill="none"
-              stroke="currentColor"
+              stroke={isExpanded ? "white" : "#fa6e60"}
               viewBox="0 0 24 24"
               strokeWidth={2.5}
-              style={{ color: '#fa6e60' }}
             >
+              {/* Plus icon - rotates 45deg to become X */}
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M19 9l-7 7-7-7"
+                d="M12 5v14M5 12h14"
               />
             </svg>
           </div>
