@@ -131,6 +131,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         include: { organisation: true },
       },
       lawyer: true,
+      developer: true,  // Developer company (Organisation)
       mediaOwner: true,
       mediaOwnerAgent: true,
       mediaOwnerContacts: {
@@ -321,59 +322,90 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             <PlanningScoreBadge score={development.planningScore} />
           )}
         </div>
-        {/* Site Context - Map and Photo thumbnails with muted background */}
+        {/* Site Context - Map/Photo thumbnails + key info with muted background */}
         {development.site && (
           <div className="px-6 py-4" style={{ backgroundColor: '#6b7280' }}>
-            <h3 className="text-lg font-semibold mb-3" style={{ color: '#ffffff' }}>Site Context</h3>
-            {/* Thumbnails - 160x120px (4:3 ratio) */}
-            <div className="flex gap-3">
-              {/* Map thumbnail */}
-              {development.site.address?.latitude && development.site.address?.longitude ? (
-                <a
-                  href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors w-[160px] h-[120px]"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=320x240&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
-                    alt="Site location"
-                    className="w-full h-full object-cover"
-                  />
-                </a>
-              ) : (
-                <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-xs w-[160px] h-[120px]">
-                  No map
-                </div>
-              )}
-              {/* Photo thumbnail */}
-              {development.site.photos?.[0]?.photoUrl ? (
-                <div className="rounded overflow-hidden border-2 border-white/30 w-[160px] h-[120px]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={development.site.photos[0].photoUrl}
-                    alt="Site photo"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-xs w-[160px] h-[120px]">
-                  No photo
-                </div>
-              )}
-            </div>
-            {/* Address and View Site button */}
-            <div className="flex items-center justify-between mt-3">
-              {fullAddress && (
-                <p className="text-sm text-white/80">{fullAddress}</p>
-              )}
+            <div className="flex items-start justify-between mb-3">
+              <h3 className="text-lg font-semibold" style={{ color: '#ffffff' }}>Site Context</h3>
               <Link
                 href={`/sites/${development.site.id}`}
-                className="px-4 py-2 text-sm font-medium text-white bg-white/20 hover:bg-white/30 border border-white/40 hover:border-white/60 rounded-full transition-colors flex-shrink-0 ml-4"
+                className="px-4 py-2 text-sm font-medium text-white bg-white/20 hover:bg-white/30 border border-white/40 hover:border-white/60 rounded-full transition-colors"
               >
                 View Site
               </Link>
+            </div>
+            {/* Two-column layout: thumbnails left, info right */}
+            <div className="flex gap-6">
+              {/* Left: Thumbnails - 160x120px (4:3 ratio) */}
+              <div className="flex gap-3 flex-shrink-0">
+                {/* Map thumbnail */}
+                {development.site.address?.latitude && development.site.address?.longitude ? (
+                  <a
+                    href={`https://www.google.com/maps?q=${development.site.address.latitude},${development.site.address.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block rounded overflow-hidden border-2 border-white/30 hover:border-white transition-colors w-[160px] h-[120px]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`https://maps.googleapis.com/maps/api/staticmap?center=${development.site.address.latitude},${development.site.address.longitude}&zoom=16&size=320x240&maptype=satellite&markers=color:red%7C${development.site.address.latitude},${development.site.address.longitude}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}`}
+                      alt="Site location"
+                      className="w-full h-full object-cover"
+                    />
+                  </a>
+                ) : (
+                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-xs w-[160px] h-[120px]">
+                    No map
+                  </div>
+                )}
+                {/* Photo thumbnail */}
+                {development.site.photos?.[0]?.photoUrl ? (
+                  <div className="rounded overflow-hidden border-2 border-white/30 w-[160px] h-[120px]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={development.site.photos[0].photoUrl}
+                      alt="Site photo"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-white/10 rounded flex items-center justify-center text-white/50 text-xs w-[160px] h-[120px]">
+                    No photo
+                  </div>
+                )}
+              </div>
+              {/* Right: Site information */}
+              <div className="flex-1 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                {/* Row 1: Site Name & Date Created */}
+                <div>
+                  <span className="text-white/60">Site Name</span>
+                  <p className="text-white font-medium">{development.site.name || '—'}</p>
+                </div>
+                <div>
+                  <span className="text-white/60">Date Created</span>
+                  <p className="text-white font-medium">
+                    {development.createdAt ? new Date(development.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                  </p>
+                </div>
+                {/* Row 2: Site Owner & Site Agent */}
+                <div>
+                  <span className="text-white/60">Site Owner</span>
+                  <p className="text-white font-medium">{development.site.siteOwner?.name || '—'}</p>
+                </div>
+                <div>
+                  <span className="text-white/60">Site Agent</span>
+                  <p className="text-white font-medium">{development.site.siteAgent?.name || '—'}</p>
+                </div>
+                {/* Row 3: Developer & Address */}
+                <div>
+                  <span className="text-white/60">Developer</span>
+                  <p className="text-white font-medium">{development.developer?.name || '—'}</p>
+                </div>
+                <div>
+                  <span className="text-white/60">Address</span>
+                  <p className="text-white font-medium">{fullAddress || '—'}</p>
+                </div>
+              </div>
             </div>
           </div>
         )}

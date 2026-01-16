@@ -241,12 +241,12 @@ async function main() {
     prisma.dealType.create({ data: { name: 'Revenue Share', description: 'Revenue sharing deal', sortOrder: 4 } }),
   ]);
 
-  // Development types
+  // Development types - describes who is developing and the commercial situation
   const devTypes = await Promise.all([
-    prisma.developmentType.create({ data: { name: 'New Build', description: 'Brand new installation', sortOrder: 1 } }),
-    prisma.developmentType.create({ data: { name: 'Upgrade', description: 'Upgrading existing panel', sortOrder: 2 } }),
-    prisma.developmentType.create({ data: { name: 'Replacement', description: 'Replacing existing structure', sortOrder: 3 } }),
-    prisma.developmentType.create({ data: { name: 'Relocation', description: 'Moving to new position', sortOrder: 4 } }),
+    prisma.developmentType.create({ data: { name: 'Proposed Wildstone', description: 'Development proposed by Wildstone', sortOrder: 1 } }),
+    prisma.developmentType.create({ data: { name: 'Proposed by Other Developer', description: 'Development proposed by another company', sortOrder: 2 } }),
+    prisma.developmentType.create({ data: { name: 'Existing Advertising', description: 'Existing advertising site operated by others', sortOrder: 3 } }),
+    prisma.developmentType.create({ data: { name: 'Archived', description: 'Archived/historical development', sortOrder: 4 } }),
   ]);
 
   // Panel types
