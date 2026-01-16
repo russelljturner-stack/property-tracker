@@ -259,6 +259,36 @@ FileMaker tracked when status fields changed:
 
 ---
 
+## Tasks List Page - Filtering Requirements
+
+**Date raised:** 16 Jan 2026
+
+The Tasks list page needs filtering capability. Russell identified these requirements:
+
+**Primary Filter - Assigned User:**
+- Default: Filter to logged-in user's tasks (requires linking `assignedTo` to User)
+- Option to view all tasks
+
+**Additional Filters Requested:**
+- By team (see others in the same team)
+- By priority (already in schema as `priority` String field)
+- By development name (which development the task belongs to)
+
+**Schema Considerations:**
+| Requirement | Current Schema | Gap |
+|-------------|----------------|-----|
+| Filter by assigned user | `assignedTo` is String (name only) | Need to link to User model, or match on name |
+| Filter by team | No team concept in schema | Need to add Team model and assign users to teams |
+| Filter by priority | `priority` String exists | Working - need to know what values are valid (High/Medium/Low?) |
+| Filter by development | `developmentId` FK exists | Working - can filter |
+
+**Questions:**
+1. Should `assignedTo` link to User records, or continue using name strings?
+2. Do we need a Team model? What teams exist in the business?
+3. What are the valid priority values? (High, Medium, Low? Or different?)
+
+---
+
 ## Review Items (Not Questions)
 
 These items need review on Railway but aren't blocking questions:
@@ -269,4 +299,4 @@ These items need review on Railway but aren't blocking questions:
 
 ---
 
-*Last updated: 13 Jan 2026 - Added questions from DDR business logic analysis*
+*Last updated: 16 Jan 2026 - Added Tasks filtering requirements*
