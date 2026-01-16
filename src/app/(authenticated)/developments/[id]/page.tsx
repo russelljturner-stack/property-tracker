@@ -938,7 +938,7 @@ function ProgressTimeline({
 
   // Brand colours for timeline
   const COLOURS = {
-    yellow: '#fff48b',        // Wildstone yellow - completed stages
+    yellow: '#fff48b',        // Brand yellow - completed stages
     yellowDark: '#d4a800',    // Darker yellow for text/icons on yellow bg
     coral: '#fa6e60',         // Current stage
     teal: '#1e434d',          // Dark teal for text

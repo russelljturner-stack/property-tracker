@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Roboto } from "next/font/google";
 import "./globals.css";
 
-// Load Wildstone brand fonts
+// Load brand fonts
 // Montserrat - used for headlines (bold, modern, professional)
 const montserrat = Montserrat({
   variable: "--font-montserrat",
