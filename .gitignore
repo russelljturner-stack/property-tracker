@@ -42,3 +42,6 @@ nul
 DDR_converted.xml
 Summary.xml
 WildstoneDevelopmentTracker240714_fmp12.xml
+
+# Claude temp files
+tmpclaude-*
