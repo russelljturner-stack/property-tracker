@@ -252,9 +252,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header & Site Context - Combined card with coral background */}
+      {/* Sticky Header - Coral background with title and info */}
       <div
-        className="shadow -mt-4 sm:-mt-6 lg:-mt-8"
+        className="shadow sticky top-0 z-10 -mt-4 sm:-mt-6 lg:-mt-8"
         style={{ backgroundColor: '#fa6e60', borderRadius: 0 }}
       >
         {/* Top row: Title + Status + Navigation */}
@@ -311,7 +311,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
         </div>
         {/* Development info row: Key fields with labels - single row of 4 */}
-        <div className="px-6 py-4 border-b border-white/20">
+        <div className="px-6 py-4">
           <div className="flex gap-8">
             <div>
               <span className="text-white/60 text-sm">Development Type</span>
@@ -335,9 +335,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
-        {/* Site Context - Map/Photo thumbnails + Site info */}
-        {development.site && (
-          <div className="px-6 py-5" style={{ backgroundColor: '#1e434d' }}>
+      </div>
+
+      {/* Site Context - Teal background, scrolls with content */}
+      {development.site && (
+        <div className="px-6 py-5 shadow -mt-6" style={{ backgroundColor: '#1e434d', borderRadius: 0 }}>
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-xl font-semibold" style={{ color: '#ffffff' }}>Site Context</h2>
               <Link
@@ -415,10 +417,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </div>
             </div>
           </div>
-        )}
-        {/* EXPERIMENTAL: Progress Timeline - below Site Context (easy to revert: see line ~408) */}
-        <ProgressTimeline stages={STAGES} currentStage={currentStage} />
-      </div>
+        </div>
+      )}
+
+      {/* Progress Timeline - below Site Context */}
+      <ProgressTimeline stages={STAGES} currentStage={currentStage} />
 
       {/* Main content: Two-column layout - narrower right column */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
